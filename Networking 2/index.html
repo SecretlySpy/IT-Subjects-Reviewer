@@ -8,6 +8,69 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script crossorigin src="https://unpkg.com/lucide-react/dist/umd/lucide-react.js"></script>
+  <script>
+    window.LucideReact = window.LucideReact || {};
+    (function () {
+      const iconNames = [
+        "Search", "Network", "Layers", "Globe2", "Shield", "Wifi", "Server",
+        "Router", "Lock", "Cable", "RadioTower", "Map", "KeyRound",
+        "Activity", "ArrowRight", "BookOpen", "Cpu", "Boxes", "MonitorCog",
+        "Home", "Menu", "X"
+      ];
+
+      function createFallbackIcon(name) {
+        return function FallbackIcon({ size = 24, className = "", strokeWidth = 2, ...props }) {
+          const children = name === "ArrowRight"
+            ? [
+                React.createElement("path", { key: "line", d: "M5 12h14" }),
+                React.createElement("path", { key: "head", d: "m13 6 6 6-6 6" })
+              ]
+            : name === "Search"
+              ? [
+                  React.createElement("circle", { key: "circle", cx: "11", cy: "11", r: "6" }),
+                  React.createElement("path", { key: "handle", d: "m16 16 4 4" })
+                ]
+              : name === "Menu"
+                ? [
+                    React.createElement("path", { key: "top", d: "M4 7h16" }),
+                    React.createElement("path", { key: "middle", d: "M4 12h16" }),
+                    React.createElement("path", { key: "bottom", d: "M4 17h16" })
+                  ]
+                : name === "X"
+                  ? [
+                      React.createElement("path", { key: "a", d: "M6 6l12 12" }),
+                      React.createElement("path", { key: "b", d: "M18 6 6 18" })
+                    ]
+                  : [
+                      React.createElement("rect", { key: "box", x: "5", y: "5", width: "14", height: "14", rx: "3" }),
+                      React.createElement("path", { key: "spark", d: "M9 12h6M12 9v6" })
+                    ];
+
+          return React.createElement(
+            "svg",
+            {
+              xmlns: "http://www.w3.org/2000/svg",
+              width: size,
+              height: size,
+              viewBox: "0 0 24 24",
+              fill: "none",
+              stroke: "currentColor",
+              strokeWidth,
+              strokeLinecap: "round",
+              strokeLinejoin: "round",
+              className,
+              ...props
+            },
+            children
+          );
+        };
+      }
+
+      iconNames.forEach((name) => {
+        window.LucideReact[name] = window.LucideReact[name] || createFallbackIcon(name);
+      });
+    })();
+  </script>
 </head>
 <body>
   <div id="root"></div>
