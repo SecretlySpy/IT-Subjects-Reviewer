@@ -7,15 +7,13 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script crossorigin src="https://unpkg.com/framer-motion/dist/framer-motion.js"></script>
   <script crossorigin src="https://unpkg.com/lucide-react/dist/umd/lucide-react.js"></script>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
 const { useMemo, useState } = React;
-const { motion } = Motion;
-const { Search, Network, Layers, Globe2, Shield, Wifi, Server, Router, Lock, Cable, RadioTower, Map, KeyRound, Activity, ArrowRight, BookOpen, Cpu, Boxes, MonitorCog, Home, Menu, X } = lucideReact;
+const { Search, Network, Layers, Globe2, Shield, Wifi, Server, Router, Lock, Cable, RadioTower, Map, KeyRound, Activity, ArrowRight, BookOpen, Cpu, Boxes, MonitorCog, Home, Menu, X } = LucideReact;
 
 const topics = [
   {
@@ -489,7 +487,7 @@ function NetworkingTwoBeginnerGuide() {
 
       <main id="top" className="mx-auto max-w-7xl px-5 pb-24">
         <section className="grid min-h-[72vh] items-center gap-10 py-16 md:grid-cols-[1.1fr_0.9fr]">
-          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+          <div>
             <Badge>Beginner-Friendly Compilation • Networking 2</Badge>
             <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-950 md:text-7xl">Networking, explained like you are starting from zero 🌐</h1>
             <p className="mt-6 max-w-3xl text-xl leading-9 text-slate-600">This compiled guide turns the Networking 2 PDFs into a simple, visual learning path. Start with the dashboard, jump to any topic, then use the diagrams, analogies, tables, and quick checks to review fast.</p>
@@ -498,7 +496,7 @@ function NetworkingTwoBeginnerGuide() {
               <a href="#practice" className="rounded-2xl border border-slate-300 bg-white px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">Practice Tests</a>
               <a href="#glossary" className="rounded-2xl border border-slate-300 bg-white px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">Search Glossary</a>
             </div>
-          </motion.div>
+          </div>
           <div className="grid gap-4">
             <MiniLayerStack />
             <PacketDiagram />
