@@ -4,6 +4,8 @@
 
 Interactive, browser-based study reviewers for IT subjects.
 
+<img src="assets/readme-hero.svg" alt="Animated IT Subjects Reviewer banner" width="100%">
+
 ![Static HTML](https://img.shields.io/badge/Static%20HTML-ready-16805f?style=for-the-badge)
 ![Responsive](https://img.shields.io/badge/Responsive-design-326bdc?style=for-the-badge)
 ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-friendly-7556b8?style=for-the-badge)
