@@ -6,20 +6,46 @@
   <title>Networking 2 Reviewer</title>
   <style>
     :root {
-      --bg: #f6f8fb;
+      color-scheme: light;
+      --bg: #f4f7f6;
       --panel: #ffffff;
-      --panel-soft: #eef4f8;
-      --ink: #17202a;
-      --muted: #617083;
-      --line: #dce4ec;
-      --navy: #132238;
-      --blue: #2f6fed;
-      --cyan: #0f9ab0;
-      --green: #18835e;
-      --amber: #c47a13;
-      --rose: #c24765;
-      --shadow: 0 16px 45px rgba(20, 35, 52, 0.12);
+      --panel-strong: #fbfefd;
+      --panel-soft: #eaf2f0;
+      --ink: #18221f;
+      --muted: #66746f;
+      --line: #d7e2df;
+      --navy: #10211e;
+      --blue: #326bdc;
+      --cyan: #0e9a9a;
+      --green: #16805f;
+      --amber: #b56f12;
+      --rose: #bc4768;
+      --violet: #7556b8;
+      --focus: rgba(50, 107, 220, 0.25);
+      --shadow: 0 18px 46px rgba(23, 35, 31, 0.12);
+      --shadow-strong: 0 28px 70px rgba(23, 35, 31, 0.18);
       --radius: 8px;
+    }
+
+    body[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #111716;
+      --panel: #18201e;
+      --panel-strong: #1e2926;
+      --panel-soft: #202c29;
+      --ink: #edf7f3;
+      --muted: #a6b5af;
+      --line: #31403c;
+      --navy: #f0faf5;
+      --blue: #7da8ff;
+      --cyan: #5fd1cc;
+      --green: #68d59f;
+      --amber: #efb861;
+      --rose: #ef83a3;
+      --violet: #baa2ff;
+      --focus: rgba(125, 168, 255, 0.32);
+      --shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+      --shadow-strong: 0 30px 80px rgba(0, 0, 0, 0.38);
     }
 
     * {
@@ -33,11 +59,25 @@
     body {
       margin: 0;
       background:
-        radial-gradient(circle at top left, rgba(47, 111, 237, 0.12), transparent 34rem),
-        linear-gradient(180deg, #fbfcfe 0%, var(--bg) 36rem);
+        linear-gradient(135deg, rgba(50, 107, 220, 0.12) 0%, rgba(22, 128, 95, 0.08) 36%, rgba(188, 71, 104, 0.08) 100%),
+        linear-gradient(180deg, var(--panel-strong) 0%, var(--bg) 34rem);
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       line-height: 1.55;
+      transition: background 220ms ease, color 220ms ease;
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(102, 116, 111, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(102, 116, 111, 0.08) 1px, transparent 1px);
+      background-size: 44px 44px;
+      content: "";
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent 62%);
+      pointer-events: none;
     }
 
     body.menu-open {
@@ -59,17 +99,40 @@
       cursor: pointer;
     }
 
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
     .app-shell {
       min-height: 100vh;
+    }
+
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 80;
+      width: 100%;
+      height: 3px;
+      background: transparent;
+    }
+
+    .scroll-progress span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--blue), var(--rose));
+      transition: width 80ms linear;
     }
 
     .topbar {
       position: sticky;
       top: 0;
       z-index: 50;
-      border-bottom: 1px solid rgba(220, 228, 236, 0.9);
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(16px);
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+      background: color-mix(in srgb, var(--panel) 88%, transparent);
+      backdrop-filter: blur(18px) saturate(140%);
     }
 
     .topbar-inner {
@@ -92,6 +155,11 @@
       white-space: nowrap;
     }
 
+    .brand span:last-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .brand-mark,
     .icon-tile {
       display: inline-grid;
@@ -100,7 +168,7 @@
       place-items: center;
       border-radius: var(--radius);
       background: var(--navy);
-      color: #fff;
+      color: var(--panel);
       flex: 0 0 auto;
     }
 
@@ -118,10 +186,16 @@
       stroke-linejoin: round;
     }
 
-    .top-nav {
+    .top-nav,
+    .topbar-tools {
       display: flex;
       align-items: center;
       gap: 0.35rem;
+    }
+
+    .topbar-tools {
+      gap: 0.55rem;
+      min-width: 0;
     }
 
     .nav-link,
@@ -146,27 +220,116 @@
     .nav-link.active,
     .filter-chip:hover,
     .filter-chip.active {
-      background: #eef4fb;
+      background: var(--panel-soft);
       color: var(--navy);
-      border-color: #d8e5f2;
+      border-color: var(--line);
+    }
+
+    body[data-theme="dark"] .nav-link:hover,
+    body[data-theme="dark"] .nav-link.active,
+    body[data-theme="dark"] .filter-chip:hover,
+    body[data-theme="dark"] .filter-chip.active {
+      background: var(--panel-soft);
+      border-color: var(--line);
+    }
+
+    .quick-find {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto minmax(9rem, 14rem);
+      gap: 0.45rem;
+      align-items: center;
+      min-height: 2.55rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      padding: 0 0.65rem;
+      box-shadow: 0 8px 22px rgba(23, 35, 31, 0.05);
+    }
+
+    .quick-find input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .quick-results {
+      position: absolute;
+      top: calc(100% + 0.45rem);
+      right: 0;
+      display: none;
+      width: min(24rem, calc(100vw - 2rem));
+      max-height: 22rem;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow-strong);
+      padding: 0.45rem;
+    }
+
+    .quick-results.open {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .quick-result {
+      display: grid;
+      gap: 0.15rem;
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      background: transparent;
+      color: inherit;
+      padding: 0.65rem;
+      text-align: left;
+    }
+
+    .quick-result:hover {
+      border-color: var(--line);
+      background: var(--panel-soft);
+    }
+
+    .quick-result strong {
+      color: var(--navy);
+      font-size: 0.92rem;
+    }
+
+    .quick-result span {
+      color: var(--muted);
+      font-size: 0.8rem;
     }
 
     .icon-btn {
-      display: none;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 2.5rem;
       height: 2.5rem;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: var(--panel);
       color: var(--navy);
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .icon-btn:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--blue) 50%, var(--line));
+      background: var(--panel-soft);
+    }
+
+    #menuToggle {
+      display: none;
     }
 
     .mobile-menu {
       display: none;
       border-top: 1px solid var(--line);
-      background: #fff;
+      background: var(--panel);
       padding: 0.75rem 1rem 1rem;
     }
 
@@ -190,13 +353,19 @@
       padding: 3rem 0 2rem;
     }
 
+    .hero-copy {
+      display: grid;
+      gap: 1rem;
+    }
+
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      border: 1px solid #d8e5f2;
+      width: fit-content;
+      border: 1px solid color-mix(in srgb, var(--cyan) 30%, var(--line));
       border-radius: var(--radius);
-      background: #fff;
+      background: color-mix(in srgb, var(--panel) 88%, transparent);
       padding: 0.45rem 0.65rem;
       color: var(--cyan);
       font-size: 0.78rem;
@@ -237,11 +406,19 @@
       letter-spacing: 0;
     }
 
+    .title-accent {
+      color: var(--cyan);
+    }
+
     .lead {
       max-width: 720px;
       color: #48586b;
       font-size: clamp(1.02rem, 2vw, 1.25rem);
       line-height: 1.75;
+    }
+
+    body[data-theme="dark"] .lead {
+      color: var(--muted);
     }
 
     .hero-actions,
@@ -264,29 +441,30 @@
       min-height: 2.75rem;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: var(--panel);
       color: var(--navy);
       padding: 0.72rem 1rem;
       font-weight: 850;
+      white-space: nowrap;
       transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
     }
 
     .btn:hover {
       transform: translateY(-1px);
-      border-color: #c5d6e6;
+      border-color: color-mix(in srgb, var(--blue) 42%, var(--line));
       box-shadow: 0 8px 22px rgba(24, 40, 58, 0.1);
     }
 
     .btn.primary {
       border-color: var(--navy);
       background: var(--navy);
-      color: #fff;
+      color: var(--panel);
     }
 
     .btn.success {
       border-color: var(--green);
       background: var(--green);
-      color: #fff;
+      color: var(--panel);
     }
 
     .btn.warn {
@@ -295,12 +473,68 @@
       color: #77510e;
     }
 
-    .visual-panel {
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      max-width: 720px;
+    }
+
+    .hero-stat {
+      position: relative;
+      overflow: hidden;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
-      box-shadow: var(--shadow);
+      background: color-mix(in srgb, var(--panel) 86%, transparent);
+      padding: 0.9rem;
+      box-shadow: 0 10px 30px rgba(23, 35, 31, 0.07);
+    }
+
+    .hero-stat::before {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0.28rem;
+      background: var(--cyan);
+      content: "";
+    }
+
+    .hero-stat:nth-child(2)::before {
+      background: var(--rose);
+    }
+
+    .hero-stat:nth-child(3)::before {
+      background: var(--amber);
+    }
+
+    .hero-stat strong {
+      display: block;
+      color: var(--navy);
+      font-size: 1.65rem;
+      line-height: 1;
+    }
+
+    .hero-stat span {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 780;
+    }
+
+    .visual-panel {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow-strong);
       overflow: hidden;
+    }
+
+    .visual-panel::before {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(50, 107, 220, 0.16), transparent 35%, rgba(22, 128, 95, 0.12));
+      content: "";
+      pointer-events: none;
     }
 
     .network-map {
@@ -309,8 +543,8 @@
       min-height: 300px;
       place-items: center;
       background:
-        linear-gradient(135deg, rgba(47, 111, 237, 0.08), transparent 40%),
-        linear-gradient(180deg, #ffffff 0%, #eef4f8 100%);
+        linear-gradient(135deg, rgba(50, 107, 220, 0.08), transparent 40%),
+        linear-gradient(180deg, var(--panel) 0%, var(--panel-soft) 100%);
       padding: 1rem;
     }
 
@@ -321,7 +555,7 @@
     }
 
     .wire {
-      stroke: #b7c7d8;
+      stroke: color-mix(in srgb, var(--muted) 45%, transparent);
       stroke-width: 4;
       stroke-linecap: round;
       stroke-dasharray: 8 12;
@@ -339,13 +573,13 @@
     }
 
     .node circle {
-      fill: #fff;
-      stroke: #aebfd0;
+      fill: var(--panel);
+      stroke: color-mix(in srgb, var(--muted) 45%, var(--line));
       stroke-width: 3;
     }
 
     .node.active circle {
-      fill: #e7f1ff;
+      fill: color-mix(in srgb, var(--blue) 16%, var(--panel));
       stroke: var(--blue);
     }
 
@@ -360,8 +594,15 @@
       display: grid;
       gap: 0.75rem;
       border-top: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.78);
+      background: color-mix(in srgb, var(--panel) 88%, transparent);
       padding: 1rem;
+    }
+
+    .map-title-row {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 0.75rem;
     }
 
     .step-controls {
@@ -374,14 +615,14 @@
       min-height: 2.5rem;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: var(--panel);
       color: var(--muted);
       font-weight: 850;
     }
 
     .step-btn.active {
       border-color: var(--blue);
-      background: #e9f2ff;
+      background: color-mix(in srgb, var(--blue) 14%, var(--panel));
       color: var(--blue);
     }
 
@@ -438,25 +679,48 @@
     }
 
     .topic-card {
+      position: relative;
       min-height: 260px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: color-mix(in srgb, var(--panel) 94%, transparent);
       color: inherit;
       padding: 1rem;
       text-align: left;
-      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+      overflow: hidden;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .topic-card::after {
+      position: absolute;
+      inset: auto 1rem 1rem auto;
+      width: 3rem;
+      height: 3rem;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--panel-soft) 70%, transparent);
+      content: "";
+      opacity: 0.7;
+      transform: scale(0.9);
+      transition: transform 180ms ease, opacity 180ms ease;
     }
 
     .topic-card:hover,
     .topic-card.active {
-      transform: translateY(-2px);
-      border-color: #b9cbe0;
-      box-shadow: var(--shadow);
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--blue) 35%, var(--line));
+      background: var(--panel);
+      box-shadow: var(--shadow-strong);
+    }
+
+    .topic-card:hover::after,
+    .topic-card.active::after {
+      opacity: 1;
+      transform: scale(1.15);
     }
 
     .topic-card.active {
-      outline: 3px solid rgba(47, 111, 237, 0.18);
+      outline: 3px solid var(--focus);
     }
 
     .tag {
@@ -465,7 +729,7 @@
       width: fit-content;
       min-height: 1.75rem;
       border-radius: var(--radius);
-      background: #eef4fb;
+      background: color-mix(in srgb, var(--cyan) 10%, var(--panel));
       color: var(--navy);
       padding: 0.25rem 0.55rem;
       font-size: 0.78rem;
@@ -499,12 +763,14 @@
     }
 
     .topic-detail {
+      position: sticky;
+      top: 5.2rem;
       min-height: 520px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: var(--panel);
       padding: 1.25rem;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-strong);
     }
 
     .detail-head {
@@ -515,6 +781,38 @@
       border-bottom: 1px solid var(--line);
       padding-bottom: 1rem;
       margin-bottom: 1rem;
+    }
+
+    .detail-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 1rem;
+    }
+
+    .detail-tab {
+      min-height: 2.25rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--muted);
+      padding: 0.4rem 0.7rem;
+      font-weight: 850;
+    }
+
+    .detail-tab.active {
+      border-color: var(--navy);
+      background: var(--navy);
+      color: var(--panel);
+    }
+
+    .detail-pane {
+      display: none;
+    }
+
+    .detail-pane.active {
+      display: grid;
+      gap: 1rem;
     }
 
     .term-list,
@@ -529,9 +827,9 @@
 
     .pill-list li,
     .term-list li {
-      border: 1px solid #d8e5f2;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #f7fbff;
+      background: color-mix(in srgb, var(--blue) 7%, var(--panel));
       padding: 0.48rem 0.6rem;
       color: #435268;
       font-weight: 750;
@@ -548,9 +846,15 @@
 
     .fact-list li {
       border-left: 4px solid var(--blue);
-      background: #f7fbff;
+      background: color-mix(in srgb, var(--blue) 7%, var(--panel));
       padding: 0.75rem 0.85rem;
       border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    body[data-theme="dark"] .pill-list li,
+    body[data-theme="dark"] .term-list li,
+    body[data-theme="dark"] .fact-list li {
+      color: var(--muted);
     }
 
     .compare-table {
@@ -571,7 +875,7 @@
 
     .compare-table th {
       background: var(--navy);
-      color: #fff;
+      color: var(--panel);
       font-size: 0.82rem;
     }
 
@@ -588,7 +892,7 @@
     .flow-step {
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #f7fbff;
+      background: color-mix(in srgb, var(--green) 6%, var(--panel));
       padding: 0.75rem;
     }
 
@@ -598,7 +902,7 @@
       width: 1.9rem;
       height: 1.9rem;
       border-radius: 50%;
-      background: #fff;
+      background: var(--panel);
       color: var(--blue);
       margin-bottom: 0.55rem;
       box-shadow: 0 4px 12px rgba(24, 40, 58, 0.08);
@@ -612,7 +916,7 @@
       height: 0.7rem;
       overflow: hidden;
       border-radius: 999px;
-      background: #dfebf4;
+      background: var(--panel-soft);
     }
 
     .meter-fill {
@@ -627,7 +931,7 @@
       min-width: 9rem;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: var(--panel);
       padding: 0.75rem;
     }
 
@@ -676,21 +980,23 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background:
-        linear-gradient(135deg, rgba(15, 154, 176, 0.14), transparent 42%),
-        #fff;
+        linear-gradient(135deg, rgba(15, 154, 154, 0.14), transparent 42%),
+        var(--panel);
       padding: 1.25rem;
       text-align: center;
-      transition: transform 180ms ease, background 180ms ease;
+      transform-style: preserve-3d;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
     }
 
     .flashcard.flipped {
       background:
-        linear-gradient(135deg, rgba(24, 131, 94, 0.16), transparent 42%),
-        #fff;
+        linear-gradient(135deg, rgba(24, 128, 95, 0.16), transparent 42%),
+        var(--panel);
+      border-color: color-mix(in srgb, var(--green) 38%, var(--line));
     }
 
     .flashcard:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px) rotateX(1deg);
     }
 
     .flashcard .question {
@@ -703,7 +1009,7 @@
 
     .flashcard .answer {
       max-width: 760px;
-      color: #345;
+      color: var(--ink);
       font-size: clamp(1.1rem, 2.2vw, 1.45rem);
       line-height: 1.55;
     }
@@ -729,7 +1035,7 @@
     .question-block {
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: var(--panel);
       padding: 1rem;
     }
 
@@ -745,31 +1051,31 @@
       padding: 0.65rem 0.75rem;
       text-align: left;
       color: #435268;
-      background: #f8fbfd;
+      background: color-mix(in srgb, var(--panel-soft) 40%, var(--panel));
       border-color: var(--line);
       font-weight: 720;
     }
 
     .choice-btn:hover {
       border-color: #c2d4e5;
-      background: #f0f6fc;
+      background: var(--panel-soft);
     }
 
     .choice-btn.selected {
       border-color: var(--blue);
-      background: #e9f2ff;
+      background: color-mix(in srgb, var(--blue) 14%, var(--panel));
       color: var(--blue);
     }
 
     .choice-btn.correct {
       border-color: var(--green);
-      background: #eaf8f1;
+      background: color-mix(in srgb, var(--green) 14%, var(--panel));
       color: var(--green);
     }
 
     .choice-btn.incorrect {
       border-color: var(--rose);
-      background: #fff0f3;
+      background: color-mix(in srgb, var(--rose) 14%, var(--panel));
       color: var(--rose);
     }
 
@@ -777,7 +1083,7 @@
       display: none;
       margin: 0.85rem 0 0;
       border-left: 4px solid var(--green);
-      background: #f0fbf6;
+      background: color-mix(in srgb, var(--green) 12%, var(--panel));
       border-radius: 0 var(--radius) var(--radius) 0;
       padding: 0.75rem 0.85rem;
       color: #36564a;
@@ -795,7 +1101,7 @@
       min-height: 3rem;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: var(--panel);
       padding: 0 0.8rem;
     }
 
@@ -820,7 +1126,7 @@
     .accordion-item {
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: var(--panel);
       overflow: hidden;
     }
 
@@ -830,7 +1136,7 @@
       justify-content: space-between;
       width: 100%;
       border: 0;
-      background: #fff;
+      background: var(--panel);
       padding: 0.9rem 1rem;
       color: var(--navy);
       font-weight: 900;
@@ -841,7 +1147,7 @@
       display: none;
       border-top: 1px solid var(--line);
       padding: 0.9rem 1rem;
-      background: #f8fbfd;
+      background: var(--panel-soft);
     }
 
     .accordion-item.open .accordion-panel {
@@ -851,9 +1157,55 @@
     .footer {
       margin-top: 4rem;
       border-radius: var(--radius);
-      background: var(--navy);
+      background: linear-gradient(135deg, #0f201d, #172c3d 54%, #34284b);
       color: #fff;
       padding: 1.5rem;
+    }
+
+    .toast {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 90;
+      display: grid;
+      gap: 0.25rem;
+      max-width: min(24rem, calc(100vw - 2rem));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--ink);
+      box-shadow: var(--shadow-strong);
+      padding: 0.85rem 1rem;
+      opacity: 0;
+      transform: translateY(0.75rem);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast strong {
+      color: var(--navy);
+      font-size: 0.95rem;
+    }
+
+    .toast span {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
     }
 
     .footer p {
@@ -869,6 +1221,10 @@
       .hero,
       .two-col {
         grid-template-columns: 1fr;
+      }
+
+      .topic-detail {
+        position: static;
       }
 
       .topic-grid,
@@ -888,13 +1244,21 @@
         display: none;
       }
 
-      .icon-btn {
+      #menuToggle {
         display: inline-flex;
+      }
+
+      .quick-find {
+        display: none;
       }
 
       .hero {
         min-height: auto;
         padding-top: 2rem;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
       }
 
       .section-head,
@@ -916,9 +1280,32 @@
         min-height: auto;
       }
     }
+
+    @media (max-width: 520px) {
+      .topbar-inner,
+      .container {
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+      }
+
+      .brand {
+        max-width: calc(100vw - 8.25rem);
+      }
+
+      .hero-actions .btn,
+      .card-actions .btn,
+      .quiz-actions .btn {
+        width: 100%;
+      }
+
+      .network-map svg {
+        height: 210px;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="scroll-progress" aria-hidden="true"><span id="scrollProgress"></span></div>
   <div class="app-shell">
     <header class="topbar">
       <div class="topbar-inner">
@@ -934,6 +1321,16 @@
           <a class="nav-link" href="#practice">Practice</a>
           <a class="nav-link" href="#glossary">Glossary</a>
         </nav>
+        <div class="topbar-tools">
+          <div class="quick-find">
+            <span class="small-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg></span>
+            <input id="globalSearch" type="search" placeholder="Quick find" autocomplete="off" aria-label="Quick find topics and terms">
+            <div class="quick-results" id="quickResults"></div>
+          </div>
+          <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle theme">
+            <svg viewBox="0 0 24 24"><path d="M12 3v2"></path><path d="M12 19v2"></path><path d="M5.64 5.64 7.05 7.05"></path><path d="m16.95 16.95 1.41 1.41"></path><path d="M3 12h2"></path><path d="M19 12h2"></path><circle cx="12" cy="12" r="4"></circle></svg>
+          </button>
+        </div>
         <button class="icon-btn" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false">
           <svg viewBox="0 0 24 24"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path></svg>
         </button>
@@ -948,10 +1345,15 @@
 
     <main id="top" class="container">
       <section class="hero" aria-labelledby="heroTitle">
-        <div>
+        <div class="hero-copy">
           <span class="eyebrow">Beginner-friendly compilation</span>
-          <h1 id="heroTitle">Networking 2 study dashboard</h1>
+          <h1 id="heroTitle">Networking 2 <span class="title-accent">study dashboard</span></h1>
           <p class="lead">Review the Internet stack, application protocols, transport, routing, LANs, wireless networks, and security through focused topic cards, a live packet path, flashcards, scored quizzes, and a searchable glossary.</p>
+          <div class="hero-stats" aria-label="Study app summary">
+            <div class="hero-stat"><strong>7</strong><span>core chapters</span></div>
+            <div class="hero-stat"><strong>24</strong><span>glossary terms</span></div>
+            <div class="hero-stat"><strong>15</strong><span>practice questions</span></div>
+          </div>
           <div class="hero-actions">
             <a class="btn primary" href="#dashboard">Open topics</a>
             <a class="btn" href="#practice">Practice tests</a>
@@ -972,10 +1374,15 @@
             </svg>
           </div>
           <div class="map-caption">
-            <div>
-              <span class="tag" id="pathStepTag">Step 1 of 5</span>
-              <h3 id="pathStepTitle">Application creates a message</h3>
-              <p id="pathStepText">The browser, DNS client, email app, or video app creates the data that needs to cross the network.</p>
+            <div class="map-title-row">
+              <div>
+                <span class="tag" id="pathStepTag">Step 1 of 5</span>
+                <h3 id="pathStepTitle">Application creates a message</h3>
+                <p id="pathStepText">The browser, DNS client, email app, or video app creates the data that needs to cross the network.</p>
+              </div>
+              <button class="icon-btn" id="pathToggle" type="button" aria-label="Pause packet path">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14"></path><path d="M16 5v14"></path></svg>
+              </button>
             </div>
             <div class="step-controls" id="pathSteps"></div>
           </div>
@@ -1088,6 +1495,7 @@
         <p>Single-file HTML, CSS, and JavaScript. No runtime CDN framework is required for the interface to load.</p>
       </footer>
     </main>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </div>
 
   <script>
@@ -1391,6 +1799,7 @@
 
     const state = {
       activeTopic: topics[0].id,
+      detailTab: "overview",
       studied: new Set(JSON.parse(localStorage.getItem("networking2Studied") || "[]")),
       bestScore: Number(localStorage.getItem("networking2BestScore") || 0),
       seenCards: Number(localStorage.getItem("networking2SeenCards") || 0),
@@ -1400,7 +1809,10 @@
       selectedTest: 0,
       answers: {},
       submitted: false,
-      pathStep: 0
+      pathStep: 0,
+      pathPaused: false,
+      pathTimer: null,
+      theme: localStorage.getItem("networking2Theme") || "light"
     };
 
     const $ = (selector, root = document) => root.querySelector(selector);
@@ -1420,6 +1832,28 @@
       localStorage.setItem("networking2Studied", JSON.stringify([...state.studied]));
       localStorage.setItem("networking2BestScore", String(state.bestScore));
       localStorage.setItem("networking2SeenCards", String(state.seenCards));
+    }
+
+    function showToast(title, detail) {
+      const toast = $("#toast");
+      toast.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(detail)}</span>`;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function applyTheme() {
+      document.body.dataset.theme = state.theme;
+      localStorage.setItem("networking2Theme", state.theme);
+      $("#themeToggle").innerHTML = state.theme === "dark"
+        ? '<svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 7 9 9 0 1 1-9-7Z"></path></svg>'
+        : '<svg viewBox="0 0 24 24"><path d="M12 3v2"></path><path d="M12 19v2"></path><path d="M5.64 5.64 7.05 7.05"></path><path d="m16.95 16.95 1.41 1.41"></path><path d="M3 12h2"></path><path d="M19 12h2"></path><circle cx="12" cy="12" r="4"></circle></svg>';
+    }
+
+    function updateScrollProgress() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? (window.scrollY / max) * 100 : 0;
+      $("#scrollProgress").style.width = `${Math.min(100, Math.max(0, progress))}%`;
     }
 
     function iconSvg(name) {
@@ -1493,7 +1927,13 @@
           </button>
         </div>
 
-        <div class="grid">
+        <div class="detail-tabs" role="tablist" aria-label="Topic detail sections">
+          <button class="detail-tab ${state.detailTab === "overview" ? "active" : ""}" type="button" data-detail-tab="overview">Overview</button>
+          <button class="detail-tab ${state.detailTab === "compare" ? "active" : ""}" type="button" data-detail-tab="compare">Compare</button>
+          <button class="detail-tab ${state.detailTab === "flow" ? "active" : ""}" type="button" data-detail-tab="flow">Flow</button>
+        </div>
+
+        <div class="detail-pane ${state.detailTab === "overview" ? "active" : ""}" data-pane="overview">
           <div>
             <h3>Key terms</h3>
             <ul class="term-list">${topic.terms.map((term) => `<li>${escapeHtml(term)}</li>`).join("")}</ul>
@@ -1503,7 +1943,9 @@
             <h3>Core ideas</h3>
             <ul class="fact-list">${topic.keyPoints.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ul>
           </div>
+        </div>
 
+        <div class="detail-pane ${state.detailTab === "compare" ? "active" : ""}" data-pane="compare">
           <div>
             <h3>Compare</h3>
             <table class="compare-table">
@@ -1511,7 +1953,9 @@
               <tbody>${rows}</tbody>
             </table>
           </div>
+        </div>
 
+        <div class="detail-pane ${state.detailTab === "flow" ? "active" : ""}" data-pane="flow">
           <div>
             <h3>Process flow</h3>
             <div class="flow">
@@ -1527,11 +1971,20 @@
         </div>
       `;
 
+      $$(".detail-tab", $("#topicDetail")).forEach((button) => {
+        button.addEventListener("click", () => {
+          state.detailTab = button.dataset.detailTab;
+          renderTopicDetail();
+        });
+      });
+
       $("#markStudied").addEventListener("click", () => {
         if (state.studied.has(topic.id)) {
           state.studied.delete(topic.id);
+          showToast("Progress updated", `${topic.title} is back in your review queue.`);
         } else {
           state.studied.add(topic.id);
+          showToast("Topic marked studied", `${topic.title} now counts toward your coverage.`);
         }
         saveProgress();
         renderTopicCards();
@@ -1595,10 +2048,19 @@
           renderPathStep();
         });
       });
-      setInterval(() => {
+      const advancePath = () => {
+        if (state.pathPaused) return;
         state.pathStep = (state.pathStep + 1) % pathSteps.length;
         renderPathStep();
-      }, 4200);
+      };
+      state.pathTimer = setInterval(advancePath, 4200);
+      $("#pathToggle").addEventListener("click", () => {
+        state.pathPaused = !state.pathPaused;
+        $("#pathToggle").setAttribute("aria-label", state.pathPaused ? "Play packet path" : "Pause packet path");
+        $("#pathToggle").innerHTML = state.pathPaused
+          ? '<svg viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"></path></svg>'
+          : '<svg viewBox="0 0 24 24"><path d="M8 5v14"></path><path d="M16 5v14"></path></svg>';
+      });
     }
 
     function filteredCards() {
@@ -1727,6 +2189,7 @@
       renderQuiz();
       $("#quizScore").textContent = `Score: ${correct}/${test.questions.length} (${score}%)`;
       renderProgress();
+      showToast("Practice test scored", `You scored ${score}% on ${test.title}.`);
     }
 
     function initQuiz() {
@@ -1766,6 +2229,66 @@
         : '<article class="card"><h3>No matching terms</h3><p>Try another networking keyword.</p></article>';
     }
 
+    function renderGlobalSearch() {
+      const input = $("#globalSearch");
+      const results = $("#quickResults");
+      const query = input.value.trim().toLowerCase();
+      if (!query) {
+        results.classList.remove("open");
+        results.innerHTML = "";
+        return;
+      }
+
+      const topicMatches = topics
+        .filter((topic) => `${topic.title} ${topic.subtitle} ${topic.terms.join(" ")}`.toLowerCase().includes(query))
+        .slice(0, 4)
+        .map((topic) => ({ type: "topic", title: topic.title, detail: topic.unit, value: topic.id }));
+
+      const termMatches = glossary
+        .filter(([term, definition]) => `${term} ${definition}`.toLowerCase().includes(query))
+        .slice(0, 5)
+        .map(([term, definition]) => ({ type: "term", title: term, detail: definition, value: term }));
+
+      const items = [...topicMatches, ...termMatches].slice(0, 7);
+      results.innerHTML = items.length
+        ? items.map((item, index) => `
+            <button class="quick-result" type="button" data-result-index="${index}">
+              <strong>${escapeHtml(item.title)}</strong>
+              <span>${escapeHtml(item.type === "topic" ? `Topic ${item.detail}` : item.detail)}</span>
+            </button>
+          `).join("")
+        : '<div class="quick-result"><strong>No results</strong><span>Try another term.</span></div>';
+
+      results.classList.add("open");
+      $$(".quick-result[data-result-index]", results).forEach((button) => {
+        button.addEventListener("click", () => {
+          const item = items[Number(button.dataset.resultIndex)];
+          if (item.type === "topic") {
+            state.activeTopic = item.value;
+            renderTopicCards();
+            renderTopicDetail();
+            document.getElementById("dashboard").scrollIntoView({ behavior: "smooth" });
+          } else {
+            $("#glossarySearch").value = item.value;
+            renderGlossary();
+            document.getElementById("glossary").scrollIntoView({ behavior: "smooth" });
+          }
+          input.value = "";
+          results.classList.remove("open");
+        });
+      });
+    }
+
+    function initGlobalSearch() {
+      $("#globalSearch").addEventListener("input", renderGlobalSearch);
+      $("#globalSearch").addEventListener("focus", renderGlobalSearch);
+      document.addEventListener("click", (event) => {
+        if (!event.target.closest(".quick-find")) {
+          $("#quickResults").classList.remove("open");
+        }
+      });
+    }
+
     function initNavigation() {
       const menuToggle = $("#menuToggle");
       const mobileMenu = $("#mobileMenu");
@@ -1798,7 +2321,20 @@
       sections.forEach((section) => observer.observe(section));
     }
 
+    function initThemeAndProgress() {
+      applyTheme();
+      $("#themeToggle").addEventListener("click", () => {
+        state.theme = state.theme === "dark" ? "light" : "dark";
+        applyTheme();
+        showToast("Theme updated", state.theme === "dark" ? "Dark mode enabled." : "Light mode enabled.");
+      });
+      updateScrollProgress();
+      window.addEventListener("scroll", updateScrollProgress, { passive: true });
+      window.addEventListener("resize", updateScrollProgress);
+    }
+
     function boot() {
+      initThemeAndProgress();
       renderTopicCards();
       renderTopicDetail();
       renderProgress();
@@ -1809,6 +2345,7 @@
       initQuiz();
       renderGlossary();
       $("#glossarySearch").addEventListener("input", renderGlossary);
+      initGlobalSearch();
       initNavigation();
     }
 
