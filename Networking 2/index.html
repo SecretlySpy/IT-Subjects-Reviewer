@@ -2163,7 +2163,7 @@
 
     function renderGlossary() {
       const query = $("#glossarySearch").value.trim().toLowerCase();
-      const items = glossary.filter(([term, definition]) => `${term} ${definition}`.toLowerCase().includes(query));
+      const items = query ? glossary.filter(([term, definition]) => `${term} ${definition}`.toLowerCase().includes(query)) : glossary;
       $("#glossaryGrid").innerHTML = items.length
         ? items.map(([term, definition]) => `
             <article class="card">

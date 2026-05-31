@@ -148,7 +148,7 @@ function PracticeZone() {
 export default function NetworkingTwoBeginnerGuide() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const filteredGlossary = useMemo(() => glossary.filter(([term, def]) => `${term} ${def}`.toLowerCase().includes(query.toLowerCase())), [query]);
+  const filteredGlossary = useMemo(() => query ? glossary.filter(([term, def]) => `${term} ${def}`.toLowerCase().includes(query.toLowerCase())) : glossary, [query]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
