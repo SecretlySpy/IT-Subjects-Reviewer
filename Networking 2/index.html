@@ -10747,7 +10747,15 @@
         element.style.setProperty("--reveal-index", String(Math.min(index, 8)));
         element.classList.add("reveal");
         if (state.revealObserver) {
-          state.revealObserver.observe(element);
+          // If the element is already in the viewport, show it immediately to avoid staying hidden
+          const rect = element.getBoundingClientRect();
+          const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+          const isVisible = rect.top < viewportHeight && rect.bottom > 0;
+          if (isVisible) {
+            element.classList.add("in-view");
+          } else {
+            state.revealObserver.observe(element);
+          }
         } else {
           element.classList.add("in-view");
         }

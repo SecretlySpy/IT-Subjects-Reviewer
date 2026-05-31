@@ -9614,7 +9614,17 @@ export default function NetworkingTwoBeginnerGuide() {
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredGlossary.map(([term, def]) => <Card key={term}><h3 className="text-xl font-black">{term}</h3><p className="mt-2 leading-7 text-slate-600">{def}</p></Card>)}
+            {filteredGlossary.length ? filteredGlossary.map(([term, def]) => (
+              <Card key={term}>
+                <h3 className="text-xl font-black">{term}</h3>
+                <p className="mt-2 leading-7 text-slate-600">{def}</p>
+              </Card>
+            )) : (
+              <Card>
+                <h3 className="text-xl font-black">No matching terms</h3>
+                <p className="mt-2 leading-7 text-slate-600">Try another networking keyword.</p>
+              </Card>
+            )}
           </div>
         </section>
 
