@@ -8,393 +8,1438 @@ const topics = [
     unit: "1.1",
     icon: Globe2,
     title: "Computer Networks and the Internet",
-    subtitle: "Devices, links, switches, protocols, packet switching, delay, loss, throughput, and layering.",
-    color: "from-sky-500 to-cyan-400",
-    beginner: "The Internet is a network of networks that moves small chunks of data called packets.",
-    pages: "Section 1",
+    subtitle: "Network edge, access networks, core packet switching, performance, protocols, and layering.",
+    color: "from-blue-600 to-indigo-400",
+    beginner: "The Internet is a huge delivery system where devices send small packet chunks through many linked networks.",
+    pages: "Topic 1",
+    terms: [
+        "Host",
+        "End system",
+        "Packet",
+        "Packet switch",
+        "Router",
+        "Link-layer switch",
+        "Communication link",
+        "Access network",
+        "ISP",
+        "Protocol",
+        "RFC",
+        "IETF",
+        "Packet switching",
+        "Circuit switching",
+        "Delay",
+        "Loss",
+        "Throughput",
+        "Bandwidth",
+        "Encapsulation",
+        "Internet stack"
+    ],
+    keyPoints: [
+        "The Internet is a network of networks, not one single machine or cable.",
+        "End systems create and consume data, while packet switches move that data through the core.",
+        "Packet switching lets many users share links efficiently, but delay and loss can happen.",
+        "Protocols standardize communication so devices from different vendors can interoperate.",
+        "Layering keeps networking manageable by assigning clear responsibilities to each layer."
+    ],
+    compare: {
+        "headers": [
+            "Concept",
+            "Simple meaning",
+            "Why it matters"
+        ],
+        "rows": [
+            [
+                "Packet switching",
+                "Users share links by sending chunks.",
+                "Efficient for bursty Internet traffic."
+            ],
+            [
+                "Circuit switching",
+                "Resources are reserved first.",
+                "Useful conceptually but wasteful when idle."
+            ],
+            [
+                "Throughput vs bandwidth",
+                "Actual rate vs maximum rate.",
+                "Explains why real downloads are slower than link speed."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Create",
+            "An application creates data."
+        ],
+        [
+            "Segment",
+            "Data is split into packets."
+        ],
+        [
+            "Forward",
+            "Switches and routers move packets."
+        ],
+        [
+            "Queue",
+            "Packets may wait when links are busy."
+        ],
+        [
+            "Deliver",
+            "The receiver reconstructs the data."
+        ]
+    ],
   },
   {
     id: "application",
     unit: "1.2",
     icon: Server,
-    title: "Application Layer",
-    subtitle: "HTTP, DNS, email, sockets, P2P, video streaming, CDNs, and application architectures.",
+    title: "Application Layer Protocols and Services",
+    subtitle: "Client-server, P2P, sockets, HTTP, DNS, email, video streaming, and content delivery networks.",
     color: "from-pink-500 to-rose-400",
-    beginner: "This is where user-facing programs create messages and use the network.",
-    pages: "Section 2",
+    beginner: "This layer is where user-facing apps create messages before the lower layers carry them.",
+    pages: "Topic 2",
+    terms: [
+        "Application layer",
+        "Process",
+        "Socket",
+        "Client-server",
+        "Peer-to-peer",
+        "HTTP",
+        "Persistent HTTP",
+        "Cookie",
+        "Web cache",
+        "DNS",
+        "DNS resolver",
+        "Authoritative DNS",
+        "SMTP",
+        "IMAP",
+        "POP3",
+        "CDN",
+        "DASH",
+        "RTP",
+        "API",
+        "Port number"
+    ],
+    keyPoints: [
+        "Application protocols define message types, syntax, semantics, and timing.",
+        "Sockets act like doors between application processes and the transport service.",
+        "DNS is essential because humans use names while the network routes with addresses.",
+        "HTTP is stateless by design, but cookies and sessions add stateful behavior.",
+        "CDNs and caches reduce delay by moving content closer to users."
+    ],
+    compare: {
+        "headers": [
+            "Item",
+            "Role",
+            "Example"
+        ],
+        "rows": [
+            [
+                "HTTP",
+                "Transfers web objects.",
+                "Browser loads a page."
+            ],
+            [
+                "DNS",
+                "Maps names to addresses.",
+                "example.com becomes an IP address."
+            ],
+            [
+                "CDN",
+                "Places content close to users.",
+                "Video served from a nearby node."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Name",
+            "Client asks DNS for an IP."
+        ],
+        [
+            "Connect",
+            "App opens a socket."
+        ],
+        [
+            "Request",
+            "Client sends an app message."
+        ],
+        [
+            "Process",
+            "Server prepares a response."
+        ],
+        [
+            "Deliver",
+            "Content reaches the application."
+        ]
+    ],
   },
   {
     id: "transport",
-    unit: "2.1",
+    unit: "2.1A",
     icon: Boxes,
-    title: "Transport Layer Basics",
-    subtitle: "Transport services, TCP, UDP, ports, multiplexing, demultiplexing, flow control, and congestion control.",
+    title: "Transport Layer Fundamentals",
+    subtitle: "Process-to-process delivery, ports, multiplexing, demultiplexing, TCP, and UDP.",
     color: "from-emerald-500 to-teal-400",
-    beginner: "This layer delivers data between applications running on different hosts.",
-    pages: "Section 3",
+    beginner: "The transport layer makes sure data reaches the right application on the right host.",
+    pages: "Topic 3",
+    terms: [
+        "Transport layer",
+        "Segment",
+        "Multiplexing",
+        "Demultiplexing",
+        "Port",
+        "Socket pair",
+        "UDP",
+        "TCP",
+        "Checksum",
+        "Best effort",
+        "Connection-oriented",
+        "Three-way handshake",
+        "Flow control",
+        "Receive buffer",
+        "Congestion control",
+        "MSS",
+        "MTU",
+        "Sequence number",
+        "Acknowledgment",
+        "Timeout"
+    ],
+    keyPoints: [
+        "Transport provides process-to-process delivery, while IP provides host-to-host delivery.",
+        "Port numbers are essential when many apps run on one host.",
+        "UDP is simple and fast but leaves reliability to the application if needed.",
+        "TCP adds reliability, ordered delivery, and control mechanisms.",
+        "TCP and UDP both rely on IP, so neither can fully prevent network-layer loss."
+    ],
+    compare: {
+        "headers": [
+            "Feature",
+            "TCP",
+            "UDP"
+        ],
+        "rows": [
+            [
+                "Setup",
+                "Uses a connection handshake.",
+                "No connection setup."
+            ],
+            [
+                "Reliability",
+                "ACKs, ordering, retransmission.",
+                "No built-in guarantee."
+            ],
+            [
+                "Use case",
+                "Web, files, email.",
+                "DNS, voice, games, streaming."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "App data",
+            "Process gives data to transport."
+        ],
+        [
+            "Port",
+            "Header identifies the app."
+        ],
+        [
+            "Segment",
+            "Transport unit is created."
+        ],
+        [
+            "Deliver",
+            "Network carries it."
+        ],
+        [
+            "Demux",
+            "Receiver chooses the socket."
+        ]
+    ],
   },
   {
-    id: "rdt-tcp",
-    unit: "2.1+",
-    icon: Boxes,
+    id: "reliable_tcp",
+    unit: "2.1B",
+    icon: Activity,
     title: "Reliable Data Transfer and TCP Control",
-    subtitle: "rdt protocols, sliding windows, Go-Back-N, Selective Repeat, TCP timers, and congestion control details.",
+    subtitle: "rdt principles, pipelining, Go-Back-N, Selective Repeat, TCP reliability, RTT, and congestion algorithms.",
     color: "from-emerald-500 to-teal-400",
-    beginner: "TCP uses numbering, acknowledgments, timers, windows, and rate control to make unreliable networks feel reliable.",
-    pages: "Section 4",
+    beginner: "This topic explains how TCP notices missing data, resends it, and slows down when the network is crowded.",
+    pages: "Topic 4",
+    terms: [
+        "Reliable data transfer",
+        "rdt",
+        "Stop-and-wait",
+        "Pipelining",
+        "Sliding window",
+        "Go-Back-N",
+        "Selective Repeat",
+        "Cumulative ACK",
+        "Duplicate ACK",
+        "Fast retransmit",
+        "RTT",
+        "EstimatedRTT",
+        "DevRTT",
+        "TimeoutInterval",
+        "Congestion window",
+        "Slow start",
+        "Congestion avoidance",
+        "Fast recovery",
+        "AIMD",
+        "TCP Reno"
+    ],
+    keyPoints: [
+        "Reliable data transfer uses checksums, ACKs, timers, and retransmission.",
+        "Pipelining improves utilization compared with stop-and-wait.",
+        "Go-Back-N is simpler but can retransmit unnecessary packets.",
+        "Selective Repeat is more efficient but requires more receiver buffering and tracking.",
+        "TCP interprets loss as a congestion signal and adapts the sending rate."
+    ],
+    compare: {
+        "headers": [
+            "Mechanism",
+            "Core idea",
+            "Tradeoff"
+        ],
+        "rows": [
+            [
+                "Stop-and-wait",
+                "One packet at a time.",
+                "Simple but inefficient."
+            ],
+            [
+                "Go-Back-N",
+                "Retransmit from the missing packet onward.",
+                "Simple but may waste bandwidth."
+            ],
+            [
+                "Selective Repeat",
+                "Retransmit only missing packets.",
+                "Efficient but more complex."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Send window",
+            "Sender transmits allowed data."
+        ],
+        [
+            "ACKs arrive",
+            "Receiver confirms bytes."
+        ],
+        [
+            "Detect gap",
+            "Timeout or duplicate ACKs signal loss."
+        ],
+        [
+            "Retransmit",
+            "Missing data is sent again."
+        ],
+        [
+            "Adjust rate",
+            "TCP changes congestion window."
+        ]
+    ],
   },
   {
-    id: "network-core",
-    unit: "2.2",
+    id: "network_data",
+    unit: "2.2A",
     icon: Router,
-    title: "Network Layer and Router Architecture",
-    subtitle: "Datagrams, forwarding, routing, router input/output ports, switching fabric, buffers, and scheduling.",
+    title: "Network Layer Data Plane",
+    subtitle: "Datagrams, forwarding, router internals, IPv4, IPv6, NAT, DHCP, ICMP, and fragmentation.",
     color: "from-orange-500 to-amber-400",
-    beginner: "The network layer moves packets from a source host to a destination host through routers.",
-    pages: "Section 5",
+    beginner: "The network layer moves packets across many networks using IP addresses and routers.",
+    pages: "Topic 5",
+    terms: [
+        "Network layer",
+        "Datagram",
+        "Forwarding",
+        "Routing",
+        "Data plane",
+        "Control plane",
+        "Forwarding table",
+        "Longest-prefix match",
+        "Router input port",
+        "Switching fabric",
+        "Router output port",
+        "Queueing",
+        "IPv4",
+        "IPv6",
+        "Subnet",
+        "CIDR",
+        "DHCP",
+        "NAT",
+        "ICMP",
+        "Fragmentation"
+    ],
+    keyPoints: [
+        "Forwarding and routing are related but not the same task.",
+        "Routers forward based on destination IP prefixes, often using longest-prefix match.",
+        "IPv4 uses 32-bit addresses; IPv6 uses 128-bit addresses and simplifies some header behavior.",
+        "DHCP gives hosts usable network configuration automatically.",
+        "NAT lets many private hosts share fewer public IPv4 addresses."
+    ],
+    compare: {
+        "headers": [
+            "Concept",
+            "Meaning",
+            "Example"
+        ],
+        "rows": [
+            [
+                "Forwarding",
+                "Local packet movement.",
+                "Input port to output port."
+            ],
+            [
+                "Routing",
+                "Path computation.",
+                "OSPF or BGP route choice."
+            ],
+            [
+                "NAT",
+                "Address translation.",
+                "Home devices share one public IP."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Receive",
+            "Router receives datagram."
+        ],
+        [
+            "Lookup",
+            "Destination prefix is matched."
+        ],
+        [
+            "Switch",
+            "Packet crosses switching fabric."
+        ],
+        [
+            "Queue",
+            "Output port may buffer."
+        ],
+        [
+            "Transmit",
+            "Packet leaves the router."
+        ]
+    ],
   },
   {
-    id: "ip-addressing",
-    unit: "2.2+",
+    id: "routing_algorithms",
+    unit: "3.1",
     icon: Router,
-    title: "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    subtitle: "IPv4 datagrams, subnets, CIDR, address assignment, NAT behavior, IPv6 format, and diagnostics.",
+    title: "Routing Algorithms and Intra-AS Routing",
+    subtitle: "Link-state, Dijkstra, distance-vector, OSPF, RIP concepts, and routing inside one autonomous system.",
     color: "from-orange-500 to-amber-400",
-    beginner: "IP addressing gives devices network locations so routers can deliver packets.",
-    pages: "Section 6",
+    beginner: "Routing algorithms are the map-planning rules routers use to decide where packets should go.",
+    pages: "Topic 6",
+    terms: [
+        "Routing algorithm",
+        "Link-state",
+        "Dijkstra algorithm",
+        "Distance-vector",
+        "Bellman-Ford",
+        "Routing table",
+        "Link cost",
+        "Convergence",
+        "Count-to-infinity",
+        "Poisoned reverse",
+        "Intra-AS routing",
+        "Autonomous system",
+        "OSPF",
+        "Link-state advertisement",
+        "Area hierarchy",
+        "RIP",
+        "IS-IS",
+        "Equal-cost multipath",
+        "Route recomputation",
+        "Topology database"
+    ],
+    keyPoints: [
+        "Link-state routing relies on a broad view of topology.",
+        "Distance-vector routing relies on neighbor-to-neighbor sharing of distance estimates.",
+        "OSPF floods link-state information and uses shortest-path computation.",
+        "Routing convergence matters because outdated routes can cause loops or blackholes.",
+        "Hierarchy improves routing scalability in large networks."
+    ],
+    compare: {
+        "headers": [
+            "Approach",
+            "Information shared",
+            "Risk"
+        ],
+        "rows": [
+            [
+                "Link-state",
+                "Local link information flooded to all routers.",
+                "More overhead but complete topology view."
+            ],
+            [
+                "Distance-vector",
+                "Distance estimates shared with neighbors.",
+                "Can converge slowly."
+            ],
+            [
+                "OSPF area design",
+                "Summarized information between areas.",
+                "Requires planned hierarchy."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Measure",
+            "Router knows neighbor link costs."
+        ],
+        [
+            "Advertise",
+            "Routing information is shared."
+        ],
+        [
+            "Compute",
+            "Algorithm finds best paths."
+        ],
+        [
+            "Install",
+            "Forwarding table is updated."
+        ],
+        [
+            "Converge",
+            "Routers stabilize after changes."
+        ]
+    ],
   },
   {
-    id: "routing",
-    unit: "3.1 / 3.2",
-    icon: Map,
-    title: "Routing Algorithms, OSPF, BGP, and SDN",
-    subtitle: "Link-state, distance-vector, autonomous systems, OSPF, BGP policy, hot potato routing, and SDN controllers.",
+    id: "isp_bgp",
+    unit: "3.2",
+    icon: Globe2,
+    title: "ISP Routing and BGP",
+    subtitle: "Autonomous systems, interdomain routing, eBGP, iBGP, path attributes, policy, and scalable Internet routing.",
     color: "from-orange-500 to-amber-400",
-    beginner: "Routing is how networks choose paths for packets across many routers and organizations.",
-    pages: "Section 7",
+    beginner: "BGP is the Internet's big negotiation system for how large networks reach each other.",
+    pages: "Topic 7",
+    terms: [
+        "Inter-AS routing",
+        "BGP",
+        "eBGP",
+        "iBGP",
+        "AS-PATH",
+        "NEXT-HOP",
+        "Prefix",
+        "Reachability",
+        "Routing policy",
+        "Hot-potato routing",
+        "Route advertisement",
+        "Route withdrawal",
+        "Peering",
+        "Transit",
+        "Provider",
+        "Customer",
+        "Local preference",
+        "MED",
+        "Route aggregation",
+        "Gateway router"
+    ],
+    keyPoints: [
+        "BGP is policy-driven, not only shortest-path driven.",
+        "AS-PATH helps detect loops and influences route selection.",
+        "eBGP exchanges routes between ASes; iBGP distributes BGP routes inside an AS.",
+        "Business relationships such as customer, provider, and peer affect route export.",
+        "Hot-potato routing may choose a nearby exit even if the remaining external path is longer."
+    ],
+    compare: {
+        "headers": [
+            "Item",
+            "Meaning",
+            "Impact"
+        ],
+        "rows": [
+            [
+                "AS-PATH",
+                "List of ASes on the route.",
+                "Helps loop detection and preference."
+            ],
+            [
+                "Local preference",
+                "Internal route priority.",
+                "Implements business policy."
+            ],
+            [
+                "Hot potato",
+                "Nearest AS exit.",
+                "Minimizes internal network cost."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Advertise",
+            "AS announces reachable prefixes."
+        ],
+        [
+            "Filter",
+            "Policy accepts or rejects routes."
+        ],
+        [
+            "Select",
+            "BGP picks best route."
+        ],
+        [
+            "Distribute",
+            "Route spreads through iBGP."
+        ],
+        [
+            "Forward",
+            "Traffic exits through a gateway."
+        ]
+    ],
   },
   {
-    id: "management",
+    id: "network_management",
     unit: "3.3",
     icon: MonitorCog,
-    title: "Network Management, SNMP, NETCONF, and YANG",
-    subtitle: "Managing devices, monitoring performance, MIBs, SNMP messages, traps, NETCONF operations, and YANG models.",
-    color: "from-sky-500 to-cyan-400",
-    beginner: "Network management is how administrators monitor and configure network devices.",
-    pages: "Section 8",
+    title: "Network Management, SDN, SNMP, NETCONF, and YANG",
+    subtitle: "Monitoring, configuration, management architecture, SNMP operations, MIBs, NETCONF, YANG models, and SDN control.",
+    color: "from-pink-500 to-rose-400",
+    beginner: "Network management is how admins observe, configure, and control many network devices reliably.",
+    pages: "Topic 8",
+    terms: [
+        "Network management",
+        "Managing server",
+        "Managed device",
+        "Agent",
+        "MIB",
+        "SNMP",
+        "SNMP Get",
+        "SNMP Set",
+        "SNMP Trap",
+        "OID",
+        "Polling",
+        "Telemetry",
+        "NETCONF",
+        "YANG",
+        "RPC",
+        "Configuration datastore",
+        "Operational state",
+        "SDN",
+        "Controller",
+        "Southbound API"
+    ],
+    keyPoints: [
+        "Management systems need both monitoring and configuration capabilities.",
+        "SNMP is common for simple monitoring and alerts.",
+        "NETCONF and YANG provide structured, model-driven configuration.",
+        "SDN centralizes or abstracts control decisions for programmability.",
+        "Operational state and intended configuration are related but not identical."
+    ],
+    compare: {
+        "headers": [
+            "Tool",
+            "Main use",
+            "Data style"
+        ],
+        "rows": [
+            [
+                "SNMP",
+                "Monitoring and simple changes.",
+                "MIB variables and OIDs."
+            ],
+            [
+                "NETCONF",
+                "Device configuration.",
+                "Structured XML RPCs."
+            ],
+            [
+                "YANG",
+                "Defines data models.",
+                "Reusable schemas."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Observe",
+            "Manager collects state."
+        ],
+        [
+            "Analyze",
+            "Admin or controller detects need."
+        ],
+        [
+            "Model",
+            "Configuration is represented."
+        ],
+        [
+            "Apply",
+            "Protocol changes device settings."
+        ],
+        [
+            "Verify",
+            "State is checked after change."
+        ]
+    ],
   },
   {
-    id: "link-services",
-    unit: "Data Link / 4.1",
+    id: "datalink_control",
+    unit: "4.1",
     icon: Cable,
-    title: "Data Link Services and Error Detection",
-    subtitle: "Frames, one-hop delivery, packetizing, parity, checksums, CRC, flow control, and multiple access basics.",
-    color: "from-sky-500 to-cyan-400",
-    beginner: "The data link layer moves frames across one local hop and checks for errors.",
-    pages: "Section 9",
+    title: "Data Link Layer Control, Packetizing, and Error Detection",
+    subtitle: "Frames, services, packetizing, parity, checksums, CRC, flow control, and multiple access foundations.",
+    color: "from-blue-600 to-indigo-400",
+    beginner: "The data link layer prepares packets for one local hop and checks whether bits were damaged.",
+    pages: "Topic 9",
+    terms: [
+        "Data link layer",
+        "Node",
+        "Link",
+        "Frame",
+        "Framing",
+        "Packetizing",
+        "Header",
+        "Trailer",
+        "Error detection",
+        "Parity bit",
+        "Two-dimensional parity",
+        "Checksum",
+        "CRC",
+        "Generator polynomial",
+        "Flow control",
+        "Medium access control",
+        "Broadcast link",
+        "Point-to-point link",
+        "Half-duplex",
+        "Full-duplex"
+    ],
+    keyPoints: [
+        "The data link layer is responsible for one-hop delivery, not end-to-end routing.",
+        "Frames include headers and often trailers to support addressing and error checks.",
+        "Parity is simple but less powerful than CRC.",
+        "CRC is widely used because it detects many common error patterns.",
+        "Shared links need access rules to reduce collisions and unfairness."
+    ],
+    compare: {
+        "headers": [
+            "Method",
+            "Strength",
+            "Common idea"
+        ],
+        "rows": [
+            [
+                "Parity",
+                "Simple detection.",
+                "Count ones."
+            ],
+            [
+                "Checksum",
+                "Moderate detection.",
+                "Add data units."
+            ],
+            [
+                "CRC",
+                "Strong detection.",
+                "Polynomial division remainder."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Frame",
+            "Wrap the packet."
+        ],
+        [
+            "Address",
+            "Add local link information."
+        ],
+        [
+            "Transmit",
+            "Send bits over the link."
+        ],
+        [
+            "Check",
+            "Receiver tests error code."
+        ],
+        [
+            "Pass",
+            "Valid payload moves upward."
+        ]
+    ],
   },
   {
-    id: "lan",
+    id: "lans_ethernet",
     unit: "4.2",
-    icon: Cable,
-    title: "LANs, Ethernet, ARP, Switches, and VLANs",
-    subtitle: "MAC addressing, ARP, Ethernet frames, CSMA/CD, switches, learning, spanning tree, VLANs, and trunks.",
-    color: "from-sky-500 to-cyan-400",
-    beginner: "LAN technologies connect nearby devices and deliver frames using MAC addresses.",
-    pages: "Section 10",
+    icon: Network,
+    title: "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    subtitle: "MAC addresses, ARP, Ethernet frames, switching, learning tables, VLAN segmentation, CSMA/CD, and CSMA/CA.",
+    color: "from-emerald-500 to-teal-400",
+    beginner: "A LAN is your local network, where devices use MAC addresses and switches to deliver frames nearby.",
+    pages: "Topic 10",
+    terms: [
+        "LAN",
+        "MAC address",
+        "ARP",
+        "ARP table",
+        "Ethernet",
+        "Ethernet frame",
+        "Preamble",
+        "Type field",
+        "CRC field",
+        "Switch",
+        "MAC learning",
+        "Forwarding table",
+        "Flooding",
+        "Broadcast domain",
+        "Collision domain",
+        "CSMA/CD",
+        "CSMA/CA",
+        "VLAN",
+        "Trunk port",
+        "Access port"
+    ],
+    keyPoints: [
+        "MAC addresses are local; IP addresses are used for routing across networks.",
+        "ARP is needed before a host can send a frame to a local IP destination.",
+        "Switches learn MAC addresses automatically from source addresses.",
+        "VLANs create logical separation without requiring separate physical switches.",
+        "CSMA/CD belongs to older shared Ethernet, while WiFi uses collision avoidance."
+    ],
+    compare: {
+        "headers": [
+            "Item",
+            "Layer",
+            "Purpose"
+        ],
+        "rows": [
+            [
+                "ARP",
+                "Between network and link.",
+                "Finds a MAC for a local IP."
+            ],
+            [
+                "Switch table",
+                "Link layer.",
+                "Maps MAC addresses to ports."
+            ],
+            [
+                "VLAN tag",
+                "Link layer.",
+                "Marks logical LAN membership."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Need MAC",
+            "Host checks ARP table."
+        ],
+        [
+            "Request",
+            "ARP broadcast asks who has IP."
+        ],
+        [
+            "Reply",
+            "Target sends MAC address."
+        ],
+        [
+            "Frame",
+            "Ethernet frame is built."
+        ],
+        [
+            "Switch",
+            "Switch forwards by MAC."
+        ]
+    ],
   },
   {
-    id: "virtualization",
+    id: "link_virtualization",
     unit: "4.3",
     icon: Layers,
-    title: "Link Virtualization, MPLS, and Data Center Networking",
-    subtitle: "MPLS labels, label switching routers, traffic engineering, VPN-like paths, and data-center network design.",
-    color: "from-pink-500 to-rose-400",
-    beginner: "Virtualization lets networks create logical paths or networks over shared physical infrastructure.",
-    pages: "Section 11",
+    title: "Link Virtualization, MPLS, and Data Center Networks",
+    subtitle: "MPLS labels, label-switched paths, traffic engineering, fast reroute, virtual links, and data-center fabric ideas.",
+    color: "from-orange-500 to-amber-400",
+    beginner: "MPLS adds short labels so traffic can follow engineered paths through a provider network.",
+    pages: "Topic 11",
+    terms: [
+        "Link virtualization",
+        "MPLS",
+        "Label",
+        "Label-switched router",
+        "Label forwarding table",
+        "LSP",
+        "Ingress router",
+        "Egress router",
+        "Traffic engineering",
+        "Fast reroute",
+        "VPN",
+        "Virtual circuit",
+        "Overlay network",
+        "Underlay network",
+        "Data center network",
+        "Top-of-rack switch",
+        "Leaf-spine",
+        "Load balancing",
+        "ECMP",
+        "Fabric"
+    ],
+    keyPoints: [
+        "MPLS forwards using labels rather than pure IP longest-prefix matching at every hop.",
+        "Labels can support traffic engineering, VPN services, and fast reroute.",
+        "Ingress and egress routers handle label entry and exit at the MPLS edge.",
+        "Data centers need scalable, high-throughput, low-latency fabrics.",
+        "Leaf-spine designs support many parallel paths and load balancing."
+    ],
+    compare: {
+        "headers": [
+            "Concept",
+            "Role",
+            "Benefit"
+        ],
+        "rows": [
+            [
+                "MPLS label",
+                "Forwarding identifier.",
+                "Fast path selection."
+            ],
+            [
+                "LSP",
+                "Preplanned label path.",
+                "Traffic engineering."
+            ],
+            [
+                "Leaf-spine",
+                "Data-center topology.",
+                "Scalable parallel paths."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Enter",
+            "Ingress router receives IP packet."
+        ],
+        [
+            "Label",
+            "MPLS label is pushed."
+        ],
+        [
+            "Switch",
+            "LSRs swap labels."
+        ],
+        [
+            "Engineer",
+            "Traffic follows designed path."
+        ],
+        [
+            "Exit",
+            "Egress removes label."
+        ]
+    ],
   },
   {
-    id: "wireless",
+    id: "wireless_networks",
     unit: "5.1",
     icon: Wifi,
     title: "Wireless Networks and WiFi",
-    subtitle: "Wireless hosts, access points, link characteristics, 802.11, CSMA/CA, hidden terminals, RTS/CTS, and association.",
-    color: "from-emerald-500 to-teal-400",
-    beginner: "Wireless networks use radio links, so devices must handle interference, fading, and shared-air access.",
-    pages: "Section 12",
+    subtitle: "Radio links, infrastructure/ad hoc modes, 802.11, access points, association, CSMA/CA, hidden terminals, and RTS/CTS.",
+    color: "from-pink-500 to-rose-400",
+    beginner: "Wireless networking sends bits through radio, which is convenient but more vulnerable to interference.",
+    pages: "Topic 12",
+    terms: [
+        "Wireless host",
+        "Base station",
+        "Access point",
+        "Infrastructure mode",
+        "Ad hoc mode",
+        "Wireless link",
+        "Signal attenuation",
+        "Interference",
+        "Multipath",
+        "SNR",
+        "802.11",
+        "SSID",
+        "Association",
+        "Beacon frame",
+        "CSMA/CA",
+        "RTS",
+        "CTS",
+        "ACK frame",
+        "Hidden terminal",
+        "Channel"
+    ],
+    keyPoints: [
+        "Wireless links are affected by distance, obstacles, interference, and multipath.",
+        "WiFi commonly uses infrastructure mode with access points.",
+        "CSMA/CA tries to avoid collisions because detecting them while transmitting is difficult.",
+        "RTS/CTS can reduce hidden-terminal collisions.",
+        "Association connects a wireless host to a selected AP and SSID."
+    ],
+    compare: {
+        "headers": [
+            "Issue",
+            "Why it matters",
+            "WiFi response"
+        ],
+        "rows": [
+            [
+                "Interference",
+                "Signals overlap.",
+                "Use channels and retransmission."
+            ],
+            [
+                "Hidden terminal",
+                "Transmitters cannot hear each other.",
+                "RTS/CTS can help."
+            ],
+            [
+                "Mobility",
+                "Signal quality changes.",
+                "Reassociation may occur."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Scan",
+            "Host listens for beacons."
+        ],
+        [
+            "Choose",
+            "Host selects an SSID/AP."
+        ],
+        [
+            "Associate",
+            "Host joins the AP."
+        ],
+        [
+            "Access",
+            "CSMA/CA waits for medium."
+        ],
+        [
+            "ACK",
+            "Receiver confirms frame."
+        ]
+    ],
   },
   {
-    id: "mobile",
+    id: "mobile_networks",
     unit: "5.2",
     icon: RadioTower,
-    title: "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    subtitle: "Cellular architecture, device identity, base stations, EPC/5G core ideas, mobility management, handoff, roaming, and Mobile IP.",
+    title: "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    subtitle: "Cellular architecture, UE, radio access, core network, SIM authentication, mobility management, handoff, roaming, and Mobile IP concepts.",
     color: "from-emerald-500 to-teal-400",
-    beginner: "Mobile networks keep devices connected while they move across coverage areas.",
-    pages: "Section 13",
+    beginner: "Mobile networks keep your device connected as it moves between towers and networks.",
+    pages: "Topic 13",
+    terms: [
+        "Mobility",
+        "User equipment",
+        "SIM",
+        "Base station",
+        "Cell",
+        "Radio access network",
+        "Core network",
+        "4G LTE",
+        "5G",
+        "MME",
+        "Serving gateway",
+        "PDN gateway",
+        "Handoff",
+        "Roaming",
+        "Home network",
+        "Visited network",
+        "Mobile IP",
+        "Home agent",
+        "Foreign agent",
+        "Tunneling"
+    ],
+    keyPoints: [
+        "Mobile means changing network attachment, not simply using wireless.",
+        "Cellular systems manage identity, authentication, location, and handoff.",
+        "Roaming involves cooperation between home and visited networks.",
+        "Mobile IP uses indirection and tunneling to reach a moving host.",
+        "Mobility can affect delay, throughput, and higher-layer connections."
+    ],
+    compare: {
+        "headers": [
+            "Concept",
+            "Meaning",
+            "Example"
+        ],
+        "rows": [
+            [
+                "Wireless",
+                "No cable.",
+                "Laptop on WiFi."
+            ],
+            [
+                "Mobile",
+                "Changing attachment.",
+                "Phone moves between cells."
+            ],
+            [
+                "Roaming",
+                "Visited network access.",
+                "Using data abroad."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Attach",
+            "Device connects to a base station."
+        ],
+        [
+            "Authenticate",
+            "Network verifies subscriber."
+        ],
+        [
+            "Anchor",
+            "Core creates data path."
+        ],
+        [
+            "Move",
+            "Signal changes while traveling."
+        ],
+        [
+            "Handoff",
+            "Connection shifts to new cell."
+        ]
+    ],
   },
   {
-    id: "security-foundations",
+    id: "security_basics",
     unit: "6.1 / 6.2",
     icon: Shield,
-    title: "Security Foundations, Cryptography, and Authentication",
-    subtitle: "Security goals, attackers, symmetric/public-key cryptography, hashes, MACs, digital signatures, certificates, and authentication protocols.",
-    color: "from-pink-500 to-rose-400",
-    beginner: "Security makes communication private, verified, unchanged, and available.",
-    pages: "Section 14",
+    title: "Security Basics, Cryptography, Authentication, and TLS",
+    subtitle: "Confidentiality, integrity, authentication, symmetric/public-key crypto, hashes, MACs, certificates, digital signatures, TLS, and HTTPS.",
+    color: "from-blue-600 to-indigo-400",
+    beginner: "Security makes sure the right people communicate privately and can detect tampering.",
+    pages: "Topic 14",
+    terms: [
+        "Confidentiality",
+        "Authentication",
+        "Integrity",
+        "Availability",
+        "Encryption",
+        "Decryption",
+        "Symmetric key",
+        "Public key",
+        "Private key",
+        "Hash function",
+        "MAC",
+        "Digital signature",
+        "Certificate",
+        "Certificate authority",
+        "Nonce",
+        "Replay attack",
+        "Man-in-the-middle",
+        "TLS",
+        "HTTPS",
+        "Session key"
+    ],
+    keyPoints: [
+        "Confidentiality, authentication, integrity, and availability are core security goals.",
+        "Symmetric crypto is efficient but requires shared secrets.",
+        "Public-key crypto helps solve key distribution and identity verification problems.",
+        "Certificates connect public keys to trusted identities.",
+        "TLS combines authentication, key establishment, encryption, and integrity for secure sessions."
+    ],
+    compare: {
+        "headers": [
+            "Tool",
+            "Provides",
+            "Typical use"
+        ],
+        "rows": [
+            [
+                "Encryption",
+                "Confidentiality.",
+                "Hide message contents."
+            ],
+            [
+                "MAC",
+                "Integrity and authentication.",
+                "Check keyed messages."
+            ],
+            [
+                "Certificate",
+                "Identity binding.",
+                "Verify a website public key."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Hello",
+            "Client and server negotiate."
+        ],
+        [
+            "Verify",
+            "Certificate proves identity."
+        ],
+        [
+            "Key",
+            "Session key is established."
+        ],
+        [
+            "Encrypt",
+            "Application data is protected."
+        ],
+        [
+            "Check",
+            "Integrity is verified."
+        ]
+    ],
   },
   {
-    id: "tls-firewall-ipsec",
-    unit: "6.2 / 6.3",
+    id: "ipsec_firewalls",
+    unit: "6.3",
     icon: Lock,
-    title: "TLS, Firewalls, IDS, and IPsec",
-    subtitle: "TLS sessions, certificates, HTTPS, firewall filtering, intrusion detection, IPsec AH/ESP, transport mode, tunnel mode, and IKE.",
-    color: "from-pink-500 to-rose-400",
-    beginner: "Security tools protect network traffic at different layers and block suspicious communication.",
-    pages: "Section 15",
-  }
+    title: "Network Layer Security, IPsec, Firewalls, and IDS",
+    subtitle: "IPsec architecture, transport and tunnel modes, AH, ESP, security associations, IKE, VPNs, packet filtering, stateful firewalls, and intrusion detection.",
+    color: "from-emerald-500 to-teal-400",
+    beginner: "Network-layer security protects IP traffic and filters dangerous traffic before it reaches systems.",
+    pages: "Topic 15",
+    terms: [
+        "Network-layer security",
+        "IPsec",
+        "Security association",
+        "SA database",
+        "SPD",
+        "IKE",
+        "Transport mode",
+        "Tunnel mode",
+        "AH",
+        "ESP",
+        "VPN",
+        "Authentication header",
+        "Encapsulation",
+        "Packet filter",
+        "Stateful firewall",
+        "ACL",
+        "DMZ",
+        "IDS",
+        "Signature detection",
+        "Anomaly detection"
+    ],
+    keyPoints: [
+        "IPsec operates at the network layer and can protect many applications transparently.",
+        "Tunnel mode is common for VPN gateway-to-gateway or remote-access scenarios.",
+        "AH provides integrity and authentication; ESP can also provide confidentiality.",
+        "Firewalls enforce traffic policy at network boundaries and hosts.",
+        "IDS tools monitor traffic or hosts for signs of attacks."
+    ],
+    compare: {
+        "headers": [
+            "Tool",
+            "Main protection",
+            "Note"
+        ],
+        "rows": [
+            [
+                "AH",
+                "Integrity and authentication.",
+                "No confidentiality."
+            ],
+            [
+                "ESP",
+                "Confidentiality, integrity, authentication.",
+                "Common in VPNs."
+            ],
+            [
+                "Firewall",
+                "Traffic filtering.",
+                "Rules must match policy."
+            ]
+        ]
+    },
+    flow: [
+        [
+            "Policy",
+            "SPD decides what to protect."
+        ],
+        [
+            "Negotiate",
+            "IKE creates security association."
+        ],
+        [
+            "Protect",
+            "AH or ESP processes packet."
+        ],
+        [
+            "Tunnel",
+            "Packet may be encapsulated."
+        ],
+        [
+            "Filter",
+            "Firewall or IDS inspects traffic."
+        ]
+    ],
+  },
 ];
 
 const glossary = [
   [
-    "Internet",
-    "A global network of networks that interconnects hosts using protocols."
-  ],
-  [
     "Host",
-    "An end device such as a laptop, phone, server, camera, or IoT device."
+    "A device at the edge of the network that runs applications, such as a phone, laptop, server, or camera."
   ],
   [
     "End system",
-    "Another name for a host because it sits at the edge of the network."
+    "Another name for a host because it sits at an end of communication and creates or receives data."
   ],
   [
     "Packet",
-    "A small unit of data plus headers sent across a packet-switched network."
+    "A small chunk of data plus headers that can be forwarded through a network."
   ],
   [
     "Packet switch",
-    "A router or link-layer switch that forwards packets toward a destination."
+    "A device that receives packets and forwards them toward a destination."
   ],
   [
     "Router",
-    "A network-layer packet switch that forwards packets between networks."
+    "A packet switch that forwards network-layer datagrams between networks using IP information."
   ],
   [
     "Link-layer switch",
-    "A local packet switch that forwards frames inside a LAN."
+    "A local packet switch that forwards frames inside a LAN using MAC addresses."
   ],
   [
     "Communication link",
-    "A physical or wireless path that carries bits between network devices."
-  ],
-  [
-    "Transmission rate",
-    "The speed at which bits are pushed onto a link."
-  ],
-  [
-    "Bandwidth",
-    "The maximum possible transmission rate of a link."
-  ],
-  [
-    "Throughput",
-    "The actual useful rate achieved by an application transfer."
-  ],
-  [
-    "Protocol",
-    "A rule set defining message formats, ordering, and actions."
+    "The physical or wireless path that carries bits between devices."
   ],
   [
     "Access network",
-    "The network that connects an end system to the first router."
-  ],
-  [
-    "Network core",
-    "The mesh of routers and links that moves packets across the Internet."
-  ],
-  [
-    "Packet switching",
-    "A method where many users share links by sending packets when needed."
-  ],
-  [
-    "Store-and-forward",
-    "A switching behavior where a router receives a whole packet before forwarding."
-  ],
-  [
-    "Queueing delay",
-    "Waiting time when packets sit in a router buffer."
-  ],
-  [
-    "Packet loss",
-    "A dropped packet, often caused by congestion or buffer overflow."
-  ],
-  [
-    "Propagation delay",
-    "Time for a signal to travel across a physical medium."
-  ],
-  [
-    "Transmission delay",
-    "Time needed to push all packet bits onto a link."
-  ],
-  [
-    "Processing delay",
-    "Time a router spends checking headers and choosing an output link."
-  ],
-  [
-    "End-to-end delay",
-    "Total time for data to travel from source to destination."
-  ],
-  [
-    "Circuit switching",
-    "A communication method that reserves resources for one session."
-  ],
-  [
-    "FDM",
-    "Frequency Division Multiplexing, where users get separate frequency bands."
-  ],
-  [
-    "TDM",
-    "Time Division Multiplexing, where users get recurring time slots."
+    "The part of the network that connects end systems to the first router."
   ],
   [
     "ISP",
-    "Internet Service Provider, a network that gives Internet connectivity."
+    "An Internet Service Provider that connects customers and other networks to the Internet."
+  ],
+  [
+    "Protocol",
+    "A rule set defining message format, message order, and actions when messages are sent or received."
   ],
   [
     "RFC",
-    "Request for Comments, a document series used for Internet standards."
+    "A Request for Comments document that records Internet standards and protocol specifications."
   ],
   [
     "IETF",
-    "Internet Engineering Task Force, an organization that develops Internet standards."
+    "The standards organization that develops many Internet protocols through RFCs."
   ],
   [
-    "Layering",
-    "Dividing networking into layers with separate responsibilities."
+    "Packet switching",
+    "A sharing method where packets from many users take turns using links."
+  ],
+  [
+    "Circuit switching",
+    "A communication method that reserves end-to-end resources before data is sent."
+  ],
+  [
+    "Delay",
+    "The time it takes data to travel from sender to receiver."
+  ],
+  [
+    "Loss",
+    "When packets are dropped because of errors, congestion, or failed paths."
+  ],
+  [
+    "Throughput",
+    "The actual rate at which useful data is delivered."
+  ],
+  [
+    "Bandwidth",
+    "The maximum transmission rate a link can support."
   ],
   [
     "Encapsulation",
-    "Wrapping data with headers and trailers as it moves down the protocol stack."
+    "The process of wrapping data with headers as it moves down network layers."
+  ],
+  [
+    "Internet stack",
+    "The layered model of application, transport, network, link, and physical responsibilities."
   ],
   [
     "Application layer",
-    "The layer where network applications and their protocols operate."
+    "The top network layer where applications define messages and services."
   ],
   [
     "Process",
-    "A running program that sends or receives network messages."
-  ],
-  [
-    "Client",
-    "A process that initiates communication or requests a service."
-  ],
-  [
-    "Server",
-    "A process that waits for and responds to client requests."
-  ],
-  [
-    "Client-server architecture",
-    "An app design with always-on servers serving many clients."
-  ],
-  [
-    "Peer-to-peer architecture",
-    "An app design where end systems communicate directly as peers."
+    "A running program that sends or receives messages through a socket."
   ],
   [
     "Socket",
-    "A software interface between an application process and transport service."
+    "The software interface between an application process and the transport layer."
   ],
   [
-    "IP address",
-    "A network-layer address used to identify a host or interface."
+    "Client-server",
+    "An architecture where clients request service from an always-on server."
   ],
   [
-    "Port number",
-    "A transport-layer number used to identify a receiving process."
-  ],
-  [
-    "Application protocol",
-    "Rules that define application message types, syntax, semantics, and timing."
+    "Peer-to-peer",
+    "An architecture where end systems communicate directly and share roles."
   ],
   [
     "HTTP",
-    "The Web protocol used for browser requests and server responses."
-  ],
-  [
-    "HTTP request",
-    "A client message asking a server for a web object or action."
-  ],
-  [
-    "HTTP response",
-    "A server message returning status information and content."
+    "The web protocol used by browsers and servers to request and send objects."
   ],
   [
     "Persistent HTTP",
     "HTTP behavior that reuses a TCP connection for multiple objects."
   ],
   [
-    "Non-persistent HTTP",
-    "HTTP behavior that opens a separate TCP connection for each object."
-  ],
-  [
     "Cookie",
-    "A small identifier that lets websites maintain state across requests."
+    "Small data used by websites to maintain state across otherwise stateless HTTP requests."
   ],
   [
     "Web cache",
-    "A proxy that stores copies of web objects to reduce delay and traffic."
+    "A proxy that stores web objects closer to clients to reduce delay and traffic."
   ],
   [
     "DNS",
-    "The distributed system that maps domain names to IP addresses."
+    "The naming system that translates domain names into IP addresses."
   ],
   [
     "DNS resolver",
-    "A client-side DNS component that asks DNS servers for name mappings."
+    "A server that queries DNS on behalf of a client."
   ],
   [
-    "Root DNS server",
-    "A top-level starting point in the DNS lookup hierarchy."
-  ],
-  [
-    "TLD server",
-    "A DNS server responsible for top-level domains such as .com or .org."
-  ],
-  [
-    "Authoritative DNS server",
-    "The DNS server with official records for a domain."
-  ],
-  [
-    "DNS cache",
-    "Stored DNS answers reused to avoid repeated lookups."
+    "Authoritative DNS",
+    "A DNS server that has official records for a domain."
   ],
   [
     "SMTP",
-    "The protocol used to transfer email between mail servers."
+    "The protocol used to send email from clients or mail servers."
   ],
   [
     "IMAP",
-    "A protocol for retrieving and synchronizing email from a mail server."
+    "A mail access protocol that keeps messages synchronized on a server."
   ],
   [
     "POP3",
-    "A simple email retrieval protocol."
-  ],
-  [
-    "P2P scalability",
-    "The ability of peer systems to grow because peers contribute resources."
-  ],
-  [
-    "BitTorrent",
-    "A P2P protocol where peers exchange pieces of a file."
+    "A simple mail access protocol that downloads messages from a server."
   ],
   [
     "CDN",
-    "Content Delivery Network, a set of distributed servers near users."
+    "A distributed system that places content near users for faster delivery."
   ],
   [
-    "Adaptive streaming",
-    "A video technique that changes quality based on available bandwidth."
+    "DASH",
+    "Dynamic Adaptive Streaming over HTTP, which adjusts video quality to network conditions."
+  ],
+  [
+    "RTP",
+    "A protocol commonly associated with real-time audio or video transport."
+  ],
+  [
+    "API",
+    "A defined interface that lets software components request services or data."
+  ],
+  [
+    "Port number",
+    "A transport identifier that helps deliver data to the correct application process."
   ],
   [
     "Transport layer",
@@ -402,719 +1447,483 @@ const glossary = [
   ],
   [
     "Segment",
-    "A transport-layer data unit containing application data and transport headers."
+    "The transport-layer unit that carries application data and a transport header."
   ],
   [
     "Multiplexing",
-    "Combining data from many sockets for transmission through the network."
+    "Collecting data from many processes so they can share the network."
   ],
   [
     "Demultiplexing",
     "Delivering received segments to the correct socket or process."
   ],
   [
-    "Source port",
-    "The port number identifying the sending process."
+    "Port",
+    "A number used to identify a specific application process on a host."
   ],
   [
-    "Destination port",
-    "The port number identifying the receiving process."
+    "Socket pair",
+    "The addresses and ports that identify a transport conversation."
   ],
   [
     "UDP",
-    "A connectionless transport protocol with low overhead and best-effort delivery."
-  ],
-  [
-    "UDP checksum",
-    "A field used to detect errors in UDP segments."
+    "A lightweight connectionless transport protocol with no built-in reliability."
   ],
   [
     "TCP",
-    "A connection-oriented transport protocol with reliable ordered delivery."
+    "A reliable connection-oriented transport protocol with ordering and control mechanisms."
   ],
   [
-    "TCP connection",
-    "A logical communication state between two TCP endpoints."
+    "Checksum",
+    "A value used to detect bit errors in a segment."
+  ],
+  [
+    "Best effort",
+    "A service model that tries to deliver data but gives no guarantee."
+  ],
+  [
+    "Connection-oriented",
+    "A service that establishes state before data transfer."
   ],
   [
     "Three-way handshake",
     "TCP setup using SYN, SYN-ACK, and ACK messages."
   ],
   [
-    "Reliable data transfer",
-    "A service that delivers data correctly and in order despite loss or errors."
-  ],
-  [
-    "ACK",
-    "Acknowledgment, a message confirming data was received."
-  ],
-  [
-    "NAK",
-    "Negative acknowledgment, a message indicating data was not received correctly."
-  ],
-  [
-    "Sequence number",
-    "A number used to identify byte or packet order."
-  ],
-  [
-    "Timeout",
-    "A timer expiration that can trigger retransmission."
-  ],
-  [
-    "Retransmission",
-    "Sending data again after suspected loss or corruption."
-  ],
-  [
     "Flow control",
-    "Preventing a sender from overwhelming the receiver."
+    "A method that prevents a sender from overwhelming the receiver."
   ],
   [
-    "Receive window",
-    "TCP field indicating how much data the receiver can accept."
+    "Receive buffer",
+    "Memory used by the receiver to hold incoming data before the application reads it."
   ],
   [
     "Congestion control",
-    "Adjusting sending rate to avoid overwhelming the network."
-  ],
-  [
-    "Congestion window",
-    "TCP sender-side limit based on perceived network congestion."
+    "A method that prevents senders from overwhelming the network."
   ],
   [
     "MSS",
-    "Maximum Segment Size, the largest TCP payload in one segment."
+    "Maximum Segment Size, the largest TCP payload placed in one segment."
   ],
   [
-    "RTT",
-    "Round-trip time, the time for data to go out and an acknowledgment to return."
+    "MTU",
+    "Maximum Transmission Unit, the largest frame payload a link can carry."
   ],
   [
-    "Pipeline",
-    "Sending multiple packets before waiting for acknowledgments."
+    "Sequence number",
+    "A number that identifies byte positions for ordering and reliability."
   ],
   [
-    "Stop-and-wait",
-    "A protocol that sends one packet and waits for its acknowledgment."
+    "Acknowledgment",
+    "A receiver message confirming data arrival."
   ],
   [
-    "Connectionless service",
-    "A service that sends messages without prior setup."
+    "Timeout",
+    "A timer event that can trigger retransmission when an ACK is missing."
   ],
   [
-    "Connection-oriented service",
-    "A service that establishes state before data transfer."
-  ],
-  [
-    "Best-effort delivery",
-    "Delivery with no guarantee of reliability, order, or timing."
-  ],
-  [
-    "Transport checksum",
-    "An error-detection field in transport headers."
-  ],
-  [
-    "Socket pair",
-    "The combination of source/destination IP addresses and ports that identifies a conversation."
+    "Reliable data transfer",
+    "A service that delivers data correctly and in order despite loss or corruption."
   ],
   [
     "rdt",
-    "Reliable data transfer, a model for correct delivery over unreliable channels."
+    "A family of teaching protocols used to explain reliability mechanisms."
   ],
   [
-    "Checksum",
-    "A value used to detect bit errors in data."
+    "Stop-and-wait",
+    "A simple method that sends one packet then waits for an ACK."
   ],
   [
-    "Corruption",
-    "A condition where bits are changed during transmission."
-  ],
-  [
-    "Duplicate packet",
-    "A repeated packet caused by retransmission or delayed delivery."
-  ],
-  [
-    "Stop-and-wait rdt",
-    "A simple reliable protocol with one outstanding packet."
-  ],
-  [
-    "Pipelined rdt",
-    "A reliable protocol allowing multiple outstanding packets."
+    "Pipelining",
+    "Sending multiple packets before waiting for all acknowledgments."
   ],
   [
     "Sliding window",
-    "A moving range of packets or bytes allowed to be sent."
-  ],
-  [
-    "Sender window",
-    "The range of data the sender may transmit without more ACKs."
-  ],
-  [
-    "Receiver window",
-    "The range of data the receiver is prepared to accept."
+    "A limit on how many unacknowledged packets or bytes may be in flight."
   ],
   [
     "Go-Back-N",
-    "A sliding-window protocol that retransmits a lost packet and all following packets."
-  ],
-  [
-    "Cumulative ACK",
-    "An ACK that confirms receipt of all data up to a point."
+    "A pipelined protocol that retransmits a lost packet and later packets in the window."
   ],
   [
     "Selective Repeat",
-    "A sliding-window protocol that individually acknowledges and retransmits packets."
+    "A pipelined protocol that retransmits only specific missing packets."
   ],
   [
-    "Individual ACK",
-    "An ACK for a specific packet rather than all earlier data."
+    "Cumulative ACK",
+    "An ACK that confirms all data up to a certain point."
   ],
   [
-    "TCP byte stream",
-    "TCP treats data as an ordered stream of bytes."
+    "Duplicate ACK",
+    "An ACK repeated for the same data, often hinting that later data arrived but a gap exists."
   ],
   [
-    "TCP sequence number",
-    "The byte-stream number of the first byte in a TCP segment."
+    "Fast retransmit",
+    "TCP behavior that retransmits after enough duplicate ACKs, before timeout."
   ],
   [
-    "TCP ACK number",
-    "The next byte number the receiver expects."
+    "RTT",
+    "Round-trip time between sending data and receiving its acknowledgment."
   ],
   [
-    "Estimated RTT",
+    "EstimatedRTT",
     "TCP's smoothed estimate of round-trip time."
   ],
   [
     "DevRTT",
-    "TCP's estimate of round-trip time variation."
+    "An estimate of RTT variation used to set safer timeouts."
   ],
   [
-    "Timeout interval",
-    "TCP's retransmission timer based on estimated RTT and variation."
+    "TimeoutInterval",
+    "The retransmission timer value derived from estimated RTT and variation."
   ],
   [
-    "Fast retransmit",
-    "TCP retransmission triggered by duplicate ACKs before timeout."
-  ],
-  [
-    "Duplicate ACK",
-    "An ACK repeating the same expected byte number."
+    "Congestion window",
+    "TCP sender-side limit on how much data can be in flight due to congestion control."
   ],
   [
     "Slow start",
-    "TCP phase where congestion window grows rapidly from a low value."
+    "TCP phase where the congestion window grows quickly from a small value."
   ],
   [
     "Congestion avoidance",
-    "TCP phase where the congestion window grows more slowly."
+    "TCP phase where the congestion window grows more cautiously."
+  ],
+  [
+    "Fast recovery",
+    "TCP behavior after packet loss detected by duplicate ACKs."
   ],
   [
     "AIMD",
-    "Additive Increase Multiplicative Decrease, a TCP congestion-control pattern."
-  ],
-  [
-    "ssthresh",
-    "Slow-start threshold separating slow start from congestion avoidance."
+    "Additive Increase Multiplicative Decrease, TCP's classic congestion behavior."
   ],
   [
     "TCP Reno",
-    "A classic TCP congestion-control variant using AIMD and fast recovery."
-  ],
-  [
-    "TCP fairness",
-    "The tendency for competing TCP flows to share bandwidth."
-  ],
-  [
-    "Flow-control limit",
-    "A limit based on receiver capacity."
-  ],
-  [
-    "Congestion-control limit",
-    "A limit based on network capacity."
-  ],
-  [
-    "Effective send window",
-    "The smaller of the receive window and congestion window."
+    "A classic TCP version using slow start, congestion avoidance, fast retransmit, and fast recovery."
   ],
   [
     "Network layer",
-    "The layer that delivers packets from sending host to receiving host."
+    "The layer responsible for moving packets from source host to destination host."
   ],
   [
     "Datagram",
-    "A network-layer packet, especially in IP networks."
+    "The network-layer packet, especially in IP networks."
   ],
   [
     "Forwarding",
-    "Moving a packet from an input link to the correct output link."
+    "The local action of moving a packet from a router input to an output interface."
   ],
   [
     "Routing",
-    "Computing the path packets should take through the network."
-  ],
-  [
-    "Forwarding table",
-    "A table used by routers to choose output links."
-  ],
-  [
-    "Routing algorithm",
-    "A method for computing paths through a network."
+    "The network-wide process of determining paths from source to destination."
   ],
   [
     "Data plane",
-    "The per-router function that forwards packets."
+    "The router function that actually forwards packets."
   ],
   [
     "Control plane",
-    "The network-wide logic that determines routing behavior."
+    "The logic that computes or installs forwarding behavior."
+  ],
+  [
+    "Forwarding table",
+    "A table a router uses to choose an output link."
+  ],
+  [
+    "Longest-prefix match",
+    "The rule of choosing the most specific matching destination prefix."
   ],
   [
     "Router input port",
-    "Router component that receives packets and performs lookup."
+    "Router component that receives packets and may do lookup."
   ],
   [
     "Switching fabric",
-    "Router component that transfers packets from input to output ports."
+    "The internal router mechanism that transfers packets from input to output."
   ],
   [
     "Router output port",
-    "Router component that buffers and transmits packets onto links."
-  ],
-  [
-    "Longest-prefix matching",
-    "Choosing the forwarding-table entry with the most specific matching prefix."
+    "Router component that queues and transmits packets on an outgoing link."
   ],
   [
     "Queueing",
-    "Waiting in a buffer when traffic arrives faster than it can leave."
-  ],
-  [
-    "Head-of-line blocking",
-    "Delay caused when a packet at the front blocks packets behind it."
-  ],
-  [
-    "Packet scheduler",
-    "A mechanism that chooses which queued packet to send next."
-  ],
-  [
-    "FIFO scheduling",
-    "First-In First-Out packet scheduling."
-  ],
-  [
-    "Priority scheduling",
-    "Scheduling that serves higher-priority traffic first."
-  ],
-  [
-    "Round-robin scheduling",
-    "Scheduling that cycles through queues."
-  ],
-  [
-    "WFQ",
-    "Weighted Fair Queueing, scheduling that gives configured shares to classes."
-  ],
-  [
-    "Buffer overflow",
-    "A condition where a full queue causes arriving packets to be dropped."
-  ],
-  [
-    "Fragmentation",
-    "Splitting a large datagram into smaller pieces."
-  ],
-  [
-    "MTU",
-    "Maximum Transmission Unit, the largest frame payload allowed on a link."
-  ],
-  [
-    "IP service model",
-    "Best-effort datagram delivery with no guaranteed bandwidth or timing."
-  ],
-  [
-    "Best-effort network",
-    "A network that tries to deliver but gives no strict guarantees."
-  ],
-  [
-    "Virtual circuit network",
-    "A network where path state is established before data transfer."
-  ],
-  [
-    "Datagram network",
-    "A network where each packet carries its destination address and is routed independently."
-  ],
-  [
-    "SDN control plane",
-    "A control model where a controller programs forwarding behavior."
-  ],
-  [
-    "Flow table",
-    "An SDN table containing match-action rules."
-  ],
-  [
-    "Match-action rule",
-    "A rule that matches packet fields and specifies an action."
-  ],
-  [
-    "Router buffer",
-    "Memory used to hold packets during congestion or scheduling."
+    "Packets waiting because the output link or processing path is busy."
   ],
   [
     "IPv4",
-    "The 32-bit version of the Internet Protocol."
+    "The 32-bit Internet Protocol version still widely used."
   ],
   [
     "IPv6",
-    "The 128-bit version of the Internet Protocol."
-  ],
-  [
-    "Interface",
-    "A host or router connection point to a network."
+    "The 128-bit Internet Protocol version designed for a much larger address space."
   ],
   [
     "Subnet",
-    "A group of interfaces sharing the same network prefix."
-  ],
-  [
-    "Network prefix",
-    "The leftmost bits identifying a subnet or route."
-  ],
-  [
-    "Host portion",
-    "The address bits identifying an interface within a subnet."
+    "A logical IP address block within a network."
   ],
   [
     "CIDR",
-    "Classless Inter-Domain Routing using slash notation prefixes."
-  ],
-  [
-    "Slash notation",
-    "Address notation such as 10.0.0.0/24 showing prefix length."
-  ],
-  [
-    "Subnet mask",
-    "A mask indicating which address bits belong to the network prefix."
-  ],
-  [
-    "Default gateway",
-    "The router a host uses to reach outside its subnet."
+    "Classless Inter-Domain Routing, notation for variable-length network prefixes."
   ],
   [
     "DHCP",
-    "Dynamic Host Configuration Protocol for automatic host configuration."
-  ],
-  [
-    "DHCP discover",
-    "A broadcast message used by a client looking for a DHCP server."
-  ],
-  [
-    "DHCP offer",
-    "A server response offering address configuration."
-  ],
-  [
-    "DHCP request",
-    "A client message requesting offered configuration."
-  ],
-  [
-    "DHCP ACK",
-    "A server confirmation of assigned configuration."
+    "A protocol that dynamically assigns IP configuration to hosts."
   ],
   [
     "NAT",
-    "Network Address Translation, rewriting private/public address and port mappings."
-  ],
-  [
-    "Private address",
-    "An address reserved for internal networks and not globally routed."
-  ],
-  [
-    "Public address",
-    "A globally routable Internet address."
-  ],
-  [
-    "NAT table",
-    "A table mapping internal address-port pairs to external address-port pairs."
+    "Network Address Translation, which maps private internal addresses to public addresses."
   ],
   [
     "ICMP",
-    "Internet Control Message Protocol for errors and diagnostics."
+    "A control-message protocol used for errors and diagnostics."
   ],
   [
-    "Ping",
-    "A reachability test using ICMP echo messages."
+    "Fragmentation",
+    "Splitting an IP datagram into smaller pieces to fit a link MTU."
   ],
   [
-    "Traceroute",
-    "A diagnostic tool that discovers router hops using TTL behavior."
+    "Routing algorithm",
+    "A method for computing paths through a network graph."
   ],
   [
-    "TTL",
-    "Time To Live, a field decreased by routers to prevent endless circulation."
-  ],
-  [
-    "IPv4 header checksum",
-    "A field used to detect errors in an IPv4 header."
-  ],
-  [
-    "IPv6 simplified header",
-    "IPv6 design with fewer fixed header fields than IPv4."
-  ],
-  [
-    "IPv6 flow label",
-    "An IPv6 field that can identify flows needing special handling."
-  ],
-  [
-    "Tunneling",
-    "Carrying one protocol inside another during transitions or VPN use."
-  ],
-  [
-    "Dual stack",
-    "Running IPv4 and IPv6 at the same time."
-  ],
-  [
-    "Address aggregation",
-    "Combining prefixes to reduce routing-table size."
-  ],
-  [
-    "Routing graph",
-    "A model of routers as nodes and links as edges."
-  ],
-  [
-    "Link cost",
-    "A number representing preference or expense of using a link."
-  ],
-  [
-    "Least-cost path",
-    "The path with the lowest total link cost."
-  ],
-  [
-    "Link-state routing",
-    "Routing where each router knows network topology and link costs."
+    "Link-state",
+    "A routing approach where routers learn network topology and compute shortest paths."
   ],
   [
     "Dijkstra algorithm",
-    "A link-state algorithm for computing shortest paths."
+    "A shortest-path algorithm used in link-state routing."
   ],
   [
-    "Link-state advertisement",
-    "Information a router floods about its links and costs."
+    "Distance-vector",
+    "A routing approach where routers share distance estimates with neighbors."
   ],
   [
-    "Distance-vector routing",
-    "Routing where routers exchange distance estimates with neighbors."
+    "Bellman-Ford",
+    "The algorithmic idea behind distance-vector route updates."
   ],
   [
-    "Bellman-Ford equation",
-    "The recurrence used in distance-vector path computation."
+    "Routing table",
+    "The table of selected routes used to forward packets."
   ],
   [
-    "Count-to-infinity problem",
-    "A distance-vector problem where bad news spreads slowly."
+    "Link cost",
+    "A value assigned to a link, often based on bandwidth, delay, or policy."
+  ],
+  [
+    "Convergence",
+    "The point when routers agree on stable routing information."
+  ],
+  [
+    "Count-to-infinity",
+    "A distance-vector problem where bad news about a failed route spreads slowly."
   ],
   [
     "Poisoned reverse",
-    "A technique to reduce certain routing loops."
+    "A technique that helps reduce certain distance-vector loops."
   ],
   [
-    "Routing loop",
-    "A condition where packets circulate among routers."
+    "Intra-AS routing",
+    "Routing performed within one autonomous system."
   ],
   [
     "Autonomous system",
     "A network or group of networks under one administrative control."
   ],
   [
-    "Intra-AS routing",
-    "Routing inside one autonomous system."
+    "OSPF",
+    "An intra-AS link-state routing protocol."
+  ],
+  [
+    "Link-state advertisement",
+    "Information flooded by routers describing their links and costs."
+  ],
+  [
+    "Area hierarchy",
+    "A design that divides OSPF networks into areas for scalability."
+  ],
+  [
+    "RIP",
+    "An older distance-vector routing protocol using hop count."
+  ],
+  [
+    "IS-IS",
+    "A link-state routing protocol used in some large provider networks."
+  ],
+  [
+    "Equal-cost multipath",
+    "Using multiple paths with the same cost to share traffic."
+  ],
+  [
+    "Route recomputation",
+    "The recalculation of paths after topology or cost changes."
+  ],
+  [
+    "Topology database",
+    "The collected link-state view used to compute routes."
   ],
   [
     "Inter-AS routing",
     "Routing between autonomous systems."
   ],
   [
-    "OSPF",
-    "Open Shortest Path First, a link-state intra-AS routing protocol."
-  ],
-  [
-    "OSPF area",
-    "A subdivision used to scale OSPF routing."
-  ],
-  [
-    "Border router",
-    "A router connecting an AS to other ASes."
-  ],
-  [
-    "Gateway router",
-    "A router that connects to another AS or external network."
-  ],
-  [
     "BGP",
-    "Border Gateway Protocol, the Internet inter-AS routing protocol."
+    "Border Gateway Protocol, the main interdomain routing protocol of the Internet."
   ],
   [
     "eBGP",
-    "BGP session between routers in different autonomous systems."
+    "BGP sessions between routers in different autonomous systems."
   ],
   [
     "iBGP",
-    "BGP session between routers inside the same autonomous system."
-  ],
-  [
-    "BGP route advertisement",
-    "A message announcing reachability to a network prefix."
+    "BGP sessions between routers inside the same autonomous system."
   ],
   [
     "AS-PATH",
-    "A BGP attribute listing autonomous systems on a path."
+    "A BGP attribute listing autonomous systems a route advertisement has traversed."
   ],
   [
     "NEXT-HOP",
     "A BGP attribute identifying the next router to reach a prefix."
   ],
   [
-    "BGP policy",
-    "Rules controlling which routes are accepted, preferred, or advertised."
+    "Prefix",
+    "A block of IP addresses advertised as reachable."
   ],
   [
-    "Hot potato routing",
-    "Choosing the closest exit point from an AS."
+    "Reachability",
+    "Information that a destination prefix can be reached."
   ],
   [
-    "SDN",
-    "Software-Defined Networking, separating control from forwarding."
+    "Routing policy",
+    "Business or administrative rules that influence route selection."
   ],
   [
-    "SDN controller",
-    "Software that computes and installs forwarding rules."
+    "Hot-potato routing",
+    "Choosing the closest exit point from an AS to hand traffic off quickly."
   ],
   [
-    "OpenFlow",
-    "A protocol for controlling flow-table entries in SDN switches."
+    "Route advertisement",
+    "A BGP message announcing reachability to a prefix."
   ],
   [
-    "Control application",
-    "SDN software that implements routing, access control, or traffic engineering."
+    "Route withdrawal",
+    "A BGP message removing a previously advertised route."
+  ],
+  [
+    "Peering",
+    "An agreement where networks exchange traffic, often without payment."
+  ],
+  [
+    "Transit",
+    "A paid service where one network carries another network's traffic to the Internet."
+  ],
+  [
+    "Provider",
+    "A network that sells transit or connectivity."
+  ],
+  [
+    "Customer",
+    "A network that buys connectivity or transit from another network."
+  ],
+  [
+    "Local preference",
+    "A BGP attribute used inside an AS to prefer certain routes."
+  ],
+  [
+    "MED",
+    "Multi-Exit Discriminator, a hint about preferred entry points into an AS."
+  ],
+  [
+    "Route aggregation",
+    "Combining multiple prefixes into a shorter summary advertisement."
+  ],
+  [
+    "Gateway router",
+    "A router connecting an AS to other autonomous systems."
   ],
   [
     "Network management",
-    "Monitoring, configuring, controlling, and troubleshooting network systems."
+    "The process of monitoring, configuring, and controlling network systems."
   ],
   [
     "Managing server",
-    "A system used by administrators to control managed devices."
+    "The system used by administrators to monitor and control devices."
   ],
   [
     "Managed device",
-    "A router, switch, server, or other network element being monitored."
+    "A router, switch, server, or access point being monitored or configured."
   ],
   [
-    "Management agent",
-    "Software on a managed device that exposes data and actions."
+    "Agent",
+    "Software on a managed device that provides management information."
   ],
   [
     "MIB",
     "Management Information Base, a structured collection of managed variables."
   ],
   [
-    "OID",
-    "Object Identifier, a hierarchical name for a managed object."
-  ],
-  [
     "SNMP",
-    "Simple Network Management Protocol for device monitoring and control."
-  ],
-  [
-    "SNMP manager",
-    "The system that sends SNMP requests and receives notifications."
-  ],
-  [
-    "SNMP agent",
-    "The device-side software responding to SNMP operations."
+    "A protocol used to query and modify management data and receive notifications."
   ],
   [
     "SNMP Get",
-    "A request to read a managed object value."
+    "An operation that reads management information from a device."
   ],
   [
     "SNMP Set",
-    "A request to change a managed object value."
-  ],
-  [
-    "SNMP Response",
-    "The answer returned by an SNMP agent."
+    "An operation that changes a management variable on a device."
   ],
   [
     "SNMP Trap",
-    "An unsolicited alert sent by an agent to a manager."
+    "An unsolicited notification sent by an agent to a manager."
+  ],
+  [
+    "OID",
+    "Object Identifier, a numeric name for a managed variable."
   ],
   [
     "Polling",
-    "Regularly asking devices for state or counters."
-  ],
-  [
-    "Event notification",
-    "A device-generated alert about a significant condition."
-  ],
-  [
-    "Fault management",
-    "Detecting, isolating, and correcting network problems."
-  ],
-  [
-    "Configuration management",
-    "Maintaining intended device settings."
-  ],
-  [
-    "Performance management",
-    "Measuring throughput, errors, utilization, and delay."
-  ],
-  [
-    "Security management",
-    "Controlling access and protecting management systems."
-  ],
-  [
-    "Accounting management",
-    "Tracking resource use for billing or analysis."
-  ],
-  [
-    "NETCONF",
-    "A protocol for installing, manipulating, and deleting device configuration."
-  ],
-  [
-    "RPC",
-    "Remote Procedure Call, a request-response method used by NETCONF."
-  ],
-  [
-    "Datastore",
-    "A NETCONF configuration storage area such as running or candidate."
-  ],
-  [
-    "Running configuration",
-    "The active configuration currently used by a device."
-  ],
-  [
-    "Candidate configuration",
-    "A proposed configuration that can be edited before commit."
-  ],
-  [
-    "Commit",
-    "A NETCONF operation that applies candidate configuration."
-  ],
-  [
-    "YANG",
-    "A modeling language for configuration and operational data."
-  ],
-  [
-    "YANG module",
-    "A reusable data model defining network configuration structure."
+    "Regularly asking devices for status information."
   ],
   [
     "Telemetry",
-    "Streaming or reporting operational data from network devices."
+    "Streaming or exporting operational data for monitoring."
   ],
   [
-    "Intent-based management",
-    "Managing networks by desired outcomes rather than only low-level commands."
+    "NETCONF",
+    "A protocol for installing, changing, and retrieving network device configuration."
+  ],
+  [
+    "YANG",
+    "A data modeling language for configuration and operational state."
+  ],
+  [
+    "RPC",
+    "Remote Procedure Call, a structured request used by protocols such as NETCONF."
+  ],
+  [
+    "Configuration datastore",
+    "A storage area representing intended device configuration."
+  ],
+  [
+    "Operational state",
+    "The actual running condition and measured status of a device."
+  ],
+  [
+    "SDN",
+    "Software-Defined Networking, separating control logic from forwarding behavior."
+  ],
+  [
+    "Controller",
+    "The software control point in an SDN architecture."
+  ],
+  [
+    "Southbound API",
+    "The interface a controller uses to program network devices."
   ],
   [
     "Data link layer",
-    "The layer responsible for transferring frames across one link."
+    "The layer that transfers frames across a single link or hop."
   ],
   [
     "Node",
@@ -1122,111 +1931,83 @@ const glossary = [
   ],
   [
     "Link",
-    "A communication channel between adjacent nodes."
+    "The communication channel between neighboring nodes."
   ],
   [
     "Frame",
-    "A data link layer unit containing header, payload, and trailer."
+    "The data link layer unit that carries a network-layer packet."
   ],
   [
     "Framing",
-    "Encapsulating a network-layer datagram inside a link-layer frame."
-  ],
-  [
-    "MAC address",
-    "A local link-layer address assigned to a network interface."
-  ],
-  [
-    "Hop-to-hop delivery",
-    "Delivery from one node to the next adjacent node."
+    "Adding boundaries and link-layer information around data."
   ],
   [
     "Packetizing",
-    "Dividing and wrapping data for transmission as packets or frames."
+    "Organizing data into packet or frame units for transmission."
   ],
   [
-    "Frame header",
+    "Header",
     "Control information placed before the payload."
   ],
   [
-    "Frame trailer",
+    "Trailer",
     "Control information placed after the payload, often for error detection."
   ],
   [
     "Error detection",
-    "Recognizing that transmitted bits were corrupted."
-  ],
-  [
-    "Error correction",
-    "Recovering original data without retransmission."
+    "Techniques that identify whether transmitted bits may be corrupted."
   ],
   [
     "Parity bit",
-    "An extra bit used to make the number of ones even or odd."
+    "A simple bit added to make the number of ones even or odd."
   ],
   [
     "Two-dimensional parity",
-    "Parity arranged in rows and columns for stronger detection."
-  ],
-  [
-    "Internet checksum",
-    "A checksum method used by some Internet protocols."
+    "A parity method that can detect and sometimes locate bit errors using rows and columns."
   ],
   [
     "CRC",
-    "Cyclic Redundancy Check, a strong polynomial-based error detector."
+    "Cyclic Redundancy Check, a strong polynomial-based error detection method."
   ],
   [
     "Generator polynomial",
-    "The divisor pattern used in CRC calculation."
+    "The divisor pattern used in CRC computation."
   ],
   [
-    "Burst error",
-    "A sequence of nearby corrupted bits."
-  ],
-  [
-    "Half-duplex",
-    "Communication where devices take turns sending."
-  ],
-  [
-    "Full-duplex",
-    "Communication where devices can send and receive at the same time."
+    "Medium access control",
+    "Rules for deciding who can transmit on a shared medium."
   ],
   [
     "Broadcast link",
-    "A shared link where transmissions can be heard by multiple nodes."
+    "A link where multiple nodes share the same communication medium."
   ],
   [
     "Point-to-point link",
-    "A link connecting exactly two nodes."
+    "A direct link between two nodes."
   ],
   [
-    "Multiple access protocol",
-    "Rules for sharing a broadcast medium."
+    "Half-duplex",
+    "Communication where a device cannot send and receive at the same time."
   ],
   [
-    "Channel partitioning",
-    "Dividing a shared channel by time, frequency, or code."
-  ],
-  [
-    "Random access",
-    "Allowing devices to transmit and recover from collisions."
-  ],
-  [
-    "Taking turns",
-    "A sharing method where nodes transmit by schedule or permission."
-  ],
-  [
-    "Collision",
-    "Overlapping transmissions on a shared medium."
-  ],
-  [
-    "MAC protocol",
-    "Rules controlling access to the transmission medium."
+    "Full-duplex",
+    "Communication where sending and receiving can happen simultaneously."
   ],
   [
     "LAN",
-    "Local Area Network, connecting devices in a limited area."
+    "Local Area Network, a network covering a limited area such as a room, home, or campus."
+  ],
+  [
+    "MAC address",
+    "A link-layer hardware address used for local frame delivery."
+  ],
+  [
+    "ARP",
+    "Address Resolution Protocol, which maps local IP addresses to MAC addresses."
+  ],
+  [
+    "ARP table",
+    "A cache of IP-to-MAC mappings."
   ],
   [
     "Ethernet",
@@ -1234,191 +2015,127 @@ const glossary = [
   ],
   [
     "Ethernet frame",
-    "A frame format used by Ethernet networks."
+    "The link-layer format used by Ethernet."
   ],
   [
     "Preamble",
-    "Ethernet bits used to synchronize receiver timing."
+    "Bits at the start of an Ethernet frame used for synchronization."
   ],
   [
-    "Ethernet type field",
-    "A field identifying the payload protocol."
+    "Type field",
+    "Ethernet field identifying the upper-layer protocol carried in the frame."
   ],
   [
-    "Broadcast MAC address",
-    "The all-ones MAC address received by all LAN interfaces."
-  ],
-  [
-    "ARP",
-    "Address Resolution Protocol, mapping local IP addresses to MAC addresses."
-  ],
-  [
-    "ARP table",
-    "A cache of IP-to-MAC mappings."
-  ],
-  [
-    "ARP request",
-    "A broadcast message asking who has a target IP address."
-  ],
-  [
-    "ARP reply",
-    "A response containing the target MAC address."
-  ],
-  [
-    "CSMA/CD",
-    "Carrier Sense Multiple Access with Collision Detection for classic Ethernet."
-  ],
-  [
-    "Carrier sense",
-    "Listening before transmitting on a shared medium."
-  ],
-  [
-    "Collision detection",
-    "Detecting overlapping transmissions in shared Ethernet."
-  ],
-  [
-    "Exponential backoff",
-    "Increasing random wait time after repeated collisions."
+    "CRC field",
+    "Ethernet error detection field."
   ],
   [
     "Switch",
-    "A link-layer device that forwards frames by MAC address."
+    "A LAN device that forwards frames based on MAC addresses."
   ],
   [
-    "Switch forwarding table",
-    "A table mapping MAC addresses to switch ports."
-  ],
-  [
-    "Self-learning",
-    "A switch learning MAC locations from source addresses."
+    "MAC learning",
+    "A switch process that records which MAC addresses are reachable through which ports."
   ],
   [
     "Flooding",
-    "Sending a frame out multiple ports when destination is unknown."
-  ],
-  [
-    "Filtering",
-    "Not forwarding a frame where it does not need to go."
-  ],
-  [
-    "Store-and-forward switch",
-    "A switch that receives the whole frame before forwarding."
-  ],
-  [
-    "Cut-through switch",
-    "A switch that begins forwarding before receiving the whole frame."
-  ],
-  [
-    "Spanning Tree Protocol",
-    "A protocol that prevents switching loops."
+    "Sending a frame out multiple ports when the destination is unknown or broadcast."
   ],
   [
     "Broadcast domain",
-    "The set of devices that receive a broadcast frame."
+    "The set of devices that receive a layer-2 broadcast."
+  ],
+  [
+    "Collision domain",
+    "A shared medium area where simultaneous transmissions can collide."
+  ],
+  [
+    "CSMA/CD",
+    "Carrier Sense Multiple Access with Collision Detection, used in classic shared Ethernet."
+  ],
+  [
+    "CSMA/CA",
+    "Carrier Sense Multiple Access with Collision Avoidance, used in WiFi."
   ],
   [
     "VLAN",
-    "Virtual LAN, a logical LAN separated from others on the same hardware."
-  ],
-  [
-    "Access port",
-    "A switch port assigned to one VLAN."
+    "A logical LAN that separates traffic within the same physical switching infrastructure."
   ],
   [
     "Trunk port",
-    "A switch port carrying traffic for multiple VLANs."
+    "A switch port that carries traffic for multiple VLANs using tags."
   ],
   [
-    "802.1Q tag",
-    "A VLAN tag inserted into Ethernet frames."
-  ],
-  [
-    "Inter-VLAN routing",
-    "Routing traffic between VLANs."
-  ],
-  [
-    "Port isolation",
-    "Switching configuration that limits which ports can communicate."
+    "Access port",
+    "A switch port assigned to one VLAN for an end device."
   ],
   [
     "Link virtualization",
-    "Creating logical link behavior over shared physical infrastructure."
+    "Making a network path behave like a logical link or service."
   ],
   [
     "MPLS",
-    "Multiprotocol Label Switching, forwarding packets using short labels."
+    "Multiprotocol Label Switching, a forwarding method based on short labels."
   ],
   [
     "Label",
-    "A fixed-length identifier used by MPLS forwarding."
+    "A fixed-length identifier used by MPLS routers to forward packets."
   ],
   [
-    "MPLS header",
-    "A small header inserted between link-layer and network-layer headers."
+    "Label-switched router",
+    "A router that forwards MPLS traffic based on label values."
   ],
   [
-    "Label switched router",
-    "An MPLS-capable router that forwards based on labels."
+    "Label forwarding table",
+    "A table mapping incoming labels to outgoing labels and interfaces."
+  ],
+  [
+    "LSP",
+    "Label Switched Path, the route MPLS packets follow through a network."
   ],
   [
     "Ingress router",
-    "The MPLS edge router that adds the first label."
+    "The MPLS edge router that first adds a label."
   ],
   [
     "Egress router",
     "The MPLS edge router that removes the label."
   ],
   [
-    "Label swapping",
-    "Replacing an incoming MPLS label with an outgoing label."
-  ],
-  [
-    "Label forwarding table",
-    "A table mapping incoming labels to output labels and interfaces."
-  ],
-  [
-    "Label switched path",
-    "A path followed by MPLS-labeled packets."
-  ],
-  [
     "Traffic engineering",
-    "Choosing routes to meet performance or utilization goals."
+    "Controlling paths to meet performance or policy goals."
   ],
   [
     "Fast reroute",
-    "Quickly moving traffic around a failure."
+    "Quickly moving traffic to a backup path after failure."
   ],
   [
-    "MPLS VPN",
-    "Using MPLS to separate customer traffic over a provider network."
+    "VPN",
+    "A virtual private network service that can be carried over shared infrastructure."
   ],
   [
     "Virtual circuit",
-    "A logical path with state in network devices."
+    "A logical path that behaves like a dedicated circuit."
   ],
   [
     "Overlay network",
-    "A virtual network built on top of another network."
+    "A logical network built on top of another network."
   ],
   [
     "Underlay network",
-    "The physical or base network carrying overlays."
+    "The physical or base IP network that carries overlay traffic."
   ],
   [
     "Data center network",
-    "A network connecting large numbers of servers and storage systems."
+    "A high-speed network connecting large numbers of servers."
   ],
   [
     "Top-of-rack switch",
-    "A switch placed near servers in a rack."
+    "A switch placed near or inside a server rack."
   ],
   [
-    "Leaf-spine topology",
-    "A data-center design with access leaf switches and spine switches."
-  ],
-  [
-    "Bisection bandwidth",
-    "The capacity across a cut dividing a network into two parts."
+    "Leaf-spine",
+    "A scalable data-center topology with leaf access switches and spine core switches."
   ],
   [
     "Load balancing",
@@ -1426,35 +2143,11 @@ const glossary = [
   ],
   [
     "ECMP",
-    "Equal-Cost Multi-Path routing across multiple equal paths."
+    "Equal-Cost Multipath, using multiple equal-cost paths for traffic."
   ],
   [
-    "Virtual machine",
-    "A software-defined computer running on shared hardware."
-  ],
-  [
-    "Container",
-    "A lightweight isolated application runtime."
-  ],
-  [
-    "Network virtualization",
-    "Creating logical networks independent of physical topology."
-  ],
-  [
-    "VXLAN",
-    "A common overlay technology for virtualized Layer 2 networks."
-  ],
-  [
-    "Service chaining",
-    "Sending traffic through an ordered set of network functions."
-  ],
-  [
-    "Middlebox",
-    "A device or service such as firewall, NAT, proxy, or load balancer."
-  ],
-  [
-    "Tenant isolation",
-    "Keeping different customers or applications separated in shared infrastructure."
+    "Fabric",
+    "The overall switching infrastructure of a data center."
   ],
   [
     "Wireless host",
@@ -1462,51 +2155,43 @@ const glossary = [
   ],
   [
     "Base station",
-    "A wireless access point connecting hosts to network infrastructure."
+    "A radio access point connecting wireless devices to network infrastructure."
   ],
   [
     "Access point",
-    "A WiFi base station for wireless LANs."
+    "A WiFi base station that connects wireless hosts to a LAN."
   ],
   [
     "Infrastructure mode",
-    "Wireless mode where hosts connect through an access point."
+    "Wireless mode where devices communicate through an access point."
   ],
   [
     "Ad hoc mode",
-    "Wireless mode where hosts communicate directly without infrastructure."
+    "Wireless mode where devices communicate directly without infrastructure."
   ],
   [
     "Wireless link",
-    "A radio connection between wireless nodes."
+    "A radio channel carrying bits between devices."
   ],
   [
     "Signal attenuation",
-    "Signal weakening as distance or obstacles increase."
+    "Loss of signal strength over distance or through obstacles."
   ],
   [
     "Interference",
-    "Disruption caused by other transmissions or noise."
+    "Unwanted signals that disrupt communication."
   ],
   [
-    "Multipath propagation",
-    "Radio signals taking multiple reflected paths."
+    "Multipath",
+    "Signal copies arriving by different paths because of reflection."
   ],
   [
     "SNR",
-    "Signal-to-noise ratio, comparing signal strength to noise."
-  ],
-  [
-    "Bit error rate",
-    "The fraction of transmitted bits received incorrectly."
+    "Signal-to-noise ratio, a measure of signal quality."
   ],
   [
     "802.11",
     "The IEEE family of WiFi standards."
-  ],
-  [
-    "BSS",
-    "Basic Service Set, a WiFi cell with stations and often an AP."
   ],
   [
     "SSID",
@@ -1514,179 +2199,107 @@ const glossary = [
   ],
   [
     "Association",
-    "The process of joining a WiFi access point."
-  ],
-  [
-    "Passive scanning",
-    "Discovering WiFi networks by listening for beacon frames."
-  ],
-  [
-    "Active scanning",
-    "Discovering WiFi networks by sending probe requests."
+    "The process of a wireless host joining an access point."
   ],
   [
     "Beacon frame",
-    "An AP frame announcing network identity and capabilities."
-  ],
-  [
-    "CSMA/CA",
-    "Carrier Sense Multiple Access with Collision Avoidance."
-  ],
-  [
-    "Collision avoidance",
-    "Trying to reduce collisions before they occur."
-  ],
-  [
-    "Random backoff",
-    "Waiting a random time before transmitting on a shared medium."
-  ],
-  [
-    "Link-layer ACK",
-    "An acknowledgment for a WiFi frame."
-  ],
-  [
-    "Hidden terminal problem",
-    "When two stations cannot hear each other but collide at an AP."
+    "A frame an AP sends to announce network presence and parameters."
   ],
   [
     "RTS",
-    "Request To Send, a control frame used to reserve the medium."
+    "Request To Send, an optional control frame to reserve the medium."
   ],
   [
     "CTS",
-    "Clear To Send, a control frame granting transmission."
+    "Clear To Send, a response allowing a sender to transmit."
   ],
   [
-    "NAV",
-    "Network Allocation Vector, virtual carrier-sense timer in WiFi."
+    "ACK frame",
+    "A WiFi acknowledgment that confirms frame reception."
   ],
   [
-    "Roaming",
-    "Moving between access points while maintaining connectivity."
+    "Hidden terminal",
+    "A device that cannot hear another transmitter but can still collide at the receiver."
   ],
   [
-    "WiFi channel",
-    "A frequency range used for wireless communication."
+    "Channel",
+    "A selected frequency range used for wireless communication."
   ],
   [
-    "MIMO",
-    "Multiple-input multiple-output antenna technology."
-  ],
-  [
-    "802.11ax",
-    "WiFi 6, an 802.11 standard designed for efficiency and capacity."
-  ],
-  [
-    "Mobile network",
-    "A network designed to support users moving between attachment points."
-  ],
-  [
-    "Cellular network",
-    "A mobile network divided into geographic cells."
-  ],
-  [
-    "Cell",
-    "A coverage area served by a base station."
+    "Mobility",
+    "The ability to keep network service while changing attachment points."
   ],
   [
     "User equipment",
-    "A mobile device such as a phone or cellular modem."
+    "The mobile device, such as a phone or cellular modem."
   ],
   [
     "SIM",
-    "Subscriber Identity Module used for subscriber identity and authentication."
+    "Subscriber identity module used for cellular identity and authentication."
   ],
   [
-    "IMSI",
-    "International Mobile Subscriber Identity stored with subscriber credentials."
-  ],
-  [
-    "4G LTE",
-    "Fourth-generation cellular architecture based on IP networking."
-  ],
-  [
-    "5G",
-    "Fifth-generation mobile architecture with enhanced bandwidth and flexibility."
+    "Cell",
+    "The geographic coverage area served by a base station."
   ],
   [
     "Radio access network",
-    "The part of a cellular system handling radio communication."
+    "The part of a mobile network connecting devices to the core."
   ],
   [
     "Core network",
-    "The provider network handling mobility, authentication, and Internet access."
+    "The carrier network handling mobility, authentication, and Internet access."
   ],
   [
-    "EPC",
-    "Evolved Packet Core, the LTE core network."
+    "4G LTE",
+    "A cellular generation using packet-switched IP-based design."
+  ],
+  [
+    "5G",
+    "A newer cellular generation with enhanced capacity, latency, and service flexibility."
   ],
   [
     "MME",
-    "Mobility Management Entity, an LTE control-plane component."
+    "Mobility Management Entity, a 4G control-plane component."
   ],
   [
     "Serving gateway",
-    "LTE component forwarding user data within the carrier network."
+    "A 4G data-plane anchor that forwards user traffic."
   ],
   [
     "PDN gateway",
-    "LTE component connecting user traffic to external packet networks."
-  ],
-  [
-    "HSS",
-    "Home Subscriber Server storing subscriber data."
-  ],
-  [
-    "Attach procedure",
-    "The process of joining and authenticating to a cellular network."
-  ],
-  [
-    "Bearer",
-    "A logical data path with specific service properties."
+    "A gateway connecting the cellular network to external packet data networks."
   ],
   [
     "Handoff",
-    "Moving an active connection from one base station to another."
+    "Moving an active device connection from one base station to another."
   ],
   [
-    "Hard handoff",
-    "Breaking the old connection before or while making the new one."
-  ],
-  [
-    "Soft handoff",
-    "Temporarily maintaining more than one radio connection."
+    "Roaming",
+    "Using a visited carrier network while subscribed to a home carrier."
   ],
   [
     "Home network",
-    "The subscriber's primary provider network."
+    "The subscriber's original carrier network."
   ],
   [
     "Visited network",
-    "A provider network serving a roaming user."
+    "The network a roaming user currently attaches to."
   ],
   [
     "Mobile IP",
-    "A protocol supporting mobility while keeping a stable home address."
+    "A protocol concept allowing a host to keep a permanent address while moving."
   ],
   [
     "Home agent",
-    "Mobile IP entity that forwards packets to a mobile node."
+    "Mobile IP entity that tracks the mobile node and forwards packets."
   ],
   [
     "Foreign agent",
-    "Mobile IP entity in a visited network assisting mobile nodes."
+    "Mobile IP entity that assists a mobile node in a visited network."
   ],
   [
-    "Care-of address",
-    "A temporary address representing a mobile node's current location."
-  ],
-  [
-    "Triangular routing",
-    "Mobile IP path where packets go through the home agent before the mobile node."
-  ],
-  [
-    "Mobility impact",
-    "Effects of movement on delay, loss, TCP performance, and application continuity."
+    "Tunneling",
+    "Encapsulating packets inside other packets to reach a mobile location."
   ],
   [
     "Confidentiality",
@@ -1694,83 +2307,43 @@ const glossary = [
   ],
   [
     "Authentication",
-    "Verifying that an entity is who it claims to be."
+    "Proving an identity or verifying the source of a message."
   ],
   [
-    "Message integrity",
-    "Assurance that a message was not changed undetected."
+    "Integrity",
+    "Detecting unauthorized changes to data."
   ],
   [
     "Availability",
-    "Keeping services accessible to legitimate users."
-  ],
-  [
-    "Access control",
-    "Restricting use of resources to authorized entities."
-  ],
-  [
-    "Eavesdropping",
-    "Secretly listening to communication."
-  ],
-  [
-    "Spoofing",
-    "Pretending to be another entity."
-  ],
-  [
-    "Replay attack",
-    "Reusing captured valid messages to trick a system."
-  ],
-  [
-    "Man-in-the-middle attack",
-    "Intercepting and possibly modifying communication between parties."
-  ],
-  [
-    "Denial of service",
-    "Attacking availability by overwhelming or disrupting service."
-  ],
-  [
-    "Plaintext",
-    "Original readable data before encryption."
-  ],
-  [
-    "Ciphertext",
-    "Encrypted data that should be unreadable without the key."
+    "Keeping services reachable for legitimate users."
   ],
   [
     "Encryption",
-    "Transforming plaintext into ciphertext."
+    "Transforming readable data into protected ciphertext."
   ],
   [
     "Decryption",
-    "Recovering plaintext from ciphertext."
+    "Recovering readable data from ciphertext."
   ],
   [
-    "Symmetric-key cryptography",
-    "Cryptography where sender and receiver share the same secret key."
-  ],
-  [
-    "Public-key cryptography",
-    "Cryptography using a public key and a private key pair."
+    "Symmetric key",
+    "A shared secret key used for both encryption and decryption."
   ],
   [
     "Public key",
-    "A key that can be shared openly."
+    "A key that can be shared publicly in asymmetric cryptography."
   ],
   [
     "Private key",
-    "A key that must be kept secret by its owner."
+    "A secret key kept by its owner in asymmetric cryptography."
   ],
   [
     "Hash function",
-    "A function that maps data to a fixed-size digest."
-  ],
-  [
-    "Cryptographic hash",
-    "A hash designed to resist collisions and preimage attacks."
+    "A one-way function producing a fixed-size digest from data."
   ],
   [
     "MAC",
-    "Message Authentication Code for integrity and authentication with a shared key."
+    "Message Authentication Code, used to verify authenticity and integrity with a shared key."
   ],
   [
     "Digital signature",
@@ -1778,7 +2351,7 @@ const glossary = [
   ],
   [
     "Certificate",
-    "A signed binding between an identity and a public key."
+    "A signed statement binding an identity to a public key."
   ],
   [
     "Certificate authority",
@@ -1786,147 +2359,99 @@ const glossary = [
   ],
   [
     "Nonce",
-    "A fresh random or unique value used to prevent replay."
+    "A fresh random value used to prevent replay."
   ],
   [
-    "Challenge-response",
-    "Authentication where one side proves knowledge by answering a challenge."
+    "Replay attack",
+    "Reusing a valid message later to trick a protocol."
   ],
   [
-    "Session key",
-    "A temporary key used for one communication session."
-  ],
-  [
-    "Key distribution",
-    "The process of securely giving parties needed keys."
-  ],
-  [
-    "Trust model",
-    "The assumptions about who or what is trusted."
-  ],
-  [
-    "Mutual authentication",
-    "Both communication parties authenticate each other."
+    "Man-in-the-middle",
+    "An attacker secretly intercepting and possibly altering communication."
   ],
   [
     "TLS",
-    "Transport Layer Security, used to protect application sessions such as HTTPS."
+    "Transport Layer Security, commonly used to secure web connections."
   ],
   [
     "HTTPS",
-    "HTTP over TLS for secure web communication."
+    "HTTP over TLS."
   ],
   [
-    "TLS handshake",
-    "The setup phase where parties negotiate keys and authenticate."
+    "Session key",
+    "A temporary symmetric key used after secure setup."
   ],
   [
-    "TLS record",
-    "A protected TLS data unit carrying application data."
+    "Network-layer security",
+    "Protection applied to IP packets or network paths."
   ],
   [
-    "Cipher suite",
-    "A set of algorithms used by a TLS session."
+    "IPsec",
+    "A suite of protocols that secures IP datagrams."
   ],
   [
-    "Certificate chain",
-    "A sequence of certificates linking a site certificate to a trusted root."
+    "Security association",
+    "A one-way security relationship defining IPsec parameters and keys."
   ],
   [
-    "Root CA",
-    "A highly trusted certificate authority at the top of a trust chain."
+    "SA database",
+    "A database storing active security associations."
   ],
   [
-    "Forward secrecy",
-    "Protection of past sessions even if a long-term key is later compromised."
+    "SPD",
+    "Security Policy Database, which says what traffic should be protected or bypassed."
   ],
   [
-    "Firewall",
-    "A device or software that filters traffic according to policy."
+    "IKE",
+    "Internet Key Exchange, used to negotiate IPsec security associations."
+  ],
+  [
+    "Transport mode",
+    "IPsec mode that protects the payload of the original IP datagram."
+  ],
+  [
+    "Tunnel mode",
+    "IPsec mode that protects the entire original datagram inside a new datagram."
+  ],
+  [
+    "AH",
+    "Authentication Header, providing authentication and integrity without encryption."
+  ],
+  [
+    "ESP",
+    "Encapsulating Security Payload, providing confidentiality plus optional integrity and authentication."
+  ],
+  [
+    "Authentication header",
+    "The IPsec AH header used for integrity and authentication."
   ],
   [
     "Packet filter",
-    "A firewall that checks packet headers such as addresses and ports."
+    "A firewall rule system that permits or denies packets by header fields."
   ],
   [
     "Stateful firewall",
-    "A firewall that tracks connection state."
-  ],
-  [
-    "Application gateway",
-    "A firewall/proxy that inspects application-layer traffic."
+    "A firewall that tracks connection state when filtering traffic."
   ],
   [
     "ACL",
-    "Access Control List, a set of permit or deny rules."
+    "Access Control List, a list of permit or deny rules."
+  ],
+  [
+    "DMZ",
+    "A separated network zone for publicly reachable services."
   ],
   [
     "IDS",
     "Intrusion Detection System that monitors for suspicious activity."
   ],
   [
-    "IPS",
-    "Intrusion Prevention System that can actively block suspicious traffic."
+    "Signature detection",
+    "IDS method that matches known attack patterns."
   ],
   [
-    "Signature-based detection",
-    "Detecting known attack patterns."
-  ],
-  [
-    "Anomaly-based detection",
-    "Detecting behavior that differs from normal patterns."
-  ],
-  [
-    "IPsec",
-    "A suite for protecting IP datagrams."
-  ],
-  [
-    "Security association",
-    "A one-way IPsec relationship defining keys and algorithms."
-  ],
-  [
-    "Security Policy Database",
-    "IPsec database indicating what traffic should be protected."
-  ],
-  [
-    "Security Association Database",
-    "IPsec database storing active security associations."
-  ],
-  [
-    "AH",
-    "Authentication Header, IPsec protocol for authentication and integrity."
-  ],
-  [
-    "ESP",
-    "Encapsulating Security Payload, IPsec protocol supporting confidentiality."
-  ],
-  [
-    "Transport mode",
-    "IPsec mode protecting the payload of the original IP datagram."
-  ],
-  [
-    "Tunnel mode",
-    "IPsec mode protecting the entire original IP datagram inside a new one."
-  ],
-  [
-    "IKE",
-    "Internet Key Exchange, used to create IPsec security associations."
-  ],
-  [
-    "VPN",
-    "Virtual Private Network, often built using tunnel-mode IPsec or TLS."
-  ],
-  [
-    "NAT traversal",
-    "Techniques allowing IPsec traffic to pass through NAT devices."
-  ],
-  [
-    "Replay protection",
-    "A mechanism that rejects old duplicated protected packets."
-  ],
-  [
-    "Security gateway",
-    "A router/firewall/VPN device enforcing security at a network boundary."
+    "Anomaly detection",
+    "IDS method that looks for deviations from normal behavior."
   ]
 ];
 
@@ -2051,1103 +2576,1103 @@ function Quiz({ items }) {
 const flashcards = [
   {
     "topic": "Computer Networks and the Internet",
-    "front": "What is Internet?",
-    "back": "A global network of networks that interconnects hosts using protocols."
-  },
-  {
-    "topic": "Computer Networks and the Internet",
     "front": "What is Host?",
-    "back": "An end device such as a laptop, phone, server, camera, or IoT device."
+    "back": "A device at the edge of the network that runs applications, such as a phone, laptop, server, or camera."
   },
   {
     "topic": "Computer Networks and the Internet",
     "front": "What is End system?",
-    "back": "Another name for a host because it sits at the edge of the network."
+    "back": "Another name for a host because it sits at an end of communication and creates or receives data."
   },
   {
     "topic": "Computer Networks and the Internet",
     "front": "What is Packet?",
-    "back": "A small unit of data plus headers sent across a packet-switched network."
+    "back": "A small chunk of data plus headers that can be forwarded through a network."
   },
   {
     "topic": "Computer Networks and the Internet",
     "front": "What is Packet switch?",
-    "back": "A router or link-layer switch that forwards packets toward a destination."
+    "back": "A device that receives packets and forwards them toward a destination."
   },
   {
     "topic": "Computer Networks and the Internet",
     "front": "What is Router?",
-    "back": "A network-layer packet switch that forwards packets between networks."
+    "back": "A packet switch that forwards network-layer datagrams between networks using IP information."
   },
   {
     "topic": "Computer Networks and the Internet",
     "front": "What is Link-layer switch?",
-    "back": "A local packet switch that forwards frames inside a LAN."
+    "back": "A local packet switch that forwards frames inside a LAN using MAC addresses."
   },
   {
     "topic": "Computer Networks and the Internet",
     "front": "What is Communication link?",
-    "back": "A physical or wireless path that carries bits between network devices."
-  },
-  {
-    "topic": "Computer Networks and the Internet",
-    "front": "What is Transmission rate?",
-    "back": "The speed at which bits are pushed onto a link."
-  },
-  {
-    "topic": "Computer Networks and the Internet",
-    "front": "What is Bandwidth?",
-    "back": "The maximum possible transmission rate of a link."
-  },
-  {
-    "topic": "Computer Networks and the Internet",
-    "front": "What is Throughput?",
-    "back": "The actual useful rate achieved by an application transfer."
-  },
-  {
-    "topic": "Computer Networks and the Internet",
-    "front": "What is Protocol?",
-    "back": "A rule set defining message formats, ordering, and actions."
+    "back": "The physical or wireless path that carries bits between devices."
   },
   {
     "topic": "Computer Networks and the Internet",
     "front": "What is Access network?",
-    "back": "The network that connects an end system to the first router."
+    "back": "The part of the network that connects end systems to the first router."
   },
   {
     "topic": "Computer Networks and the Internet",
-    "front": "What is Network core?",
-    "back": "The mesh of routers and links that moves packets across the Internet."
+    "front": "What is ISP?",
+    "back": "An Internet Service Provider that connects customers and other networks to the Internet."
+  },
+  {
+    "topic": "Computer Networks and the Internet",
+    "front": "What is Protocol?",
+    "back": "A rule set defining message format, message order, and actions when messages are sent or received."
+  },
+  {
+    "topic": "Computer Networks and the Internet",
+    "front": "What is RFC?",
+    "back": "A Request for Comments document that records Internet standards and protocol specifications."
+  },
+  {
+    "topic": "Computer Networks and the Internet",
+    "front": "What is IETF?",
+    "back": "The standards organization that develops many Internet protocols through RFCs."
   },
   {
     "topic": "Computer Networks and the Internet",
     "front": "What is Packet switching?",
-    "back": "A method where many users share links by sending packets when needed."
+    "back": "A sharing method where packets from many users take turns using links."
   },
   {
     "topic": "Computer Networks and the Internet",
-    "front": "What is Store-and-forward?",
-    "back": "A switching behavior where a router receives a whole packet before forwarding."
+    "front": "What is Circuit switching?",
+    "back": "A communication method that reserves end-to-end resources before data is sent."
   },
   {
     "topic": "Computer Networks and the Internet",
-    "front": "What is Queueing delay?",
-    "back": "Waiting time when packets sit in a router buffer."
+    "front": "What is Delay?",
+    "back": "The time it takes data to travel from sender to receiver."
   },
   {
     "topic": "Computer Networks and the Internet",
-    "front": "What is Packet loss?",
-    "back": "A dropped packet, often caused by congestion or buffer overflow."
+    "front": "What is Loss?",
+    "back": "When packets are dropped because of errors, congestion, or failed paths."
   },
   {
     "topic": "Computer Networks and the Internet",
-    "front": "What is Propagation delay?",
-    "back": "Time for a signal to travel across a physical medium."
+    "front": "What is Throughput?",
+    "back": "The actual rate at which useful data is delivered."
   },
   {
     "topic": "Computer Networks and the Internet",
-    "front": "What is Transmission delay?",
-    "back": "Time needed to push all packet bits onto a link."
+    "front": "What is Bandwidth?",
+    "back": "The maximum transmission rate a link can support."
   },
   {
-    "topic": "Application Layer",
+    "topic": "Computer Networks and the Internet",
+    "front": "What is Encapsulation?",
+    "back": "The process of wrapping data with headers as it moves down network layers."
+  },
+  {
+    "topic": "Computer Networks and the Internet",
+    "front": "What is Internet stack?",
+    "back": "The layered model of application, transport, network, link, and physical responsibilities."
+  },
+  {
+    "topic": "Application Layer Protocols and Services",
     "front": "What is Application layer?",
-    "back": "The layer where network applications and their protocols operate."
+    "back": "The top network layer where applications define messages and services."
   },
   {
-    "topic": "Application Layer",
+    "topic": "Application Layer Protocols and Services",
     "front": "What is Process?",
-    "back": "A running program that sends or receives network messages."
+    "back": "A running program that sends or receives messages through a socket."
   },
   {
-    "topic": "Application Layer",
-    "front": "What is Client?",
-    "back": "A process that initiates communication or requests a service."
-  },
-  {
-    "topic": "Application Layer",
-    "front": "What is Server?",
-    "back": "A process that waits for and responds to client requests."
-  },
-  {
-    "topic": "Application Layer",
-    "front": "What is Client-server architecture?",
-    "back": "An app design with always-on servers serving many clients."
-  },
-  {
-    "topic": "Application Layer",
-    "front": "What is Peer-to-peer architecture?",
-    "back": "An app design where end systems communicate directly as peers."
-  },
-  {
-    "topic": "Application Layer",
+    "topic": "Application Layer Protocols and Services",
     "front": "What is Socket?",
-    "back": "A software interface between an application process and transport service."
+    "back": "The software interface between an application process and the transport layer."
   },
   {
-    "topic": "Application Layer",
-    "front": "What is IP address?",
-    "back": "A network-layer address used to identify a host or interface."
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is Client-server?",
+    "back": "An architecture where clients request service from an always-on server."
   },
   {
-    "topic": "Application Layer",
-    "front": "What is Port number?",
-    "back": "A transport-layer number used to identify a receiving process."
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is Peer-to-peer?",
+    "back": "An architecture where end systems communicate directly and share roles."
   },
   {
-    "topic": "Application Layer",
-    "front": "What is Application protocol?",
-    "back": "Rules that define application message types, syntax, semantics, and timing."
-  },
-  {
-    "topic": "Application Layer",
+    "topic": "Application Layer Protocols and Services",
     "front": "What is HTTP?",
-    "back": "The Web protocol used for browser requests and server responses."
+    "back": "The web protocol used by browsers and servers to request and send objects."
   },
   {
-    "topic": "Application Layer",
-    "front": "What is HTTP request?",
-    "back": "A client message asking a server for a web object or action."
-  },
-  {
-    "topic": "Application Layer",
-    "front": "What is HTTP response?",
-    "back": "A server message returning status information and content."
-  },
-  {
-    "topic": "Application Layer",
+    "topic": "Application Layer Protocols and Services",
     "front": "What is Persistent HTTP?",
     "back": "HTTP behavior that reuses a TCP connection for multiple objects."
   },
   {
-    "topic": "Application Layer",
-    "front": "What is Non-persistent HTTP?",
-    "back": "HTTP behavior that opens a separate TCP connection for each object."
-  },
-  {
-    "topic": "Application Layer",
+    "topic": "Application Layer Protocols and Services",
     "front": "What is Cookie?",
-    "back": "A small identifier that lets websites maintain state across requests."
+    "back": "Small data used by websites to maintain state across otherwise stateless HTTP requests."
   },
   {
-    "topic": "Application Layer",
+    "topic": "Application Layer Protocols and Services",
     "front": "What is Web cache?",
-    "back": "A proxy that stores copies of web objects to reduce delay and traffic."
+    "back": "A proxy that stores web objects closer to clients to reduce delay and traffic."
   },
   {
-    "topic": "Application Layer",
+    "topic": "Application Layer Protocols and Services",
     "front": "What is DNS?",
-    "back": "The distributed system that maps domain names to IP addresses."
+    "back": "The naming system that translates domain names into IP addresses."
   },
   {
-    "topic": "Application Layer",
+    "topic": "Application Layer Protocols and Services",
     "front": "What is DNS resolver?",
-    "back": "A client-side DNS component that asks DNS servers for name mappings."
+    "back": "A server that queries DNS on behalf of a client."
   },
   {
-    "topic": "Application Layer",
-    "front": "What is Root DNS server?",
-    "back": "A top-level starting point in the DNS lookup hierarchy."
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is Authoritative DNS?",
+    "back": "A DNS server that has official records for a domain."
   },
   {
-    "topic": "Transport Layer Basics",
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is SMTP?",
+    "back": "The protocol used to send email from clients or mail servers."
+  },
+  {
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is IMAP?",
+    "back": "A mail access protocol that keeps messages synchronized on a server."
+  },
+  {
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is POP3?",
+    "back": "A simple mail access protocol that downloads messages from a server."
+  },
+  {
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is CDN?",
+    "back": "A distributed system that places content near users for faster delivery."
+  },
+  {
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is DASH?",
+    "back": "Dynamic Adaptive Streaming over HTTP, which adjusts video quality to network conditions."
+  },
+  {
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is RTP?",
+    "back": "A protocol commonly associated with real-time audio or video transport."
+  },
+  {
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is API?",
+    "back": "A defined interface that lets software components request services or data."
+  },
+  {
+    "topic": "Application Layer Protocols and Services",
+    "front": "What is Port number?",
+    "back": "A transport identifier that helps deliver data to the correct application process."
+  },
+  {
+    "topic": "Transport Layer Fundamentals",
     "front": "What is Transport layer?",
     "back": "The layer that provides logical communication between application processes."
   },
   {
-    "topic": "Transport Layer Basics",
+    "topic": "Transport Layer Fundamentals",
     "front": "What is Segment?",
-    "back": "A transport-layer data unit containing application data and transport headers."
+    "back": "The transport-layer unit that carries application data and a transport header."
   },
   {
-    "topic": "Transport Layer Basics",
+    "topic": "Transport Layer Fundamentals",
     "front": "What is Multiplexing?",
-    "back": "Combining data from many sockets for transmission through the network."
+    "back": "Collecting data from many processes so they can share the network."
   },
   {
-    "topic": "Transport Layer Basics",
+    "topic": "Transport Layer Fundamentals",
     "front": "What is Demultiplexing?",
     "back": "Delivering received segments to the correct socket or process."
   },
   {
-    "topic": "Transport Layer Basics",
-    "front": "What is Source port?",
-    "back": "The port number identifying the sending process."
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is Port?",
+    "back": "A number used to identify a specific application process on a host."
   },
   {
-    "topic": "Transport Layer Basics",
-    "front": "What is Destination port?",
-    "back": "The port number identifying the receiving process."
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is Socket pair?",
+    "back": "The addresses and ports that identify a transport conversation."
   },
   {
-    "topic": "Transport Layer Basics",
+    "topic": "Transport Layer Fundamentals",
     "front": "What is UDP?",
-    "back": "A connectionless transport protocol with low overhead and best-effort delivery."
+    "back": "A lightweight connectionless transport protocol with no built-in reliability."
   },
   {
-    "topic": "Transport Layer Basics",
-    "front": "What is UDP checksum?",
-    "back": "A field used to detect errors in UDP segments."
-  },
-  {
-    "topic": "Transport Layer Basics",
+    "topic": "Transport Layer Fundamentals",
     "front": "What is TCP?",
-    "back": "A connection-oriented transport protocol with reliable ordered delivery."
+    "back": "A reliable connection-oriented transport protocol with ordering and control mechanisms."
   },
   {
-    "topic": "Transport Layer Basics",
-    "front": "What is TCP connection?",
-    "back": "A logical communication state between two TCP endpoints."
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is Checksum?",
+    "back": "A value used to detect bit errors in a segment."
   },
   {
-    "topic": "Transport Layer Basics",
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is Best effort?",
+    "back": "A service model that tries to deliver data but gives no guarantee."
+  },
+  {
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is Connection-oriented?",
+    "back": "A service that establishes state before data transfer."
+  },
+  {
+    "topic": "Transport Layer Fundamentals",
     "front": "What is Three-way handshake?",
     "back": "TCP setup using SYN, SYN-ACK, and ACK messages."
   },
   {
-    "topic": "Transport Layer Basics",
-    "front": "What is Reliable data transfer?",
-    "back": "A service that delivers data correctly and in order despite loss or errors."
-  },
-  {
-    "topic": "Transport Layer Basics",
-    "front": "What is ACK?",
-    "back": "Acknowledgment, a message confirming data was received."
-  },
-  {
-    "topic": "Transport Layer Basics",
-    "front": "What is NAK?",
-    "back": "Negative acknowledgment, a message indicating data was not received correctly."
-  },
-  {
-    "topic": "Transport Layer Basics",
-    "front": "What is Sequence number?",
-    "back": "A number used to identify byte or packet order."
-  },
-  {
-    "topic": "Transport Layer Basics",
-    "front": "What is Timeout?",
-    "back": "A timer expiration that can trigger retransmission."
-  },
-  {
-    "topic": "Transport Layer Basics",
-    "front": "What is Retransmission?",
-    "back": "Sending data again after suspected loss or corruption."
-  },
-  {
-    "topic": "Transport Layer Basics",
+    "topic": "Transport Layer Fundamentals",
     "front": "What is Flow control?",
-    "back": "Preventing a sender from overwhelming the receiver."
+    "back": "A method that prevents a sender from overwhelming the receiver."
   },
   {
-    "topic": "Transport Layer Basics",
-    "front": "What is Receive window?",
-    "back": "TCP field indicating how much data the receiver can accept."
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is Receive buffer?",
+    "back": "Memory used by the receiver to hold incoming data before the application reads it."
   },
   {
-    "topic": "Transport Layer Basics",
+    "topic": "Transport Layer Fundamentals",
     "front": "What is Congestion control?",
-    "back": "Adjusting sending rate to avoid overwhelming the network."
+    "back": "A method that prevents senders from overwhelming the network."
+  },
+  {
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is MSS?",
+    "back": "Maximum Segment Size, the largest TCP payload placed in one segment."
+  },
+  {
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is MTU?",
+    "back": "Maximum Transmission Unit, the largest frame payload a link can carry."
+  },
+  {
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is Sequence number?",
+    "back": "A number that identifies byte positions for ordering and reliability."
+  },
+  {
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is Acknowledgment?",
+    "back": "A receiver message confirming data arrival."
+  },
+  {
+    "topic": "Transport Layer Fundamentals",
+    "front": "What is Timeout?",
+    "back": "A timer event that can trigger retransmission when an ACK is missing."
+  },
+  {
+    "topic": "Reliable Data Transfer and TCP Control",
+    "front": "What is Reliable data transfer?",
+    "back": "A service that delivers data correctly and in order despite loss or corruption."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
     "front": "What is rdt?",
-    "back": "Reliable data transfer, a model for correct delivery over unreliable channels."
+    "back": "A family of teaching protocols used to explain reliability mechanisms."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Checksum?",
-    "back": "A value used to detect bit errors in data."
+    "front": "What is Stop-and-wait?",
+    "back": "A simple method that sends one packet then waits for an ACK."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Corruption?",
-    "back": "A condition where bits are changed during transmission."
-  },
-  {
-    "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Duplicate packet?",
-    "back": "A repeated packet caused by retransmission or delayed delivery."
-  },
-  {
-    "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Stop-and-wait rdt?",
-    "back": "A simple reliable protocol with one outstanding packet."
-  },
-  {
-    "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Pipelined rdt?",
-    "back": "A reliable protocol allowing multiple outstanding packets."
+    "front": "What is Pipelining?",
+    "back": "Sending multiple packets before waiting for all acknowledgments."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
     "front": "What is Sliding window?",
-    "back": "A moving range of packets or bytes allowed to be sent."
-  },
-  {
-    "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Sender window?",
-    "back": "The range of data the sender may transmit without more ACKs."
-  },
-  {
-    "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Receiver window?",
-    "back": "The range of data the receiver is prepared to accept."
+    "back": "A limit on how many unacknowledged packets or bytes may be in flight."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
     "front": "What is Go-Back-N?",
-    "back": "A sliding-window protocol that retransmits a lost packet and all following packets."
-  },
-  {
-    "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Cumulative ACK?",
-    "back": "An ACK that confirms receipt of all data up to a point."
+    "back": "A pipelined protocol that retransmits a lost packet and later packets in the window."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
     "front": "What is Selective Repeat?",
-    "back": "A sliding-window protocol that individually acknowledges and retransmits packets."
+    "back": "A pipelined protocol that retransmits only specific missing packets."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Individual ACK?",
-    "back": "An ACK for a specific packet rather than all earlier data."
+    "front": "What is Cumulative ACK?",
+    "back": "An ACK that confirms all data up to a certain point."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is TCP byte stream?",
-    "back": "TCP treats data as an ordered stream of bytes."
+    "front": "What is Duplicate ACK?",
+    "back": "An ACK repeated for the same data, often hinting that later data arrived but a gap exists."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is TCP sequence number?",
-    "back": "The byte-stream number of the first byte in a TCP segment."
+    "front": "What is Fast retransmit?",
+    "back": "TCP behavior that retransmits after enough duplicate ACKs, before timeout."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is TCP ACK number?",
-    "back": "The next byte number the receiver expects."
+    "front": "What is RTT?",
+    "back": "Round-trip time between sending data and receiving its acknowledgment."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Estimated RTT?",
+    "front": "What is EstimatedRTT?",
     "back": "TCP's smoothed estimate of round-trip time."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
     "front": "What is DevRTT?",
-    "back": "TCP's estimate of round-trip time variation."
+    "back": "An estimate of RTT variation used to set safer timeouts."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Timeout interval?",
-    "back": "TCP's retransmission timer based on estimated RTT and variation."
+    "front": "What is TimeoutInterval?",
+    "back": "The retransmission timer value derived from estimated RTT and variation."
   },
   {
     "topic": "Reliable Data Transfer and TCP Control",
-    "front": "What is Fast retransmit?",
-    "back": "TCP retransmission triggered by duplicate ACKs before timeout."
+    "front": "What is Congestion window?",
+    "back": "TCP sender-side limit on how much data can be in flight due to congestion control."
   },
   {
-    "topic": "Network Layer and Router Architecture",
+    "topic": "Reliable Data Transfer and TCP Control",
+    "front": "What is Slow start?",
+    "back": "TCP phase where the congestion window grows quickly from a small value."
+  },
+  {
+    "topic": "Reliable Data Transfer and TCP Control",
+    "front": "What is Congestion avoidance?",
+    "back": "TCP phase where the congestion window grows more cautiously."
+  },
+  {
+    "topic": "Reliable Data Transfer and TCP Control",
+    "front": "What is Fast recovery?",
+    "back": "TCP behavior after packet loss detected by duplicate ACKs."
+  },
+  {
+    "topic": "Reliable Data Transfer and TCP Control",
+    "front": "What is AIMD?",
+    "back": "Additive Increase Multiplicative Decrease, TCP's classic congestion behavior."
+  },
+  {
+    "topic": "Reliable Data Transfer and TCP Control",
+    "front": "What is TCP Reno?",
+    "back": "A classic TCP version using slow start, congestion avoidance, fast retransmit, and fast recovery."
+  },
+  {
+    "topic": "Network Layer Data Plane",
     "front": "What is Network layer?",
-    "back": "The layer that delivers packets from sending host to receiving host."
+    "back": "The layer responsible for moving packets from source host to destination host."
   },
   {
-    "topic": "Network Layer and Router Architecture",
+    "topic": "Network Layer Data Plane",
     "front": "What is Datagram?",
-    "back": "A network-layer packet, especially in IP networks."
+    "back": "The network-layer packet, especially in IP networks."
   },
   {
-    "topic": "Network Layer and Router Architecture",
+    "topic": "Network Layer Data Plane",
     "front": "What is Forwarding?",
-    "back": "Moving a packet from an input link to the correct output link."
+    "back": "The local action of moving a packet from a router input to an output interface."
   },
   {
-    "topic": "Network Layer and Router Architecture",
+    "topic": "Network Layer Data Plane",
     "front": "What is Routing?",
-    "back": "Computing the path packets should take through the network."
+    "back": "The network-wide process of determining paths from source to destination."
   },
   {
-    "topic": "Network Layer and Router Architecture",
-    "front": "What is Forwarding table?",
-    "back": "A table used by routers to choose output links."
-  },
-  {
-    "topic": "Network Layer and Router Architecture",
-    "front": "What is Routing algorithm?",
-    "back": "A method for computing paths through a network."
-  },
-  {
-    "topic": "Network Layer and Router Architecture",
+    "topic": "Network Layer Data Plane",
     "front": "What is Data plane?",
-    "back": "The per-router function that forwards packets."
+    "back": "The router function that actually forwards packets."
   },
   {
-    "topic": "Network Layer and Router Architecture",
+    "topic": "Network Layer Data Plane",
     "front": "What is Control plane?",
-    "back": "The network-wide logic that determines routing behavior."
+    "back": "The logic that computes or installs forwarding behavior."
   },
   {
-    "topic": "Network Layer and Router Architecture",
+    "topic": "Network Layer Data Plane",
+    "front": "What is Forwarding table?",
+    "back": "A table a router uses to choose an output link."
+  },
+  {
+    "topic": "Network Layer Data Plane",
+    "front": "What is Longest-prefix match?",
+    "back": "The rule of choosing the most specific matching destination prefix."
+  },
+  {
+    "topic": "Network Layer Data Plane",
     "front": "What is Router input port?",
-    "back": "Router component that receives packets and performs lookup."
+    "back": "Router component that receives packets and may do lookup."
   },
   {
-    "topic": "Network Layer and Router Architecture",
+    "topic": "Network Layer Data Plane",
     "front": "What is Switching fabric?",
-    "back": "Router component that transfers packets from input to output ports."
+    "back": "The internal router mechanism that transfers packets from input to output."
   },
   {
-    "topic": "Network Layer and Router Architecture",
+    "topic": "Network Layer Data Plane",
     "front": "What is Router output port?",
-    "back": "Router component that buffers and transmits packets onto links."
+    "back": "Router component that queues and transmits packets on an outgoing link."
   },
   {
-    "topic": "Network Layer and Router Architecture",
-    "front": "What is Longest-prefix matching?",
-    "back": "Choosing the forwarding-table entry with the most specific matching prefix."
-  },
-  {
-    "topic": "Network Layer and Router Architecture",
+    "topic": "Network Layer Data Plane",
     "front": "What is Queueing?",
-    "back": "Waiting in a buffer when traffic arrives faster than it can leave."
+    "back": "Packets waiting because the output link or processing path is busy."
   },
   {
-    "topic": "Network Layer and Router Architecture",
-    "front": "What is Head-of-line blocking?",
-    "back": "Delay caused when a packet at the front blocks packets behind it."
-  },
-  {
-    "topic": "Network Layer and Router Architecture",
-    "front": "What is Packet scheduler?",
-    "back": "A mechanism that chooses which queued packet to send next."
-  },
-  {
-    "topic": "Network Layer and Router Architecture",
-    "front": "What is FIFO scheduling?",
-    "back": "First-In First-Out packet scheduling."
-  },
-  {
-    "topic": "Network Layer and Router Architecture",
-    "front": "What is Priority scheduling?",
-    "back": "Scheduling that serves higher-priority traffic first."
-  },
-  {
-    "topic": "Network Layer and Router Architecture",
-    "front": "What is Round-robin scheduling?",
-    "back": "Scheduling that cycles through queues."
-  },
-  {
-    "topic": "Network Layer and Router Architecture",
-    "front": "What is WFQ?",
-    "back": "Weighted Fair Queueing, scheduling that gives configured shares to classes."
-  },
-  {
-    "topic": "Network Layer and Router Architecture",
-    "front": "What is Buffer overflow?",
-    "back": "A condition where a full queue causes arriving packets to be dropped."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
+    "topic": "Network Layer Data Plane",
     "front": "What is IPv4?",
-    "back": "The 32-bit version of the Internet Protocol."
+    "back": "The 32-bit Internet Protocol version still widely used."
   },
   {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
+    "topic": "Network Layer Data Plane",
     "front": "What is IPv6?",
-    "back": "The 128-bit version of the Internet Protocol."
+    "back": "The 128-bit Internet Protocol version designed for a much larger address space."
   },
   {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is IP address?",
-    "back": "A logical address assigned to a network interface."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is Interface?",
-    "back": "A host or router connection point to a network."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
+    "topic": "Network Layer Data Plane",
     "front": "What is Subnet?",
-    "back": "A group of interfaces sharing the same network prefix."
+    "back": "A logical IP address block within a network."
   },
   {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is Network prefix?",
-    "back": "The leftmost bits identifying a subnet or route."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is Host portion?",
-    "back": "The address bits identifying an interface within a subnet."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
+    "topic": "Network Layer Data Plane",
     "front": "What is CIDR?",
-    "back": "Classless Inter-Domain Routing using slash notation prefixes."
+    "back": "Classless Inter-Domain Routing, notation for variable-length network prefixes."
   },
   {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is Slash notation?",
-    "back": "Address notation such as 10.0.0.0/24 showing prefix length."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is Subnet mask?",
-    "back": "A mask indicating which address bits belong to the network prefix."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is Default gateway?",
-    "back": "The router a host uses to reach outside its subnet."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
+    "topic": "Network Layer Data Plane",
     "front": "What is DHCP?",
-    "back": "Dynamic Host Configuration Protocol for automatic host configuration."
+    "back": "A protocol that dynamically assigns IP configuration to hosts."
   },
   {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is DHCP discover?",
-    "back": "A broadcast message used by a client looking for a DHCP server."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is DHCP offer?",
-    "back": "A server response offering address configuration."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is DHCP request?",
-    "back": "A client message requesting offered configuration."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is DHCP ACK?",
-    "back": "A server confirmation of assigned configuration."
-  },
-  {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
+    "topic": "Network Layer Data Plane",
     "front": "What is NAT?",
-    "back": "Network Address Translation, rewriting private/public address and port mappings."
+    "back": "Network Address Translation, which maps private internal addresses to public addresses."
   },
   {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is Private address?",
-    "back": "An address reserved for internal networks and not globally routed."
+    "topic": "Network Layer Data Plane",
+    "front": "What is ICMP?",
+    "back": "A control-message protocol used for errors and diagnostics."
   },
   {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is Public address?",
-    "back": "A globally routable Internet address."
+    "topic": "Network Layer Data Plane",
+    "front": "What is Fragmentation?",
+    "back": "Splitting an IP datagram into smaller pieces to fit a link MTU."
   },
   {
-    "topic": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP",
-    "front": "What is NAT table?",
-    "back": "A table mapping internal address-port pairs to external address-port pairs."
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Routing algorithm?",
+    "back": "A method for computing paths through a network graph."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Routing graph?",
-    "back": "A model of routers as nodes and links as edges."
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Link-state?",
+    "back": "A routing approach where routers learn network topology and compute shortest paths."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Link cost?",
-    "back": "A number representing preference or expense of using a link."
-  },
-  {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Least-cost path?",
-    "back": "The path with the lowest total link cost."
-  },
-  {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Link-state routing?",
-    "back": "Routing where each router knows network topology and link costs."
-  },
-  {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
+    "topic": "Routing Algorithms and Intra-AS Routing",
     "front": "What is Dijkstra algorithm?",
-    "back": "A link-state algorithm for computing shortest paths."
+    "back": "A shortest-path algorithm used in link-state routing."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Link-state advertisement?",
-    "back": "Information a router floods about its links and costs."
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Distance-vector?",
+    "back": "A routing approach where routers share distance estimates with neighbors."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Distance-vector routing?",
-    "back": "Routing where routers exchange distance estimates with neighbors."
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Bellman-Ford?",
+    "back": "The algorithmic idea behind distance-vector route updates."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Bellman-Ford equation?",
-    "back": "The recurrence used in distance-vector path computation."
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Routing table?",
+    "back": "The table of selected routes used to forward packets."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Count-to-infinity problem?",
-    "back": "A distance-vector problem where bad news spreads slowly."
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Link cost?",
+    "back": "A value assigned to a link, often based on bandwidth, delay, or policy."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Convergence?",
+    "back": "The point when routers agree on stable routing information."
+  },
+  {
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Count-to-infinity?",
+    "back": "A distance-vector problem where bad news about a failed route spreads slowly."
+  },
+  {
+    "topic": "Routing Algorithms and Intra-AS Routing",
     "front": "What is Poisoned reverse?",
-    "back": "A technique to reduce certain routing loops."
+    "back": "A technique that helps reduce certain distance-vector loops."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Routing loop?",
-    "back": "A condition where packets circulate among routers."
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Intra-AS routing?",
+    "back": "Routing performed within one autonomous system."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
+    "topic": "Routing Algorithms and Intra-AS Routing",
     "front": "What is Autonomous system?",
     "back": "A network or group of networks under one administrative control."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Intra-AS routing?",
-    "back": "Routing inside one autonomous system."
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is OSPF?",
+    "back": "An intra-AS link-state routing protocol."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Link-state advertisement?",
+    "back": "Information flooded by routers describing their links and costs."
+  },
+  {
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Area hierarchy?",
+    "back": "A design that divides OSPF networks into areas for scalability."
+  },
+  {
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is RIP?",
+    "back": "An older distance-vector routing protocol using hop count."
+  },
+  {
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is IS-IS?",
+    "back": "A link-state routing protocol used in some large provider networks."
+  },
+  {
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Equal-cost multipath?",
+    "back": "Using multiple paths with the same cost to share traffic."
+  },
+  {
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Route recomputation?",
+    "back": "The recalculation of paths after topology or cost changes."
+  },
+  {
+    "topic": "Routing Algorithms and Intra-AS Routing",
+    "front": "What is Topology database?",
+    "back": "The collected link-state view used to compute routes."
+  },
+  {
+    "topic": "ISP Routing and BGP",
     "front": "What is Inter-AS routing?",
     "back": "Routing between autonomous systems."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is OSPF?",
-    "back": "Open Shortest Path First, a link-state intra-AS routing protocol."
-  },
-  {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is OSPF area?",
-    "back": "A subdivision used to scale OSPF routing."
-  },
-  {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Border router?",
-    "back": "A router connecting an AS to other ASes."
-  },
-  {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
-    "front": "What is Gateway router?",
-    "back": "A router that connects to another AS or external network."
-  },
-  {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
+    "topic": "ISP Routing and BGP",
     "front": "What is BGP?",
-    "back": "Border Gateway Protocol, the Internet inter-AS routing protocol."
+    "back": "Border Gateway Protocol, the main interdomain routing protocol of the Internet."
   },
   {
-    "topic": "Routing Algorithms, OSPF, BGP, and SDN",
+    "topic": "ISP Routing and BGP",
     "front": "What is eBGP?",
-    "back": "BGP session between routers in different autonomous systems."
+    "back": "BGP sessions between routers in different autonomous systems."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
+    "topic": "ISP Routing and BGP",
+    "front": "What is iBGP?",
+    "back": "BGP sessions between routers inside the same autonomous system."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is AS-PATH?",
+    "back": "A BGP attribute listing autonomous systems a route advertisement has traversed."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is NEXT-HOP?",
+    "back": "A BGP attribute identifying the next router to reach a prefix."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Prefix?",
+    "back": "A block of IP addresses advertised as reachable."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Reachability?",
+    "back": "Information that a destination prefix can be reached."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Routing policy?",
+    "back": "Business or administrative rules that influence route selection."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Hot-potato routing?",
+    "back": "Choosing the closest exit point from an AS to hand traffic off quickly."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Route advertisement?",
+    "back": "A BGP message announcing reachability to a prefix."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Route withdrawal?",
+    "back": "A BGP message removing a previously advertised route."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Peering?",
+    "back": "An agreement where networks exchange traffic, often without payment."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Transit?",
+    "back": "A paid service where one network carries another network's traffic to the Internet."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Provider?",
+    "back": "A network that sells transit or connectivity."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Customer?",
+    "back": "A network that buys connectivity or transit from another network."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Local preference?",
+    "back": "A BGP attribute used inside an AS to prefer certain routes."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is MED?",
+    "back": "Multi-Exit Discriminator, a hint about preferred entry points into an AS."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Route aggregation?",
+    "back": "Combining multiple prefixes into a shorter summary advertisement."
+  },
+  {
+    "topic": "ISP Routing and BGP",
+    "front": "What is Gateway router?",
+    "back": "A router connecting an AS to other autonomous systems."
+  },
+  {
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
     "front": "What is Network management?",
-    "back": "Monitoring, configuring, controlling, and troubleshooting network systems."
+    "back": "The process of monitoring, configuring, and controlling network systems."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
     "front": "What is Managing server?",
-    "back": "A system used by administrators to control managed devices."
+    "back": "The system used by administrators to monitor and control devices."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
     "front": "What is Managed device?",
-    "back": "A router, switch, server, or other network element being monitored."
+    "back": "A router, switch, server, or access point being monitored or configured."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is Management agent?",
-    "back": "Software on a managed device that exposes data and actions."
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is Agent?",
+    "back": "Software on a managed device that provides management information."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
     "front": "What is MIB?",
     "back": "Management Information Base, a structured collection of managed variables."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is OID?",
-    "back": "Object Identifier, a hierarchical name for a managed object."
-  },
-  {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
     "front": "What is SNMP?",
-    "back": "Simple Network Management Protocol for device monitoring and control."
+    "back": "A protocol used to query and modify management data and receive notifications."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is SNMP manager?",
-    "back": "The system that sends SNMP requests and receives notifications."
-  },
-  {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is SNMP agent?",
-    "back": "The device-side software responding to SNMP operations."
-  },
-  {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
     "front": "What is SNMP Get?",
-    "back": "A request to read a managed object value."
+    "back": "An operation that reads management information from a device."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
     "front": "What is SNMP Set?",
-    "back": "A request to change a managed object value."
+    "back": "An operation that changes a management variable on a device."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is SNMP Response?",
-    "back": "The answer returned by an SNMP agent."
-  },
-  {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
     "front": "What is SNMP Trap?",
-    "back": "An unsolicited alert sent by an agent to a manager."
+    "back": "An unsolicited notification sent by an agent to a manager."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is OID?",
+    "back": "Object Identifier, a numeric name for a managed variable."
+  },
+  {
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
     "front": "What is Polling?",
-    "back": "Regularly asking devices for state or counters."
+    "back": "Regularly asking devices for status information."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is Event notification?",
-    "back": "A device-generated alert about a significant condition."
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is Telemetry?",
+    "back": "Streaming or exporting operational data for monitoring."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is Fault management?",
-    "back": "Detecting, isolating, and correcting network problems."
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is NETCONF?",
+    "back": "A protocol for installing, changing, and retrieving network device configuration."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is Configuration management?",
-    "back": "Maintaining intended device settings."
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is YANG?",
+    "back": "A data modeling language for configuration and operational state."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is Performance management?",
-    "back": "Measuring throughput, errors, utilization, and delay."
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is RPC?",
+    "back": "Remote Procedure Call, a structured request used by protocols such as NETCONF."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is Security management?",
-    "back": "Controlling access and protecting management systems."
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is Configuration datastore?",
+    "back": "A storage area representing intended device configuration."
   },
   {
-    "topic": "Network Management, SNMP, NETCONF, and YANG",
-    "front": "What is Accounting management?",
-    "back": "Tracking resource use for billing or analysis."
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is Operational state?",
+    "back": "The actual running condition and measured status of a device."
   },
   {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is SDN?",
+    "back": "Software-Defined Networking, separating control logic from forwarding behavior."
+  },
+  {
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is Controller?",
+    "back": "The software control point in an SDN architecture."
+  },
+  {
+    "topic": "Network Management, SDN, SNMP, NETCONF, and YANG",
+    "front": "What is Southbound API?",
+    "back": "The interface a controller uses to program network devices."
+  },
+  {
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Data link layer?",
-    "back": "The layer responsible for transferring frames across one link."
+    "back": "The layer that transfers frames across a single link or hop."
   },
   {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Node?",
     "back": "A host, router, switch, or access point connected to a link."
   },
   {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Link?",
-    "back": "A communication channel between adjacent nodes."
+    "back": "The communication channel between neighboring nodes."
   },
   {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Frame?",
-    "back": "A data link layer unit containing header, payload, and trailer."
+    "back": "The data link layer unit that carries a network-layer packet."
   },
   {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Framing?",
-    "back": "Encapsulating a network-layer datagram inside a link-layer frame."
+    "back": "Adding boundaries and link-layer information around data."
   },
   {
-    "topic": "Data Link Services and Error Detection",
-    "front": "What is MAC address?",
-    "back": "A local link-layer address assigned to a network interface."
-  },
-  {
-    "topic": "Data Link Services and Error Detection",
-    "front": "What is Hop-to-hop delivery?",
-    "back": "Delivery from one node to the next adjacent node."
-  },
-  {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Packetizing?",
-    "back": "Dividing and wrapping data for transmission as packets or frames."
+    "back": "Organizing data into packet or frame units for transmission."
   },
   {
-    "topic": "Data Link Services and Error Detection",
-    "front": "What is Frame header?",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
+    "front": "What is Header?",
     "back": "Control information placed before the payload."
   },
   {
-    "topic": "Data Link Services and Error Detection",
-    "front": "What is Frame trailer?",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
+    "front": "What is Trailer?",
     "back": "Control information placed after the payload, often for error detection."
   },
   {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Error detection?",
-    "back": "Recognizing that transmitted bits were corrupted."
+    "back": "Techniques that identify whether transmitted bits may be corrupted."
   },
   {
-    "topic": "Data Link Services and Error Detection",
-    "front": "What is Error correction?",
-    "back": "Recovering original data without retransmission."
-  },
-  {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Parity bit?",
-    "back": "An extra bit used to make the number of ones even or odd."
+    "back": "A simple bit added to make the number of ones even or odd."
   },
   {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Two-dimensional parity?",
-    "back": "Parity arranged in rows and columns for stronger detection."
+    "back": "A parity method that can detect and sometimes locate bit errors using rows and columns."
   },
   {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Checksum?",
-    "back": "An error-detection method using arithmetic sums."
+    "back": "A sum-based error detection value."
   },
   {
-    "topic": "Data Link Services and Error Detection",
-    "front": "What is Internet checksum?",
-    "back": "A checksum method used by some Internet protocols."
-  },
-  {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is CRC?",
-    "back": "Cyclic Redundancy Check, a strong polynomial-based error detector."
+    "back": "Cyclic Redundancy Check, a strong polynomial-based error detection method."
   },
   {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Generator polynomial?",
-    "back": "The divisor pattern used in CRC calculation."
+    "back": "The divisor pattern used in CRC computation."
   },
   {
-    "topic": "Data Link Services and Error Detection",
-    "front": "What is Burst error?",
-    "back": "A sequence of nearby corrupted bits."
-  },
-  {
-    "topic": "Data Link Services and Error Detection",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
     "front": "What is Flow control?",
-    "back": "Preventing a fast sender from overwhelming a receiver."
+    "back": "A method that prevents a receiver from being overwhelmed."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
+    "front": "What is Medium access control?",
+    "back": "Rules for deciding who can transmit on a shared medium."
+  },
+  {
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
+    "front": "What is Broadcast link?",
+    "back": "A link where multiple nodes share the same communication medium."
+  },
+  {
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
+    "front": "What is Point-to-point link?",
+    "back": "A direct link between two nodes."
+  },
+  {
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
+    "front": "What is Half-duplex?",
+    "back": "Communication where a device cannot send and receive at the same time."
+  },
+  {
+    "topic": "Data Link Layer Control, Packetizing, and Error Detection",
+    "front": "What is Full-duplex?",
+    "back": "Communication where sending and receiving can happen simultaneously."
+  },
+  {
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
     "front": "What is LAN?",
-    "back": "Local Area Network, connecting devices in a limited area."
+    "back": "Local Area Network, a network covering a limited area such as a room, home, or campus."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Ethernet?",
-    "back": "The dominant wired LAN technology."
-  },
-  {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Ethernet frame?",
-    "back": "A frame format used by Ethernet networks."
-  },
-  {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Preamble?",
-    "back": "Ethernet bits used to synchronize receiver timing."
-  },
-  {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Ethernet type field?",
-    "back": "A field identifying the payload protocol."
-  },
-  {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
     "front": "What is MAC address?",
-    "back": "A 48-bit link-layer address used in LAN delivery."
+    "back": "A link-layer hardware address used for local frame delivery."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Broadcast MAC address?",
-    "back": "The all-ones MAC address received by all LAN interfaces."
-  },
-  {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
     "front": "What is ARP?",
-    "back": "Address Resolution Protocol, mapping local IP addresses to MAC addresses."
+    "back": "Address Resolution Protocol, which maps local IP addresses to MAC addresses."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
     "front": "What is ARP table?",
     "back": "A cache of IP-to-MAC mappings."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is ARP request?",
-    "back": "A broadcast message asking who has a target IP address."
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is Ethernet?",
+    "back": "The dominant wired LAN technology."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is ARP reply?",
-    "back": "A response containing the target MAC address."
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is Ethernet frame?",
+    "back": "The link-layer format used by Ethernet."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is CSMA/CD?",
-    "back": "Carrier Sense Multiple Access with Collision Detection for classic Ethernet."
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is Preamble?",
+    "back": "Bits at the start of an Ethernet frame used for synchronization."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Carrier sense?",
-    "back": "Listening before transmitting on a shared medium."
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is Type field?",
+    "back": "Ethernet field identifying the upper-layer protocol carried in the frame."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Collision detection?",
-    "back": "Detecting overlapping transmissions in shared Ethernet."
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is CRC field?",
+    "back": "Ethernet error detection field."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Exponential backoff?",
-    "back": "Increasing random wait time after repeated collisions."
-  },
-  {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
     "front": "What is Switch?",
-    "back": "A link-layer device that forwards frames by MAC address."
+    "back": "A LAN device that forwards frames based on MAC addresses."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Switch forwarding table?",
-    "back": "A table mapping MAC addresses to switch ports."
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is MAC learning?",
+    "back": "A switch process that records which MAC addresses are reachable through which ports."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Self-learning?",
-    "back": "A switch learning MAC locations from source addresses."
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is Forwarding table?",
+    "back": "A switch table mapping MAC addresses to ports."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
     "front": "What is Flooding?",
-    "back": "Sending a frame out multiple ports when destination is unknown."
+    "back": "Sending a frame out multiple ports when the destination is unknown or broadcast."
   },
   {
-    "topic": "LANs, Ethernet, ARP, Switches, and VLANs",
-    "front": "What is Filtering?",
-    "back": "Not forwarding a frame where it does not need to go."
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is Broadcast domain?",
+    "back": "The set of devices that receive a layer-2 broadcast."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is Collision domain?",
+    "back": "A shared medium area where simultaneous transmissions can collide."
+  },
+  {
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is CSMA/CD?",
+    "back": "Carrier Sense Multiple Access with Collision Detection, used in classic shared Ethernet."
+  },
+  {
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is CSMA/CA?",
+    "back": "Carrier Sense Multiple Access with Collision Avoidance, used in WiFi."
+  },
+  {
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is VLAN?",
+    "back": "A logical LAN that separates traffic within the same physical switching infrastructure."
+  },
+  {
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is Trunk port?",
+    "back": "A switch port that carries traffic for multiple VLANs using tags."
+  },
+  {
+    "topic": "LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "front": "What is Access port?",
+    "back": "A switch port assigned to one VLAN for an end device."
+  },
+  {
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Link virtualization?",
-    "back": "Creating logical link behavior over shared physical infrastructure."
+    "back": "Making a network path behave like a logical link or service."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is MPLS?",
-    "back": "Multiprotocol Label Switching, forwarding packets using short labels."
+    "back": "Multiprotocol Label Switching, a forwarding method based on short labels."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Label?",
-    "back": "A fixed-length identifier used by MPLS forwarding."
+    "back": "A fixed-length identifier used by MPLS routers to forward packets."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
-    "front": "What is MPLS header?",
-    "back": "A small header inserted between link-layer and network-layer headers."
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
+    "front": "What is Label-switched router?",
+    "back": "A router that forwards MPLS traffic based on label values."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
-    "front": "What is Label switched router?",
-    "back": "An MPLS-capable router that forwards based on labels."
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
+    "front": "What is Label forwarding table?",
+    "back": "A table mapping incoming labels to outgoing labels and interfaces."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
+    "front": "What is LSP?",
+    "back": "Label Switched Path, the route MPLS packets follow through a network."
+  },
+  {
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Ingress router?",
-    "back": "The MPLS edge router that adds the first label."
+    "back": "The MPLS edge router that first adds a label."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Egress router?",
     "back": "The MPLS edge router that removes the label."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
-    "front": "What is Label swapping?",
-    "back": "Replacing an incoming MPLS label with an outgoing label."
-  },
-  {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
-    "front": "What is Label forwarding table?",
-    "back": "A table mapping incoming labels to output labels and interfaces."
-  },
-  {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
-    "front": "What is Label switched path?",
-    "back": "A path followed by MPLS-labeled packets."
-  },
-  {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Traffic engineering?",
-    "back": "Choosing routes to meet performance or utilization goals."
+    "back": "Controlling paths to meet performance or policy goals."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Fast reroute?",
-    "back": "Quickly moving traffic around a failure."
+    "back": "Quickly moving traffic to a backup path after failure."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
-    "front": "What is MPLS VPN?",
-    "back": "Using MPLS to separate customer traffic over a provider network."
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
+    "front": "What is VPN?",
+    "back": "A virtual private network service that can be carried over shared infrastructure."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Virtual circuit?",
-    "back": "A logical path with state in network devices."
+    "back": "A logical path that behaves like a dedicated circuit."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
-    "front": "What is Tunneling?",
-    "back": "Encapsulating traffic inside another protocol or label path."
-  },
-  {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Overlay network?",
-    "back": "A virtual network built on top of another network."
+    "back": "A logical network built on top of another network."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Underlay network?",
-    "back": "The physical or base network carrying overlays."
+    "back": "The physical or base IP network that carries overlay traffic."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Data center network?",
-    "back": "A network connecting large numbers of servers and storage systems."
+    "back": "A high-speed network connecting large numbers of servers."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
     "front": "What is Top-of-rack switch?",
-    "back": "A switch placed near servers in a rack."
+    "back": "A switch placed near or inside a server rack."
   },
   {
-    "topic": "Link Virtualization, MPLS, and Data Center Networking",
-    "front": "What is Leaf-spine topology?",
-    "back": "A data-center design with access leaf switches and spine switches."
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
+    "front": "What is Leaf-spine?",
+    "back": "A scalable data-center topology with leaf access switches and spine core switches."
+  },
+  {
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
+    "front": "What is Load balancing?",
+    "back": "Distributing traffic across multiple paths or servers."
+  },
+  {
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
+    "front": "What is ECMP?",
+    "back": "Equal-Cost Multipath, using multiple equal-cost paths for traffic."
+  },
+  {
+    "topic": "Link Virtualization, MPLS, and Data Center Networks",
+    "front": "What is Fabric?",
+    "back": "The overall switching infrastructure of a data center."
   },
   {
     "topic": "Wireless Networks and WiFi",
@@ -3157,62 +3682,52 @@ const flashcards = [
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is Base station?",
-    "back": "A wireless access point connecting hosts to network infrastructure."
+    "back": "A radio access point connecting wireless devices to network infrastructure."
   },
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is Access point?",
-    "back": "A WiFi base station for wireless LANs."
+    "back": "A WiFi base station that connects wireless hosts to a LAN."
   },
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is Infrastructure mode?",
-    "back": "Wireless mode where hosts connect through an access point."
+    "back": "Wireless mode where devices communicate through an access point."
   },
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is Ad hoc mode?",
-    "back": "Wireless mode where hosts communicate directly without infrastructure."
+    "back": "Wireless mode where devices communicate directly without infrastructure."
   },
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is Wireless link?",
-    "back": "A radio connection between wireless nodes."
+    "back": "A radio channel carrying bits between devices."
   },
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is Signal attenuation?",
-    "back": "Signal weakening as distance or obstacles increase."
+    "back": "Loss of signal strength over distance or through obstacles."
   },
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is Interference?",
-    "back": "Disruption caused by other transmissions or noise."
+    "back": "Unwanted signals that disrupt communication."
   },
   {
     "topic": "Wireless Networks and WiFi",
-    "front": "What is Multipath propagation?",
-    "back": "Radio signals taking multiple reflected paths."
+    "front": "What is Multipath?",
+    "back": "Signal copies arriving by different paths because of reflection."
   },
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is SNR?",
-    "back": "Signal-to-noise ratio, comparing signal strength to noise."
-  },
-  {
-    "topic": "Wireless Networks and WiFi",
-    "front": "What is Bit error rate?",
-    "back": "The fraction of transmitted bits received incorrectly."
+    "back": "Signal-to-noise ratio, a measure of signal quality."
   },
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is 802.11?",
     "back": "The IEEE family of WiFi standards."
-  },
-  {
-    "topic": "Wireless Networks and WiFi",
-    "front": "What is BSS?",
-    "back": "Basic Service Set, a WiFi cell with stations and often an AP."
   },
   {
     "topic": "Wireless Networks and WiFi",
@@ -3222,5358 +3737,5383 @@ const flashcards = [
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is Association?",
-    "back": "The process of joining a WiFi access point."
-  },
-  {
-    "topic": "Wireless Networks and WiFi",
-    "front": "What is Passive scanning?",
-    "back": "Discovering WiFi networks by listening for beacon frames."
-  },
-  {
-    "topic": "Wireless Networks and WiFi",
-    "front": "What is Active scanning?",
-    "back": "Discovering WiFi networks by sending probe requests."
+    "back": "The process of a wireless host joining an access point."
   },
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is Beacon frame?",
-    "back": "An AP frame announcing network identity and capabilities."
+    "back": "A frame an AP sends to announce network presence and parameters."
   },
   {
     "topic": "Wireless Networks and WiFi",
     "front": "What is CSMA/CA?",
-    "back": "Carrier Sense Multiple Access with Collision Avoidance."
+    "back": "WiFi's collision avoidance medium access method."
   },
   {
     "topic": "Wireless Networks and WiFi",
-    "front": "What is Collision avoidance?",
-    "back": "Trying to reduce collisions before they occur."
+    "front": "What is RTS?",
+    "back": "Request To Send, an optional control frame to reserve the medium."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is Mobile network?",
-    "back": "A network designed to support users moving between attachment points."
+    "topic": "Wireless Networks and WiFi",
+    "front": "What is CTS?",
+    "back": "Clear To Send, a response allowing a sender to transmit."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is Cellular network?",
-    "back": "A mobile network divided into geographic cells."
+    "topic": "Wireless Networks and WiFi",
+    "front": "What is ACK frame?",
+    "back": "A WiFi acknowledgment that confirms frame reception."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is Cell?",
-    "back": "A coverage area served by a base station."
+    "topic": "Wireless Networks and WiFi",
+    "front": "What is Hidden terminal?",
+    "back": "A device that cannot hear another transmitter but can still collide at the receiver."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is Base station?",
-    "back": "Cellular radio equipment connecting devices to the provider network."
+    "topic": "Wireless Networks and WiFi",
+    "front": "What is Channel?",
+    "back": "A selected frequency range used for wireless communication."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is Mobility?",
+    "back": "The ability to keep network service while changing attachment points."
+  },
+  {
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
     "front": "What is User equipment?",
-    "back": "A mobile device such as a phone or cellular modem."
+    "back": "The mobile device, such as a phone or cellular modem."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
     "front": "What is SIM?",
-    "back": "Subscriber Identity Module used for subscriber identity and authentication."
+    "back": "Subscriber identity module used for cellular identity and authentication."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is IMSI?",
-    "back": "International Mobile Subscriber Identity stored with subscriber credentials."
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is Base station?",
+    "back": "Cellular radio equipment that connects user devices to the carrier network."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is 4G LTE?",
-    "back": "Fourth-generation cellular architecture based on IP networking."
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is Cell?",
+    "back": "The geographic coverage area served by a base station."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is 5G?",
-    "back": "Fifth-generation mobile architecture with enhanced bandwidth and flexibility."
-  },
-  {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
     "front": "What is Radio access network?",
-    "back": "The part of a cellular system handling radio communication."
+    "back": "The part of a mobile network connecting devices to the core."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
     "front": "What is Core network?",
-    "back": "The provider network handling mobility, authentication, and Internet access."
+    "back": "The carrier network handling mobility, authentication, and Internet access."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is EPC?",
-    "back": "Evolved Packet Core, the LTE core network."
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is 4G LTE?",
+    "back": "A cellular generation using packet-switched IP-based design."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is 5G?",
+    "back": "A newer cellular generation with enhanced capacity, latency, and service flexibility."
+  },
+  {
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
     "front": "What is MME?",
-    "back": "Mobility Management Entity, an LTE control-plane component."
+    "back": "Mobility Management Entity, a 4G control-plane component."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
     "front": "What is Serving gateway?",
-    "back": "LTE component forwarding user data within the carrier network."
+    "back": "A 4G data-plane anchor that forwards user traffic."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
     "front": "What is PDN gateway?",
-    "back": "LTE component connecting user traffic to external packet networks."
+    "back": "A gateway connecting the cellular network to external packet data networks."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is HSS?",
-    "back": "Home Subscriber Server storing subscriber data."
-  },
-  {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is Attach procedure?",
-    "back": "The process of joining and authenticating to a cellular network."
-  },
-  {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is Bearer?",
-    "back": "A logical data path with specific service properties."
-  },
-  {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
     "front": "What is Handoff?",
-    "back": "Moving an active connection from one base station to another."
+    "back": "Moving an active device connection from one base station to another."
   },
   {
-    "topic": "Mobile Networks, 4G/5G, Roaming, and Handoffs",
-    "front": "What is Hard handoff?",
-    "back": "Breaking the old connection before or while making the new one."
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is Roaming?",
+    "back": "Using a visited carrier network while subscribed to a home carrier."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is Home network?",
+    "back": "The subscriber's original carrier network."
+  },
+  {
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is Visited network?",
+    "back": "The network a roaming user currently attaches to."
+  },
+  {
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is Mobile IP?",
+    "back": "A protocol concept allowing a host to keep a permanent address while moving."
+  },
+  {
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is Home agent?",
+    "back": "Mobile IP entity that tracks the mobile node and forwards packets."
+  },
+  {
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is Foreign agent?",
+    "back": "Mobile IP entity that assists a mobile node in a visited network."
+  },
+  {
+    "topic": "Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "front": "What is Tunneling?",
+    "back": "Encapsulating packets inside other packets to reach a mobile location."
+  },
+  {
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
     "front": "What is Confidentiality?",
     "back": "Keeping message contents hidden from unauthorized parties."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
     "front": "What is Authentication?",
-    "back": "Verifying that an entity is who it claims to be."
+    "back": "Proving an identity or verifying the source of a message."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Message integrity?",
-    "back": "Assurance that a message was not changed undetected."
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
+    "front": "What is Integrity?",
+    "back": "Detecting unauthorized changes to data."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
     "front": "What is Availability?",
-    "back": "Keeping services accessible to legitimate users."
+    "back": "Keeping services reachable for legitimate users."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Access control?",
-    "back": "Restricting use of resources to authorized entities."
-  },
-  {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Eavesdropping?",
-    "back": "Secretly listening to communication."
-  },
-  {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Spoofing?",
-    "back": "Pretending to be another entity."
-  },
-  {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Replay attack?",
-    "back": "Reusing captured valid messages to trick a system."
-  },
-  {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Man-in-the-middle attack?",
-    "back": "Intercepting and possibly modifying communication between parties."
-  },
-  {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Denial of service?",
-    "back": "Attacking availability by overwhelming or disrupting service."
-  },
-  {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Plaintext?",
-    "back": "Original readable data before encryption."
-  },
-  {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Ciphertext?",
-    "back": "Encrypted data that should be unreadable without the key."
-  },
-  {
-    "topic": "Security Foundations, Cryptography, and Authentication",
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
     "front": "What is Encryption?",
-    "back": "Transforming plaintext into ciphertext."
+    "back": "Transforming readable data into protected ciphertext."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
     "front": "What is Decryption?",
-    "back": "Recovering plaintext from ciphertext."
+    "back": "Recovering readable data from ciphertext."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Symmetric-key cryptography?",
-    "back": "Cryptography where sender and receiver share the same secret key."
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
+    "front": "What is Symmetric key?",
+    "back": "A shared secret key used for both encryption and decryption."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Public-key cryptography?",
-    "back": "Cryptography using a public key and a private key pair."
-  },
-  {
-    "topic": "Security Foundations, Cryptography, and Authentication",
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
     "front": "What is Public key?",
-    "back": "A key that can be shared openly."
+    "back": "A key that can be shared publicly in asymmetric cryptography."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
     "front": "What is Private key?",
-    "back": "A key that must be kept secret by its owner."
+    "back": "A secret key kept by its owner in asymmetric cryptography."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
     "front": "What is Hash function?",
-    "back": "A function that maps data to a fixed-size digest."
+    "back": "A one-way function producing a fixed-size digest from data."
   },
   {
-    "topic": "Security Foundations, Cryptography, and Authentication",
-    "front": "What is Cryptographic hash?",
-    "back": "A hash designed to resist collisions and preimage attacks."
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
+    "front": "What is MAC?",
+    "back": "Message Authentication Code, used to verify authenticity and integrity with a shared key."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
+    "front": "What is Digital signature?",
+    "back": "A public-key mechanism proving origin and integrity."
+  },
+  {
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
+    "front": "What is Certificate?",
+    "back": "A signed statement binding an identity to a public key."
+  },
+  {
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
+    "front": "What is Certificate authority?",
+    "back": "A trusted party that signs certificates."
+  },
+  {
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
+    "front": "What is Nonce?",
+    "back": "A fresh random value used to prevent replay."
+  },
+  {
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
+    "front": "What is Replay attack?",
+    "back": "Reusing a valid message later to trick a protocol."
+  },
+  {
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
+    "front": "What is Man-in-the-middle?",
+    "back": "An attacker secretly intercepting and possibly altering communication."
+  },
+  {
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
     "front": "What is TLS?",
-    "back": "Transport Layer Security, used to protect application sessions such as HTTPS."
+    "back": "Transport Layer Security, commonly used to secure web connections."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
     "front": "What is HTTPS?",
-    "back": "HTTP over TLS for secure web communication."
+    "back": "HTTP over TLS."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is TLS handshake?",
-    "back": "The setup phase where parties negotiate keys and authenticate."
+    "topic": "Security Basics, Cryptography, Authentication, and TLS",
+    "front": "What is Session key?",
+    "back": "A temporary symmetric key used after secure setup."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is TLS record?",
-    "back": "A protected TLS data unit carrying application data."
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is Network-layer security?",
+    "back": "Protection applied to IP packets or network paths."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is Cipher suite?",
-    "back": "A set of algorithms used by a TLS session."
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is IPsec?",
+    "back": "A suite of protocols that secures IP datagrams."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is Certificate chain?",
-    "back": "A sequence of certificates linking a site certificate to a trusted root."
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is Security association?",
+    "back": "A one-way security relationship defining IPsec parameters and keys."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is Root CA?",
-    "back": "A highly trusted certificate authority at the top of a trust chain."
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is SA database?",
+    "back": "A database storing active security associations."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is Forward secrecy?",
-    "back": "Protection of past sessions even if a long-term key is later compromised."
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is SPD?",
+    "back": "Security Policy Database, which says what traffic should be protected or bypassed."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is Firewall?",
-    "back": "A device or software that filters traffic according to policy."
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is IKE?",
+    "back": "Internet Key Exchange, used to negotiate IPsec security associations."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is Transport mode?",
+    "back": "IPsec mode that protects the payload of the original IP datagram."
+  },
+  {
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is Tunnel mode?",
+    "back": "IPsec mode that protects the entire original datagram inside a new datagram."
+  },
+  {
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is AH?",
+    "back": "Authentication Header, providing authentication and integrity without encryption."
+  },
+  {
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is ESP?",
+    "back": "Encapsulating Security Payload, providing confidentiality plus optional integrity and authentication."
+  },
+  {
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is VPN?",
+    "back": "A secure virtual private network built across shared infrastructure."
+  },
+  {
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is Authentication header?",
+    "back": "The IPsec AH header used for integrity and authentication."
+  },
+  {
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is Encapsulation?",
+    "back": "Wrapping one packet inside another packet."
+  },
+  {
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
     "front": "What is Packet filter?",
-    "back": "A firewall that checks packet headers such as addresses and ports."
+    "back": "A firewall rule system that permits or denies packets by header fields."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
     "front": "What is Stateful firewall?",
-    "back": "A firewall that tracks connection state."
+    "back": "A firewall that tracks connection state when filtering traffic."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is Application gateway?",
-    "back": "A firewall/proxy that inspects application-layer traffic."
-  },
-  {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
     "front": "What is ACL?",
-    "back": "Access Control List, a set of permit or deny rules."
+    "back": "Access Control List, a list of permit or deny rules."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is DMZ?",
+    "back": "A separated network zone for publicly reachable services."
+  },
+  {
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
     "front": "What is IDS?",
     "back": "Intrusion Detection System that monitors for suspicious activity."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is IPS?",
-    "back": "Intrusion Prevention System that can actively block suspicious traffic."
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is Signature detection?",
+    "back": "IDS method that matches known attack patterns."
   },
   {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is Signature-based detection?",
-    "back": "Detecting known attack patterns."
-  },
-  {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is Anomaly-based detection?",
-    "back": "Detecting behavior that differs from normal patterns."
-  },
-  {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is IPsec?",
-    "back": "A suite for protecting IP datagrams."
-  },
-  {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is Security association?",
-    "back": "A one-way IPsec relationship defining keys and algorithms."
-  },
-  {
-    "topic": "TLS, Firewalls, IDS, and IPsec",
-    "front": "What is Security Policy Database?",
-    "back": "IPsec database indicating what traffic should be protected."
+    "topic": "Network Layer Security, IPsec, Firewalls, and IDS",
+    "front": "What is Anomaly detection?",
+    "back": "IDS method that looks for deviations from normal behavior."
   }
 ];
 
 const practiceTests = [
   {
-    "title": "Computer Networks and the Internet — 30-item Practice Test",
+    "title": "1.1 Practice: Computer Networks and the Internet",
+    "description": "30-item practice test for Computer Networks and the Internet.",
     "questions": [
       {
-        "q": "Which term best matches this description: A global network of networks that interconnects hosts using protocols.",
+        "q": "What is Host?",
         "options": [
-          "Internet",
-          "Communication link",
-          "Packet switching",
-          "End-to-end delay"
+          "A device at the edge of the network that runs applications, such as a phone, laptop, server, or camera.",
+          "YANG gives shared meaning and structure to configuration data.",
+          "Sending and receiving at the same time.",
+          "Operators can steer flows over selected paths."
         ],
         "answer": 0,
-        "explain": "Internet: A global network of networks that interconnects hosts using protocols."
+        "explain": "A device at the edge of the network that runs applications, such as a phone, laptop, server, or camera."
       },
       {
-        "q": "Which term best matches this description: An end device such as a laptop, phone, server, camera, or IoT device.",
+        "q": "What is End system?",
         "options": [
-          "Transmission rate",
-          "Host",
-          "Store-and-forward",
-          "Circuit switching"
-        ],
-        "answer": 1,
-        "explain": "Host: An end device such as a laptop, phone, server, camera, or IoT device."
-      },
-      {
-        "q": "Which term best matches this description: Another name for a host because it sits at the edge of the network.",
-        "options": [
-          "Bandwidth",
-          "Queueing delay",
-          "End system",
-          "FDM"
-        ],
-        "answer": 2,
-        "explain": "End system: Another name for a host because it sits at the edge of the network."
-      },
-      {
-        "q": "Which term best matches this description: A small unit of data plus headers sent across a packet-switched network.",
-        "options": [
-          "Throughput",
-          "Packet loss",
-          "TDM",
-          "Packet"
+          "Programmable and centralized network control.",
+          "A cache of IP-to-MAC mappings.",
+          "Detecting unauthorized changes to data.",
+          "Another name for a host because it sits at an end of communication and creates or receives data."
         ],
         "answer": 3,
-        "explain": "Packet: A small unit of data plus headers sent across a packet-switched network."
+        "explain": "Another name for a host because it sits at an end of communication and creates or receives data."
       },
       {
-        "q": "Which term best matches this description: A router or link-layer switch that forwards packets toward a destination.",
+        "q": "What is Packet?",
         "options": [
-          "Packet switch",
-          "Protocol",
-          "Propagation delay",
-          "ISP"
-        ],
-        "answer": 0,
-        "explain": "Packet switch: A router or link-layer switch that forwards packets toward a destination."
-      },
-      {
-        "q": "Which term best matches this description: A network-layer packet switch that forwards packets between networks.",
-        "options": [
-          "Access network",
-          "Router",
-          "Transmission delay",
-          "RFC"
-        ],
-        "answer": 1,
-        "explain": "Router: A network-layer packet switch that forwards packets between networks."
-      },
-      {
-        "q": "Which term best matches this description: A local packet switch that forwards frames inside a LAN.",
-        "options": [
-          "Network core",
-          "Processing delay",
-          "Link-layer switch",
-          "IETF"
+          "Shortest paths from one source to all destinations.",
+          "Multi-Exit Discriminator, a hint about preferred entry points into an AS.",
+          "A small chunk of data plus headers that can be forwarded through a network.",
+          "A method for computing paths through a network graph."
         ],
         "answer": 2,
-        "explain": "Link-layer switch: A local packet switch that forwards frames inside a LAN."
+        "explain": "A small chunk of data plus headers that can be forwarded through a network."
       },
       {
-        "q": "Which term best matches this description: A physical or wireless path that carries bits between network devices.",
+        "q": "What is Packet switch?",
         "options": [
-          "Packet switching",
-          "End-to-end delay",
-          "Layering",
-          "Communication link"
+          "Subscriber identity module used for cellular identity and authentication.",
+          "A device that receives packets and forwards them toward a destination.",
+          "It selects the most specific route for a destination.",
+          "An ongoing session while the user moves."
+        ],
+        "answer": 1,
+        "explain": "A device that receives packets and forwards them toward a destination."
+      },
+      {
+        "q": "What is Router?",
+        "options": [
+          "A packet switch that forwards network-layer datagrams between networks using IP information.",
+          "A local packet switch that forwards frames inside a LAN using MAC addresses.",
+          "It separates complex network work into smaller responsibilities.",
+          "A BGP attribute used inside an AS to prefer certain routes."
+        ],
+        "answer": 0,
+        "explain": "A packet switch that forwards network-layer datagrams between networks using IP information."
+      },
+      {
+        "q": "What is Link-layer switch?",
+        "options": [
+          "The logic that computes or installs forwarding behavior.",
+          "A graphics rendering technique for web pages.",
+          "A timer event that can trigger retransmission when an ACK is missing.",
+          "A local packet switch that forwards frames inside a LAN using MAC addresses."
         ],
         "answer": 3,
-        "explain": "Communication link: A physical or wireless path that carries bits between network devices."
+        "explain": "A local packet switch that forwards frames inside a LAN using MAC addresses."
       },
       {
-        "q": "Which term best matches this description: The speed at which bits are pushed onto a link.",
+        "q": "What is Communication link?",
         "options": [
-          "Transmission rate",
-          "Store-and-forward",
-          "Circuit switching",
-          "Encapsulation"
-        ],
-        "answer": 0,
-        "explain": "Transmission rate: The speed at which bits are pushed onto a link."
-      },
-      {
-        "q": "Which term best matches this description: The maximum possible transmission rate of a link.",
-        "options": [
-          "Queueing delay",
-          "Bandwidth",
-          "FDM",
-          "Internet"
-        ],
-        "answer": 1,
-        "explain": "Bandwidth: The maximum possible transmission rate of a link."
-      },
-      {
-        "q": "Which term best matches this description: The actual useful rate achieved by an application transfer.",
-        "options": [
-          "Packet loss",
-          "TDM",
-          "Throughput",
-          "Host"
+          "It connects access networks to larger Internet infrastructure.",
+          "A one-way security relationship defining IPsec parameters and keys.",
+          "The physical or wireless path that carries bits between devices.",
+          "Cyclic Redundancy Check, a strong polynomial-based error detection method."
         ],
         "answer": 2,
-        "explain": "Throughput: The actual useful rate achieved by an application transfer."
+        "explain": "The physical or wireless path that carries bits between devices."
       },
       {
-        "q": "Which term best matches this description: A rule set defining message formats, ordering, and actions.",
+        "q": "What is Access network?",
         "options": [
-          "Propagation delay",
-          "ISP",
-          "End system",
-          "Protocol"
+          "Bottlenecks, congestion, and protocol overhead reduce useful delivery rate.",
+          "The part of the network that connects end systems to the first router.",
+          "A receiver message confirming data arrival.",
+          "It sends arriving data to the correct application process."
+        ],
+        "answer": 1,
+        "explain": "The part of the network that connects end systems to the first router."
+      },
+      {
+        "q": "What is ISP?",
+        "options": [
+          "An Internet Service Provider that connects customers and other networks to the Internet.",
+          "A local packet switch that forwards frames inside a LAN using MAC addresses.",
+          "ESP can encrypt payloads.",
+          "Moving data from one node to its immediate neighbor."
+        ],
+        "answer": 0,
+        "explain": "An Internet Service Provider that connects customers and other networks to the Internet."
+      },
+      {
+        "q": "What is Protocol?",
+        "options": [
+          "Error detection information such as a CRC.",
+          "Cyclic Redundancy Check, a strong polynomial-based error detection method.",
+          "The software interface between an application process and the transport layer.",
+          "A rule set defining message format, message order, and actions when messages are sent or received."
         ],
         "answer": 3,
-        "explain": "Protocol: A rule set defining message formats, ordering, and actions."
+        "explain": "A rule set defining message format, message order, and actions when messages are sent or received."
       },
       {
-        "q": "Which term best matches this description: The network that connects an end system to the first router.",
+        "q": "What is RFC?",
         "options": [
-          "Access network",
-          "Transmission delay",
-          "RFC",
-          "Packet"
-        ],
-        "answer": 0,
-        "explain": "Access network: The network that connects an end system to the first router."
-      },
-      {
-        "q": "Which term best matches this description: The mesh of routers and links that moves packets across the Internet.",
-        "options": [
-          "Processing delay",
-          "Network core",
-          "IETF",
-          "Packet switch"
-        ],
-        "answer": 1,
-        "explain": "Network core: The mesh of routers and links that moves packets across the Internet."
-      },
-      {
-        "q": "Which term best matches this description: A method where many users share links by sending packets when needed.",
-        "options": [
-          "End-to-end delay",
-          "Layering",
-          "Packet switching",
-          "Router"
+          "Transforming readable data into protected ciphertext.",
+          "Routers may have outdated or inconsistent distance estimates.",
+          "A Request for Comments document that records Internet standards and protocol specifications.",
+          "The communication channel between neighboring nodes."
         ],
         "answer": 2,
-        "explain": "Packet switching: A method where many users share links by sending packets when needed."
+        "explain": "A Request for Comments document that records Internet standards and protocol specifications."
       },
       {
-        "q": "Which term best matches this description: A switching behavior where a router receives a whole packet before forwarding.",
+        "q": "What is IETF?",
         "options": [
-          "Circuit switching",
-          "Encapsulation",
-          "Link-layer switch",
-          "Store-and-forward"
+          "A firewall that tracks connection state when filtering traffic.",
+          "The standards organization that develops many Internet protocols through RFCs.",
+          "Carrying multiple VLANs between switches.",
+          "Ethernet field identifying the upper-layer protocol carried in the frame."
+        ],
+        "answer": 1,
+        "explain": "The standards organization that develops many Internet protocols through RFCs."
+      },
+      {
+        "q": "What is Packet switching?",
+        "options": [
+          "A sharing method where packets from many users take turns using links.",
+          "The wireless medium for a transmission.",
+          "When packets are dropped because of errors, congestion, or failed paths.",
+          "A BGP message removing a previously advertised route."
+        ],
+        "answer": 0,
+        "explain": "A sharing method where packets from many users take turns using links."
+      },
+      {
+        "q": "What is Circuit switching?",
+        "options": [
+          "Shortest paths from one source to all destinations.",
+          "A distance-vector problem where bad news about a failed route spreads slowly.",
+          "Loss of signal strength over distance or through obstacles.",
+          "A communication method that reserves end-to-end resources before data is sent."
         ],
         "answer": 3,
-        "explain": "Store-and-forward: A switching behavior where a router receives a whole packet before forwarding."
+        "explain": "A communication method that reserves end-to-end resources before data is sent."
       },
       {
-        "q": "Which term best matches this description: Waiting time when packets sit in a router buffer.",
+        "q": "What is Delay?",
         "options": [
-          "Queueing delay",
-          "FDM",
-          "Internet",
-          "Communication link"
-        ],
-        "answer": 0,
-        "explain": "Queueing delay: Waiting time when packets sit in a router buffer."
-      },
-      {
-        "q": "Which term best matches this description: A dropped packet, often caused by congestion or buffer overflow.",
-        "options": [
-          "TDM",
-          "Packet loss",
-          "Host",
-          "Transmission rate"
-        ],
-        "answer": 1,
-        "explain": "Packet loss: A dropped packet, often caused by congestion or buffer overflow."
-      },
-      {
-        "q": "Which term best matches this description: Time for a signal to travel across a physical medium.",
-        "options": [
-          "ISP",
-          "End system",
-          "Propagation delay",
-          "Bandwidth"
+          "The naming system that translates domain names into IP addresses.",
+          "A control-message protocol used for errors and diagnostics.",
+          "The time it takes data to travel from sender to receiver.",
+          "It organizes manageable device variables."
         ],
         "answer": 2,
-        "explain": "Propagation delay: Time for a signal to travel across a physical medium."
+        "explain": "The time it takes data to travel from sender to receiver."
       },
       {
-        "q": "Which term best matches this description: Time needed to push all packet bits onto a link.",
+        "q": "What is Loss?",
         "options": [
-          "RFC",
-          "Packet",
-          "Throughput",
+          "SMTP sends mail, while IMAP retrieves and synchronizes mail.",
+          "When packets are dropped because of errors, congestion, or failed paths.",
+          "They reduce overlap and interference when planned well.",
+          "Information flooded by routers describing their links and costs."
+        ],
+        "answer": 1,
+        "explain": "When packets are dropped because of errors, congestion, or failed paths."
+      },
+      {
+        "q": "What is Throughput?",
+        "options": [
+          "The actual rate at which useful data is delivered.",
+          "Mobile IP entity that assists a mobile node in a visited network.",
+          "A router connecting an AS to other autonomous systems.",
+          "TCP phase where the congestion window grows more cautiously."
+        ],
+        "answer": 0,
+        "explain": "The actual rate at which useful data is delivered."
+      },
+      {
+        "q": "What is Bandwidth?",
+        "options": [
+          "A data modeling language for configuration and operational state.",
+          "Control information attached to a datagram for network-layer delivery.",
+          "A link-layer hardware address used for local frame delivery.",
+          "The maximum transmission rate a link can support."
+        ],
+        "answer": 3,
+        "explain": "The maximum transmission rate a link can support."
+      },
+      {
+        "q": "What is Encapsulation?",
+        "options": [
+          "The congestion window grows rapidly until a threshold or loss event.",
+          "The retransmission timer value derived from estimated RTT and variation.",
+          "The process of wrapping data with headers as it moves down network layers.",
+          "A logical path that behaves like a dedicated circuit."
+        ],
+        "answer": 2,
+        "explain": "The process of wrapping data with headers as it moves down network layers."
+      },
+      {
+        "q": "What is Internet stack?",
+        "options": [
+          "A service that establishes state before data transfer.",
+          "The layered model of application, transport, network, link, and physical responsibilities.",
+          "The divisor pattern used in CRC computation.",
+          "Signal copies arriving by different paths because of reflection."
+        ],
+        "answer": 1,
+        "explain": "The layered model of application, transport, network, link, and physical responsibilities."
+      },
+      {
+        "q": "Which delay type happens because a packet waits in a router buffer?",
+        "options": [
+          "Queuing delay",
+          "The network a roaming user currently attaches to.",
+          "A BGP message removing a previously advertised route.",
+          "Border Gateway Protocol, the main interdomain routing protocol of the Internet."
+        ],
+        "answer": 0,
+        "explain": "Queuing delay"
+      },
+      {
+        "q": "Which delay type depends on link bandwidth and packet length?",
+        "options": [
+          "A shared medium heard by multiple nodes.",
+          "The Mobile IP component that forwards traffic to the mobile node.",
+          "A method for computing paths through a network graph.",
           "Transmission delay"
         ],
         "answer": 3,
-        "explain": "Transmission delay: Time needed to push all packet bits onto a link."
+        "explain": "Transmission delay"
       },
       {
-        "q": "Which term best matches this description: Time a router spends checking headers and choosing an output link.",
+        "q": "Which delay type depends on the physical distance and signal speed?",
         "options": [
-          "Processing delay",
-          "IETF",
-          "Packet switch",
-          "Protocol"
-        ],
-        "answer": 0,
-        "explain": "Processing delay: Time a router spends checking headers and choosing an output link."
-      },
-      {
-        "q": "Which term best matches this description: Total time for data to travel from source to destination.",
-        "options": [
-          "Layering",
-          "End-to-end delay",
-          "Router",
-          "Access network"
-        ],
-        "answer": 1,
-        "explain": "End-to-end delay: Total time for data to travel from source to destination."
-      },
-      {
-        "q": "Which term best matches this description: A communication method that reserves resources for one session.",
-        "options": [
-          "Encapsulation",
-          "Link-layer switch",
-          "Circuit switching",
-          "Network core"
-        ],
-        "answer": 2,
-        "explain": "Circuit switching: A communication method that reserves resources for one session."
-      },
-      {
-        "q": "Which term best matches this description: Frequency Division Multiplexing, where users get separate frequency bands.",
-        "options": [
-          "Internet",
-          "Communication link",
-          "Packet switching",
-          "FDM"
-        ],
-        "answer": 3,
-        "explain": "FDM: Frequency Division Multiplexing, where users get separate frequency bands."
-      },
-      {
-        "q": "Which term best matches this description: Time Division Multiplexing, where users get recurring time slots.",
-        "options": [
-          "TDM",
-          "Host",
-          "Transmission rate",
-          "Store-and-forward"
-        ],
-        "answer": 0,
-        "explain": "TDM: Time Division Multiplexing, where users get recurring time slots."
-      },
-      {
-        "q": "Which term best matches this description: Internet Service Provider, a network that gives Internet connectivity.",
-        "options": [
-          "End system",
-          "ISP",
-          "Bandwidth",
-          "Queueing delay"
-        ],
-        "answer": 1,
-        "explain": "ISP: Internet Service Provider, a network that gives Internet connectivity."
-      },
-      {
-        "q": "Which term best matches this description: Request for Comments, a document series used for Internet standards.",
-        "options": [
-          "Packet",
-          "Throughput",
-          "RFC",
-          "Packet loss"
-        ],
-        "answer": 2,
-        "explain": "RFC: Request for Comments, a document series used for Internet standards."
-      },
-      {
-        "q": "Which term best matches this description: Internet Engineering Task Force, an organization that develops Internet standards.",
-        "options": [
-          "Packet switch",
-          "Protocol",
+          "It sends arriving data to the correct application process.",
+          "A physical cable type used only for local wiring.",
           "Propagation delay",
-          "IETF"
+          "The actual rate at which useful data is delivered."
         ],
-        "answer": 3,
-        "explain": "IETF: Internet Engineering Task Force, an organization that develops Internet standards."
+        "answer": 2,
+        "explain": "Propagation delay"
       },
       {
-        "q": "Which term best matches this description: Dividing networking into layers with separate responsibilities.",
+        "q": "Why can packet loss occur during congestion?",
         "options": [
-          "Layering",
-          "Router",
-          "Access network",
+          "Routing between autonomous systems.",
+          "Router buffers can overflow and drop packets.",
+          "A BGP message removing a previously advertised route.",
+          "Peers contribute resources as more users join."
+        ],
+        "answer": 1,
+        "explain": "Router buffers can overflow and drop packets."
+      },
+      {
+        "q": "Why is layering useful?",
+        "options": [
+          "It separates complex network work into smaller responsibilities.",
+          "After multiple duplicate ACKs indicate likely loss.",
+          "Forwarding packets to the mobile node's current location.",
+          "Additive Increase Multiplicative Decrease, TCP's classic congestion behavior."
+        ],
+        "answer": 0,
+        "explain": "It separates complex network work into smaller responsibilities."
+      },
+      {
+        "q": "What does a protocol standard make possible?",
+        "options": [
+          "A BGP message removing a previously advertised route.",
+          "A simple mail access protocol that downloads messages from a server.",
+          "BGP-learned routes inside one autonomous system.",
+          "Interoperability between different systems and vendors."
+        ],
+        "answer": 3,
+        "explain": "Interoperability between different systems and vendors."
+      },
+      {
+        "q": "Why can throughput be lower than bandwidth?",
+        "options": [
+          "An ACK repeated for the same data, often hinting that later data arrived but a gap exists.",
+          "A classic TCP version using slow start, congestion avoidance, fast retransmit, and fast recovery.",
+          "Bottlenecks, congestion, and protocol overhead reduce useful delivery rate.",
+          "Out-of-order packets may arrive before missing packets are retransmitted."
+        ],
+        "answer": 2,
+        "explain": "Bottlenecks, congestion, and protocol overhead reduce useful delivery rate."
+      },
+      {
+        "q": "What role does an ISP play?",
+        "options": [
+          "A label is added to the packet.",
+          "It connects access networks to larger Internet infrastructure.",
+          "The MPLS edge router that removes the label.",
+          "Links, costs, or routers can fail or change."
+        ],
+        "answer": 1,
+        "explain": "It connects access networks to larger Internet infrastructure."
+      },
+      {
+        "q": "What is a network core?",
+        "options": [
+          "The mesh of packet switches and links that carries traffic across networks.",
+          "A configuration command may fail or produce unexpected state.",
+          "A device that receives packets and forwards them toward a destination.",
+          "The network a roaming user currently attaches to."
+        ],
+        "answer": 0,
+        "explain": "The mesh of packet switches and links that carries traffic across networks."
+      },
+      {
+        "q": "What is the network edge?",
+        "options": [
+          "A method that prevents a receiver from being overwhelmed.",
+          "A public-key mechanism proving origin and integrity.",
+          "A mail access protocol that keeps messages synchronized on a server.",
+          "The hosts and access networks where users and applications connect."
+        ],
+        "answer": 3,
+        "explain": "The hosts and access networks where users and applications connect."
+      }
+    ]
+  },
+  {
+    "title": "1.2 Practice: Application Layer Protocols and Services",
+    "description": "30-item practice test for Application Layer Protocols and Services.",
+    "questions": [
+      {
+        "q": "What is Application layer?",
+        "options": [
+          "Ethernet error detection field.",
+          "A logical path that behaves like a dedicated circuit.",
+          "The top network layer where applications define messages and services.",
+          "Multiple devices use the same radio medium."
+        ],
+        "answer": 2,
+        "explain": "The top network layer where applications define messages and services."
+      },
+      {
+        "q": "What is Process?",
+        "options": [
+          "The receiver's ability to accept data.",
+          "A running program that sends or receives messages through a socket.",
+          "The VLAN to which the frame belongs.",
+          "Information that a destination prefix can be reached."
+        ],
+        "answer": 1,
+        "explain": "A running program that sends or receives messages through a socket."
+      },
+      {
+        "q": "What is Socket?",
+        "options": [
+          "The software interface between an application process and the transport layer.",
+          "Internet Key Exchange, used to negotiate IPsec security associations.",
+          "They bind public keys to identities.",
+          "Private connectivity over shared infrastructure."
+        ],
+        "answer": 0,
+        "explain": "The software interface between an application process and the transport layer."
+      },
+      {
+        "q": "What is Client-server?",
+        "options": [
+          "Subscriber identity module used for cellular identity and authentication.",
+          "A firewall rule system that permits or denies packets by header fields.",
+          "The divisor pattern used in CRC computation.",
+          "An architecture where clients request service from an always-on server."
+        ],
+        "answer": 3,
+        "explain": "An architecture where clients request service from an always-on server."
+      },
+      {
+        "q": "What is Peer-to-peer?",
+        "options": [
+          "A cellular generation using packet-switched IP-based design.",
+          "The entire original IP datagram.",
+          "An architecture where end systems communicate directly and share roles.",
+          "Eavesdropping and tampering when configured correctly."
+        ],
+        "answer": 2,
+        "explain": "An architecture where end systems communicate directly and share roles."
+      },
+      {
+        "q": "What is HTTP?",
+        "options": [
+          "Adding boundaries and link-layer information around data.",
+          "The web protocol used by browsers and servers to request and send objects.",
+          "To improve scalability and reduce routing overhead.",
+          "Forwarding packets to the mobile node's current location."
+        ],
+        "answer": 1,
+        "explain": "The web protocol used by browsers and servers to request and send objects."
+      },
+      {
+        "q": "What is Persistent HTTP?",
+        "options": [
+          "HTTP behavior that reuses a TCP connection for multiple objects.",
+          "It scales name resolution across the global Internet.",
+          "Adding boundaries and link-layer information around data.",
+          "A rule set defining message format, message order, and actions when messages are sent or received."
+        ],
+        "answer": 0,
+        "explain": "HTTP behavior that reuses a TCP connection for multiple objects."
+      },
+      {
+        "q": "What is Cookie?",
+        "options": [
+          "Forwarding packets to the mobile node's current location.",
+          "An agreement where networks exchange traffic, often without payment.",
+          "The software interface between an application process and the transport layer.",
+          "Small data used by websites to maintain state across otherwise stateless HTTP requests."
+        ],
+        "answer": 3,
+        "explain": "Small data used by websites to maintain state across otherwise stateless HTTP requests."
+      },
+      {
+        "q": "What is Web cache?",
+        "options": [
+          "Business or administrative rules that influence route selection.",
+          "Information flooded by routers describing their links and costs.",
+          "A proxy that stores web objects closer to clients to reduce delay and traffic.",
+          "HTTP behavior that reuses a TCP connection for multiple objects."
+        ],
+        "answer": 2,
+        "explain": "A proxy that stores web objects closer to clients to reduce delay and traffic."
+      },
+      {
+        "q": "What is DNS?",
+        "options": [
+          "A BGP message announcing reachability to a prefix.",
+          "The naming system that translates domain names into IP addresses.",
+          "Multiple devices use the same radio medium.",
+          "The IPsec AH header used for integrity and authentication."
+        ],
+        "answer": 1,
+        "explain": "The naming system that translates domain names into IP addresses."
+      },
+      {
+        "q": "What is DNS resolver?",
+        "options": [
+          "A server that queries DNS on behalf of a client.",
+          "Delivery is attempted but not guaranteed.",
+          "A newer cellular generation with enhanced capacity, latency, and service flexibility.",
+          "The Mobile IP component that forwards traffic to the mobile node."
+        ],
+        "answer": 0,
+        "explain": "A server that queries DNS on behalf of a client."
+      },
+      {
+        "q": "What is Authoritative DNS?",
+        "options": [
+          "It may retransmit data believed to be lost.",
+          "Additive Increase Multiplicative Decrease, TCP's classic congestion behavior.",
+          "It does not yet know the destination MAC's port.",
+          "A DNS server that has official records for a domain."
+        ],
+        "answer": 3,
+        "explain": "A DNS server that has official records for a domain."
+      },
+      {
+        "q": "What is SMTP?",
+        "options": [
+          "The Mobile IP component that forwards traffic to the mobile node.",
+          "Reusing a valid message later to trick a protocol.",
+          "The protocol used to send email from clients or mail servers.",
+          "A sum-based error detection value."
+        ],
+        "answer": 2,
+        "explain": "The protocol used to send email from clients or mail servers."
+      },
+      {
+        "q": "What is IMAP?",
+        "options": [
+          "A running program that sends or receives messages through a socket.",
+          "A mail access protocol that keeps messages synchronized on a server.",
+          "Control information placed before the payload.",
+          "It can provide timely performance and state data."
+        ],
+        "answer": 1,
+        "explain": "A mail access protocol that keeps messages synchronized on a server."
+      },
+      {
+        "q": "What is POP3?",
+        "options": [
+          "A simple mail access protocol that downloads messages from a server.",
+          "Security Policy Database, which says what traffic should be protected or bypassed.",
+          "TCP setup using SYN, SYN-ACK, and ACK messages.",
+          "The part of a mobile network connecting devices to the core."
+        ],
+        "answer": 0,
+        "explain": "A simple mail access protocol that downloads messages from a server."
+      },
+      {
+        "q": "What is CDN?",
+        "options": [
+          "The base stations and radio systems connecting devices.",
+          "It resolves MAC addresses only within a LAN/broadcast domain.",
+          "HTTP behavior that reuses a TCP connection for multiple objects.",
+          "A distributed system that places content near users for faster delivery."
+        ],
+        "answer": 3,
+        "explain": "A distributed system that places content near users for faster delivery."
+      },
+      {
+        "q": "What is DASH?",
+        "options": [
+          "Lower-cost paths are preferred.",
+          "The set of devices that receive a layer-2 broadcast.",
+          "Dynamic Adaptive Streaming over HTTP, which adjusts video quality to network conditions.",
+          "Bits at the start of an Ethernet frame used for synchronization."
+        ],
+        "answer": 2,
+        "explain": "Dynamic Adaptive Streaming over HTTP, which adjusts video quality to network conditions."
+      },
+      {
+        "q": "What is RTP?",
+        "options": [
+          "The 128-bit Internet Protocol version designed for a much larger address space.",
+          "A protocol commonly associated with real-time audio or video transport.",
+          "It needs reliable and ordered delivery.",
+          "Internet Key Exchange, used to negotiate IPsec security associations."
+        ],
+        "answer": 1,
+        "explain": "A protocol commonly associated with real-time audio or video transport."
+      },
+      {
+        "q": "What is API?",
+        "options": [
+          "A defined interface that lets software components request services or data.",
+          "Address Resolution Protocol, which maps local IP addresses to MAC addresses.",
+          "The system used by administrators to monitor and control devices.",
+          "The carrier network handling mobility, authentication, and Internet access."
+        ],
+        "answer": 0,
+        "explain": "A defined interface that lets software components request services or data."
+      },
+      {
+        "q": "What is Port number?",
+        "options": [
+          "Local Area Network, a network covering a limited area such as a room, home, or campus.",
+          "A shared medium heard by multiple nodes.",
+          "It selects the most specific route for a destination.",
+          "A transport identifier that helps deliver data to the correct application process."
+        ],
+        "answer": 3,
+        "explain": "A transport identifier that helps deliver data to the correct application process."
+      },
+      {
+        "q": "Why are sockets important?",
+        "options": [
+          "A service is useless if legitimate users cannot reach it.",
+          "IPsec mode that protects the entire original datagram inside a new datagram.",
+          "They connect application processes to transport services.",
+          "A high-speed network connecting large numbers of servers."
+        ],
+        "answer": 2,
+        "explain": "They connect application processes to transport services."
+      },
+      {
+        "q": "Why does DNS use a hierarchy?",
+        "options": [
+          "Choosing the closest exit point from an AS to hand traffic off quickly.",
+          "It scales name resolution across the global Internet.",
+          "TCP sender-side limit on how much data can be in flight due to congestion control.",
+          "A sum-based error detection value."
+        ],
+        "answer": 1,
+        "explain": "It scales name resolution across the global Internet."
+      },
+      {
+        "q": "Why does caching help the Web?",
+        "options": [
+          "It reduces response time and upstream traffic.",
+          "Adding boundaries and link-layer information around data.",
+          "Who created the message.",
+          "A protocol for installing, changing, and retrieving network device configuration."
+        ],
+        "answer": 0,
+        "explain": "It reduces response time and upstream traffic."
+      },
+      {
+        "q": "What makes HTTP stateless?",
+        "options": [
+          "Interoperability between different systems and vendors.",
+          "Subscriber identity module used for cellular identity and authentication.",
+          "Splitting an IP datagram into smaller pieces to fit a link MTU.",
+          "Each request can be handled without remembering previous requests."
+        ],
+        "answer": 3,
+        "explain": "Each request can be handled without remembering previous requests."
+      },
+      {
+        "q": "Why do video systems use adaptive streaming?",
+        "options": [
+          "Sending a frame out multiple ports when the destination is unknown or broadcast.",
+          "Policy, path exploration, and distributed updates take time.",
+          "They adjust quality when available throughput changes.",
+          "The IPsec AH header used for integrity and authentication."
+        ],
+        "answer": 2,
+        "explain": "They adjust quality when available throughput changes."
+      },
+      {
+        "q": "What is a URL used for?",
+        "options": [
+          "A cellular generation using packet-switched IP-based design.",
+          "It identifies a resource and how to access it.",
+          "A simple mail access protocol that downloads messages from a server.",
+          "HTTP protected by TLS."
+        ],
+        "answer": 1,
+        "explain": "It identifies a resource and how to access it."
+      },
+      {
+        "q": "What does SMTP do that IMAP does not?",
+        "options": [
+          "SMTP sends mail, while IMAP retrieves and synchronizes mail.",
+          "Object Identifier, a numeric name for a managed variable.",
+          "Business or administrative rules that influence route selection.",
+          "TCP behavior after packet loss detected by duplicate ACKs."
+        ],
+        "answer": 0,
+        "explain": "SMTP sends mail, while IMAP retrieves and synchronizes mail."
+      },
+      {
+        "q": "What is a server process?",
+        "options": [
+          "The layer that provides logical communication between application processes.",
+          "A switch process that records which MAC addresses are reachable through which ports.",
+          "The subscriber's original carrier network.",
+          "A running program waiting for client requests."
+        ],
+        "answer": 3,
+        "explain": "A running program waiting for client requests."
+      },
+      {
+        "q": "Why is P2P scalable?",
+        "options": [
+          "An architecture where end systems communicate directly and share roles.",
+          "A programming style that does not affect packet delivery.",
+          "Peers contribute resources as more users join.",
+          "A reliable connection-oriented transport protocol with ordering and control mechanisms."
+        ],
+        "answer": 2,
+        "explain": "Peers contribute resources as more users join."
+      },
+      {
+        "q": "What is a CDN edge server?",
+        "options": [
+          "IPsec mode that protects the payload of the original IP datagram.",
+          "A nearby server that delivers cached content to users.",
+          "A radio access point connecting wireless devices to network infrastructure.",
+          "A service model that tries to deliver data but gives no guarantee."
+        ],
+        "answer": 1,
+        "explain": "A nearby server that delivers cached content to users."
+      }
+    ]
+  },
+  {
+    "title": "2.1A Practice: Transport Layer Fundamentals",
+    "description": "30-item practice test for Transport Layer Fundamentals.",
+    "questions": [
+      {
+        "q": "What is Transport layer?",
+        "options": [
+          "The layer that provides logical communication between application processes.",
+          "A trusted party that signs certificates.",
+          "Moving data from one node to its immediate neighbor.",
+          "Clear To Send, a response allowing a sender to transmit."
+        ],
+        "answer": 0,
+        "explain": "The layer that provides logical communication between application processes."
+      },
+      {
+        "q": "What is Segment?",
+        "options": [
+          "A shortest-path algorithm used in link-state routing.",
+          "The part of the network that connects end systems to the first router.",
+          "A classic TCP version using slow start, congestion avoidance, fast retransmit, and fast recovery.",
+          "The transport-layer unit that carries application data and a transport header."
+        ],
+        "answer": 3,
+        "explain": "The transport-layer unit that carries application data and a transport header."
+      },
+      {
+        "q": "What is Multiplexing?",
+        "options": [
+          "It separates complex network work into smaller responsibilities.",
+          "Reporting errors and supporting diagnostics.",
+          "Collecting data from many processes so they can share the network.",
+          "Authentication Header, providing authentication and integrity without encryption."
+        ],
+        "answer": 2,
+        "explain": "Collecting data from many processes so they can share the network."
+      },
+      {
+        "q": "What is Demultiplexing?",
+        "options": [
+          "Intrusion Detection System that monitors for suspicious activity.",
+          "Delivering received segments to the correct socket or process.",
+          "Lower-cost paths are preferred.",
+          "It does not yet know the destination MAC's port."
+        ],
+        "answer": 1,
+        "explain": "Delivering received segments to the correct socket or process."
+      },
+      {
+        "q": "What is Port?",
+        "options": [
+          "A number used to identify a specific application process on a host.",
+          "TCP setup using SYN, SYN-ACK, and ACK messages.",
+          "Link utilization and throughput.",
+          "A BGP attribute used inside an AS to prefer certain routes."
+        ],
+        "answer": 0,
+        "explain": "A number used to identify a specific application process on a host."
+      },
+      {
+        "q": "What is Socket pair?",
+        "options": [
+          "Message Authentication Code, used to verify authenticity and integrity with a shared key.",
+          "Label Switched Path, the route MPLS packets follow through a network.",
+          "Techniques that identify whether transmitted bits may be corrupted.",
+          "The addresses and ports that identify a transport conversation."
+        ],
+        "answer": 3,
+        "explain": "The addresses and ports that identify a transport conversation."
+      },
+      {
+        "q": "What is UDP?",
+        "options": [
+          "The software control point in an SDN architecture.",
+          "Loss of signal strength over distance or through obstacles.",
+          "A lightweight connectionless transport protocol with no built-in reliability.",
+          "TCP behavior that retransmits after enough duplicate ACKs, before timeout."
+        ],
+        "answer": 2,
+        "explain": "A lightweight connectionless transport protocol with no built-in reliability."
+      },
+      {
+        "q": "What is TCP?",
+        "options": [
+          "Packets arrive faster than they can be transmitted.",
+          "A reliable connection-oriented transport protocol with ordering and control mechanisms.",
+          "Transforming readable data into protected ciphertext.",
+          "After multiple duplicate ACKs indicate likely loss."
+        ],
+        "answer": 1,
+        "explain": "A reliable connection-oriented transport protocol with ordering and control mechanisms."
+      },
+      {
+        "q": "What is Checksum?",
+        "options": [
+          "A value used to detect bit errors in a segment.",
+          "A simple bit added to make the number of ones even or odd.",
+          "A suite of protocols that secures IP datagrams.",
+          "Packets circulate because routers point traffic back toward each other."
+        ],
+        "answer": 0,
+        "explain": "A value used to detect bit errors in a segment."
+      },
+      {
+        "q": "What is Best effort?",
+        "options": [
+          "BGP sessions between routers in different autonomous systems.",
+          "The IEEE family of WiFi standards.",
+          "Identifying a specific management variable.",
+          "A service model that tries to deliver data but gives no guarantee."
+        ],
+        "answer": 3,
+        "explain": "A service model that tries to deliver data but gives no guarantee."
+      },
+      {
+        "q": "What is Connection-oriented?",
+        "options": [
+          "Network Address Translation, which maps private internal addresses to public addresses.",
+          "A 4G data-plane anchor that forwards user traffic.",
+          "A service that establishes state before data transfer.",
+          "A router, switch, server, or access point being monitored or configured."
+        ],
+        "answer": 2,
+        "explain": "A service that establishes state before data transfer."
+      },
+      {
+        "q": "What is Three-way handshake?",
+        "options": [
+          "Signal copies arriving by different paths because of reflection.",
+          "TCP setup using SYN, SYN-ACK, and ACK messages.",
+          "The data link layer unit that carries a network-layer packet.",
+          "The network currently serving a roaming user."
+        ],
+        "answer": 1,
+        "explain": "TCP setup using SYN, SYN-ACK, and ACK messages."
+      },
+      {
+        "q": "What is Flow control?",
+        "options": [
+          "A method that prevents a sender from overwhelming the receiver.",
+          "Internal private hosts are hidden behind translated addresses.",
+          "Making a network path behave like a logical link or service.",
+          "Identity, mobility, gateways, and Internet connectivity."
+        ],
+        "answer": 0,
+        "explain": "A method that prevents a sender from overwhelming the receiver."
+      },
+      {
+        "q": "What is Receive buffer?",
+        "options": [
+          "Another name for a host because it sits at an end of communication and creates or receives data.",
+          "The transport-layer unit that carries application data and a transport header.",
+          "Propagation delay",
+          "Memory used by the receiver to hold incoming data before the application reads it."
+        ],
+        "answer": 3,
+        "explain": "Memory used by the receiver to hold incoming data before the application reads it."
+      },
+      {
+        "q": "What is Congestion control?",
+        "options": [
+          "A data modeling language for configuration and operational state.",
+          "The 32-bit Internet Protocol version still widely used.",
+          "A method that prevents senders from overwhelming the network.",
+          "Operators can steer flows over selected paths."
+        ],
+        "answer": 2,
+        "explain": "A method that prevents senders from overwhelming the network."
+      },
+      {
+        "q": "What is MSS?",
+        "options": [
+          "A service that establishes state before data transfer.",
+          "Maximum Segment Size, the largest TCP payload placed in one segment.",
+          "A scalable data-center topology with leaf access switches and spine core switches.",
+          "Techniques that identify whether transmitted bits may be corrupted."
+        ],
+        "answer": 1,
+        "explain": "Maximum Segment Size, the largest TCP payload placed in one segment."
+      },
+      {
+        "q": "What is MTU?",
+        "options": [
+          "Maximum Transmission Unit, the largest frame payload a link can carry.",
+          "Traffic or behavior that deviates from normal patterns.",
+          "Handoffs and wireless loss can look like congestion.",
+          "A distributed system that places content near users for faster delivery."
+        ],
+        "answer": 0,
+        "explain": "Maximum Transmission Unit, the largest frame payload a link can carry."
+      },
+      {
+        "q": "What is Sequence number?",
+        "options": [
+          "A WiFi acknowledgment that confirms frame reception.",
+          "Local Area Network, a network covering a limited area such as a room, home, or campus.",
+          "Header fields such as addresses, ports, and protocol.",
+          "A number that identifies byte positions for ordering and reliability."
+        ],
+        "answer": 3,
+        "explain": "A number that identifies byte positions for ordering and reliability."
+      },
+      {
+        "q": "What is Acknowledgment?",
+        "options": [
+          "The actual rate at which useful data is delivered.",
+          "Collecting data from many processes so they can share the network.",
+          "A receiver message confirming data arrival.",
+          "Quickly moving traffic to a backup path after failure."
+        ],
+        "answer": 2,
+        "explain": "A receiver message confirming data arrival."
+      },
+      {
+        "q": "What is Timeout?",
+        "options": [
+          "A radio access point connecting wireless devices to network infrastructure.",
+          "A timer event that can trigger retransmission when an ACK is missing.",
+          "The actual rate at which useful data is delivered.",
+          "A protocol commonly associated with real-time audio or video transport."
+        ],
+        "answer": 1,
+        "explain": "A timer event that can trigger retransmission when an ACK is missing."
+      },
+      {
+        "q": "What problem does demultiplexing solve?",
+        "options": [
+          "It sends arriving data to the correct application process.",
+          "Management Information Base, a structured collection of managed variables.",
+          "The time it takes data to travel from sender to receiver.",
+          "A temporary symmetric key used after secure setup."
+        ],
+        "answer": 0,
+        "explain": "It sends arriving data to the correct application process."
+      },
+      {
+        "q": "Why might DNS use UDP?",
+        "options": [
+          "Information flooded by routers describing their links and costs.",
+          "The layer that transfers frames across a single link or hop.",
+          "Links, costs, or routers can fail or change.",
+          "A small request can be sent quickly without connection setup."
+        ],
+        "answer": 3,
+        "explain": "A small request can be sent quickly without connection setup."
+      },
+      {
+        "q": "Why might file transfer use TCP?",
+        "options": [
+          "A paid service where one network carries another network's traffic to the Internet.",
+          "A protocol that dynamically assigns IP configuration to hosts.",
+          "It needs reliable and ordered delivery.",
+          "A link-state routing protocol used in some large provider networks."
+        ],
+        "answer": 2,
+        "explain": "It needs reliable and ordered delivery."
+      },
+      {
+        "q": "What does a checksum detect?",
+        "options": [
+          "Using a visited carrier network while subscribed to a home carrier.",
+          "Bit errors in the segment.",
+          "Transforming readable data into protected ciphertext.",
+          "IDS method that looks for deviations from normal behavior."
+        ],
+        "answer": 1,
+        "explain": "Bit errors in the segment."
+      },
+      {
+        "q": "Why does TCP use a handshake?",
+        "options": [
+          "It establishes connection state before data transfer.",
+          "IPsec mode that protects the payload of the original IP datagram.",
+          "The base stations and radio systems connecting devices.",
+          "A running program that sends or receives messages through a socket."
+        ],
+        "answer": 0,
+        "explain": "It establishes connection state before data transfer."
+      },
+      {
+        "q": "How is flow control different from congestion control?",
+        "options": [
+          "The set of devices that receive a layer-2 broadcast.",
+          "The hosts and access networks where users and applications connect.",
+          "A preferred route because it may generate revenue.",
+          "Flow control protects the receiver; congestion control protects the network."
+        ],
+        "answer": 3,
+        "explain": "Flow control protects the receiver; congestion control protects the network."
+      },
+      {
+        "q": "Why are sequence numbers useful?",
+        "options": [
+          "Internet Key Exchange, used to negotiate IPsec security associations.",
+          "Control information attached to a datagram for network-layer delivery.",
+          "They let TCP order data and detect missing bytes.",
+          "The network name advertised by a WiFi access point."
+        ],
+        "answer": 2,
+        "explain": "They let TCP order data and detect missing bytes."
+      },
+      {
+        "q": "What does best effort mean?",
+        "options": [
+          "A one-way function producing a fixed-size digest from data.",
+          "Delivery is attempted but not guaranteed.",
+          "Separating public services from internal networks.",
+          "Encapsulating packets inside other packets to reach a mobile location."
+        ],
+        "answer": 1,
+        "explain": "Delivery is attempted but not guaranteed."
+      },
+      {
+        "q": "What happens when TCP times out?",
+        "options": [
+          "It may retransmit data believed to be lost.",
+          "A shortest-path algorithm used in link-state routing.",
+          "Keeping services reachable for legitimate users.",
+          "Multiprotocol Label Switching, a forwarding method based on short labels."
+        ],
+        "answer": 0,
+        "explain": "It may retransmit data believed to be lost."
+      },
+      {
+        "q": "What is a socket address made of?",
+        "options": [
+          "A database storing active security associations.",
+          "Routing between autonomous systems.",
+          "Programmable and centralized network control.",
+          "IP address and port information."
+        ],
+        "answer": 3,
+        "explain": "IP address and port information."
+      }
+    ]
+  },
+  {
+    "title": "2.1B Practice: Reliable Data Transfer and TCP Control",
+    "description": "30-item practice test for Reliable Data Transfer and TCP Control.",
+    "questions": [
+      {
+        "q": "What is Reliable data transfer?",
+        "options": [
+          "A secret key kept by its owner in asymmetric cryptography.",
+          "A service is useless if legitimate users cannot reach it.",
+          "A service that delivers data correctly and in order despite loss or corruption.",
+          "Transmission delay"
+        ],
+        "answer": 2,
+        "explain": "A service that delivers data correctly and in order despite loss or corruption."
+      },
+      {
+        "q": "What is rdt?",
+        "options": [
+          "They connect application processes to transport services.",
+          "A family of teaching protocols used to explain reliability mechanisms.",
+          "Round-trip time between sending data and receiving its acknowledgment.",
+          "A database storing active security associations."
+        ],
+        "answer": 1,
+        "explain": "A family of teaching protocols used to explain reliability mechanisms."
+      },
+      {
+        "q": "What is Stop-and-wait?",
+        "options": [
+          "A simple method that sends one packet then waits for an ACK.",
+          "A BGP message removing a previously advertised route.",
+          "A mail access protocol that keeps messages synchronized on a server.",
+          "BGP-learned routes inside one autonomous system."
+        ],
+        "answer": 0,
+        "explain": "A simple method that sends one packet then waits for an ACK."
+      },
+      {
+        "q": "What is Pipelining?",
+        "options": [
+          "Authentication Header, providing authentication and integrity without encryption.",
+          "It separates complex network work into smaller responsibilities.",
+          "Reporting errors and supporting diagnostics.",
+          "Sending multiple packets before waiting for all acknowledgments."
+        ],
+        "answer": 3,
+        "explain": "Sending multiple packets before waiting for all acknowledgments."
+      },
+      {
+        "q": "What is Sliding window?",
+        "options": [
+          "Keys and parameters for IPsec security associations.",
+          "A logical path that behaves like a dedicated circuit.",
+          "A limit on how many unacknowledged packets or bytes may be in flight.",
+          "Multiprotocol Label Switching, a forwarding method based on short labels."
+        ],
+        "answer": 2,
+        "explain": "A limit on how many unacknowledged packets or bytes may be in flight."
+      },
+      {
+        "q": "What is Go-Back-N?",
+        "options": [
+          "Multiple devices use the same radio medium.",
+          "A pipelined protocol that retransmits a lost packet and later packets in the window.",
+          "A mail access protocol that keeps messages synchronized on a server.",
+          "They let TCP order data and detect missing bytes."
+        ],
+        "answer": 1,
+        "explain": "A pipelined protocol that retransmits a lost packet and later packets in the window."
+      },
+      {
+        "q": "What is Selective Repeat?",
+        "options": [
+          "A pipelined protocol that retransmits only specific missing packets.",
+          "Sending and receiving at the same time.",
+          "The original datagram payload.",
+          "A control-message protocol used for errors and diagnostics."
+        ],
+        "answer": 0,
+        "explain": "A pipelined protocol that retransmits only specific missing packets."
+      },
+      {
+        "q": "What is Cumulative ACK?",
+        "options": [
+          "A switch port that carries traffic for multiple VLANs using tags.",
+          "Security Policy Database, which says what traffic should be protected or bypassed.",
+          "A link-state routing protocol used in some large provider networks.",
+          "An ACK that confirms all data up to a certain point."
+        ],
+        "answer": 3,
+        "explain": "An ACK that confirms all data up to a certain point."
+      },
+      {
+        "q": "What is Duplicate ACK?",
+        "options": [
+          "Software-Defined Networking, separating control logic from forwarding behavior.",
+          "To reuse spectrum and manage coverage.",
+          "An ACK repeated for the same data, often hinting that later data arrived but a gap exists.",
+          "Wireless frames are more likely to be lost or corrupted."
+        ],
+        "answer": 2,
+        "explain": "An ACK repeated for the same data, often hinting that later data arrived but a gap exists."
+      },
+      {
+        "q": "What is Fast retransmit?",
+        "options": [
+          "The wireless medium for a transmission.",
+          "TCP behavior that retransmits after enough duplicate ACKs, before timeout.",
+          "Wireless mode where devices communicate through an access point.",
+          "The ability to keep network service while changing attachment points."
+        ],
+        "answer": 1,
+        "explain": "TCP behavior that retransmits after enough duplicate ACKs, before timeout."
+      },
+      {
+        "q": "What is RTT?",
+        "options": [
+          "Round-trip time between sending data and receiving its acknowledgment.",
+          "To reduce routing table size.",
+          "The MPLS edge router that removes the label.",
+          "Unwanted signals that disrupt communication."
+        ],
+        "answer": 0,
+        "explain": "Round-trip time between sending data and receiving its acknowledgment."
+      },
+      {
+        "q": "What is EstimatedRTT?",
+        "options": [
+          "The wireless medium for a transmission.",
+          "Communication where a device cannot send and receive at the same time.",
+          "Detecting unauthorized changes to data.",
+          "TCP's smoothed estimate of round-trip time."
+        ],
+        "answer": 3,
+        "explain": "TCP's smoothed estimate of round-trip time."
+      },
+      {
+        "q": "What is DevRTT?",
+        "options": [
+          "Distributing traffic across multiple paths or servers.",
+          "A service that delivers data correctly and in order despite loss or corruption.",
+          "An estimate of RTT variation used to set safer timeouts.",
+          "ESP can encrypt payloads."
+        ],
+        "answer": 2,
+        "explain": "An estimate of RTT variation used to set safer timeouts."
+      },
+      {
+        "q": "What is TimeoutInterval?",
+        "options": [
+          "The naming system that translates domain names into IP addresses.",
+          "The retransmission timer value derived from estimated RTT and variation.",
+          "They reduce overlap and interference when planned well.",
+          "Organizing data into packet or frame units for transmission."
+        ],
+        "answer": 1,
+        "explain": "The retransmission timer value derived from estimated RTT and variation."
+      },
+      {
+        "q": "What is Congestion window?",
+        "options": [
+          "TCP sender-side limit on how much data can be in flight due to congestion control.",
+          "They connect application processes to transport services.",
+          "An intra-AS link-state routing protocol.",
+          "Packets waiting because the output link or processing path is busy."
+        ],
+        "answer": 0,
+        "explain": "TCP sender-side limit on how much data can be in flight due to congestion control."
+      },
+      {
+        "q": "What is Slow start?",
+        "options": [
+          "It may detect but not correct errors.",
+          "A technique that helps reduce certain distance-vector loops.",
+          "A secure virtual private network built across shared infrastructure.",
+          "TCP phase where the congestion window grows quickly from a small value."
+        ],
+        "answer": 3,
+        "explain": "TCP phase where the congestion window grows quickly from a small value."
+      },
+      {
+        "q": "What is Congestion avoidance?",
+        "options": [
+          "Reporting errors and supporting diagnostics.",
+          "An attacker secretly intercepting and possibly altering communication.",
+          "TCP phase where the congestion window grows more cautiously.",
+          "It reduces outage time after a failure."
+        ],
+        "answer": 2,
+        "explain": "TCP phase where the congestion window grows more cautiously."
+      },
+      {
+        "q": "What is Fast recovery?",
+        "options": [
+          "It separates complex network work into smaller responsibilities.",
+          "TCP behavior after packet loss detected by duplicate ACKs.",
+          "It selects the most specific route for a destination.",
+          "A number used to identify a specific application process on a host."
+        ],
+        "answer": 1,
+        "explain": "TCP behavior after packet loss detected by duplicate ACKs."
+      },
+      {
+        "q": "What is AIMD?",
+        "options": [
+          "Additive Increase Multiplicative Decrease, TCP's classic congestion behavior.",
+          "Out-of-order packets may arrive before missing packets are retransmitted.",
+          "TCP's smoothed estimate of round-trip time.",
+          "A cellular generation using packet-switched IP-based design."
+        ],
+        "answer": 0,
+        "explain": "Additive Increase Multiplicative Decrease, TCP's classic congestion behavior."
+      },
+      {
+        "q": "What is TCP Reno?",
+        "options": [
+          "The layer that transfers frames across a single link or hop.",
+          "Packets may need fragmentation or path MTU discovery.",
+          "A router that forwards MPLS traffic based on label values.",
+          "A classic TCP version using slow start, congestion avoidance, fast retransmit, and fast recovery."
+        ],
+        "answer": 3,
+        "explain": "A classic TCP version using slow start, congestion avoidance, fast retransmit, and fast recovery."
+      },
+      {
+        "q": "Why is stop-and-wait inefficient on long-delay links?",
+        "options": [
+          "A sharing method where packets from many users take turns using links.",
+          "Error detection information such as a CRC.",
+          "The sender is idle while waiting for each ACK.",
+          "The IEEE family of WiFi standards."
+        ],
+        "answer": 2,
+        "explain": "The sender is idle while waiting for each ACK."
+      },
+      {
+        "q": "What does pipelining improve?",
+        "options": [
+          "It resolves MAC addresses only within a LAN/broadcast domain.",
+          "Link utilization and throughput.",
+          "A logical path that behaves like a dedicated circuit.",
+          "TCP setup using SYN, SYN-ACK, and ACK messages."
+        ],
+        "answer": 1,
+        "explain": "Link utilization and throughput."
+      },
+      {
+        "q": "Why does Selective Repeat need buffering?",
+        "options": [
+          "Out-of-order packets may arrive before missing packets are retransmitted.",
+          "The mobile device, such as a phone or cellular modem.",
+          "A DNS server that has official records for a domain.",
+          "Router component that receives packets and may do lookup."
+        ],
+        "answer": 0,
+        "explain": "Out-of-order packets may arrive before missing packets are retransmitted."
+      },
+      {
+        "q": "When can fast retransmit happen?",
+        "options": [
+          "The base stations and radio systems connecting devices.",
+          "A high-speed network connecting large numbers of servers.",
+          "Identity, mobility, gateways, and Internet connectivity.",
+          "After multiple duplicate ACKs indicate likely loss."
+        ],
+        "answer": 3,
+        "explain": "After multiple duplicate ACKs indicate likely loss."
+      },
+      {
+        "q": "Why does TCP estimate RTT?",
+        "options": [
+          "The communication channel between neighboring nodes.",
+          "It does not yet know the destination MAC's port.",
+          "It needs a reasonable retransmission timeout.",
+          "Known attack patterns."
+        ],
+        "answer": 2,
+        "explain": "It needs a reasonable retransmission timeout."
+      },
+      {
+        "q": "What happens in slow start?",
+        "options": [
+          "The MPLS edge router that first adds a label.",
+          "The congestion window grows rapidly until a threshold or loss event.",
+          "An attacker secretly intercepting and possibly altering communication.",
+          "Multiple devices may try to transmit at the same time."
+        ],
+        "answer": 1,
+        "explain": "The congestion window grows rapidly until a threshold or loss event."
+      },
+      {
+        "q": "What does AIMD do after congestion?",
+        "options": [
+          "It increases slowly and decreases sharply after loss.",
+          "A number that identifies byte positions for ordering and reliability.",
+          "TCP behavior after packet loss detected by duplicate ACKs.",
+          "A shared medium heard by multiple nodes."
+        ],
+        "answer": 0,
+        "explain": "It increases slowly and decreases sharply after loss."
+      },
+      {
+        "q": "Why does TCP reduce its sending rate?",
+        "options": [
+          "Encapsulating packets inside other packets to reach a mobile location.",
+          "Paying another network to reach the broader Internet.",
+          "A cache of IP-to-MAC mappings.",
+          "To relieve congestion in the network."
+        ],
+        "answer": 3,
+        "explain": "To relieve congestion in the network."
+      },
+      {
+        "q": "What is the benefit of cumulative ACKs?",
+        "options": [
+          "Mobile IP entity that assists a mobile node in a visited network.",
+          "A suite of protocols that secures IP datagrams.",
+          "They compactly acknowledge a continuous byte stream.",
+          "Header fields such as addresses, ports, and protocol."
+        ],
+        "answer": 2,
+        "explain": "They compactly acknowledge a continuous byte stream."
+      },
+      {
+        "q": "Why are timers still needed?",
+        "options": [
+          "A table a router uses to choose an output link.",
+          "Some losses may not produce duplicate ACKs.",
+          "Interoperability between different systems and vendors.",
+          "Sending multiple packets before waiting for all acknowledgments."
+        ],
+        "answer": 1,
+        "explain": "Some losses may not produce duplicate ACKs."
+      }
+    ]
+  },
+  {
+    "title": "2.2A Practice: Network Layer Data Plane",
+    "description": "30-item practice test for Network Layer Data Plane.",
+    "questions": [
+      {
+        "q": "What is Network layer?",
+        "options": [
+          "The layer responsible for moving packets from source host to destination host.",
+          "Hop-count metrics and small maximum hop counts limit scalability.",
+          "Packets may need fragmentation or path MTU discovery.",
+          "To prove freshness and block replay attacks."
+        ],
+        "answer": 0,
+        "explain": "The layer responsible for moving packets from source host to destination host."
+      },
+      {
+        "q": "What is Datagram?",
+        "options": [
+          "Internet Key Exchange, used to negotiate IPsec security associations.",
+          "A WiFi acknowledgment that confirms frame reception.",
+          "Shortest paths from one source to all destinations.",
+          "The network-layer packet, especially in IP networks."
+        ],
+        "answer": 3,
+        "explain": "The network-layer packet, especially in IP networks."
+      },
+      {
+        "q": "What is Forwarding?",
+        "options": [
+          "To reduce routing table size.",
+          "Sending and receiving at the same time.",
+          "The local action of moving a packet from a router input to an output interface.",
+          "A DNS server that has official records for a domain."
+        ],
+        "answer": 2,
+        "explain": "The local action of moving a packet from a router input to an output interface."
+      },
+      {
+        "q": "What is Routing?",
+        "options": [
+          "It increases slowly and decreases sharply after loss.",
+          "The network-wide process of determining paths from source to destination.",
+          "A radio channel carrying bits between devices.",
+          "Sending a frame out multiple ports when the destination is unknown or broadcast."
+        ],
+        "answer": 1,
+        "explain": "The network-wide process of determining paths from source to destination."
+      },
+      {
+        "q": "What is Data plane?",
+        "options": [
+          "The router function that actually forwards packets.",
+          "Bit errors in the segment.",
+          "Error detection information such as a CRC.",
+          "Connecting an end device to one VLAN."
+        ],
+        "answer": 0,
+        "explain": "The router function that actually forwards packets."
+      },
+      {
+        "q": "What is Control plane?",
+        "options": [
+          "A number used to identify a specific application process on a host.",
+          "A frame an AP sends to announce network presence and parameters.",
+          "Carrying multiple VLANs between switches.",
+          "The logic that computes or installs forwarding behavior."
+        ],
+        "answer": 3,
+        "explain": "The logic that computes or installs forwarding behavior."
+      },
+      {
+        "q": "What is Forwarding table?",
+        "options": [
+          "A receiver message confirming data arrival.",
+          "Transport Layer Security, commonly used to secure web connections.",
+          "A table a router uses to choose an output link.",
+          "A sum-based error detection value."
+        ],
+        "answer": 2,
+        "explain": "A table a router uses to choose an output link."
+      },
+      {
+        "q": "What is Longest-prefix match?",
+        "options": [
+          "Wireless mode where devices communicate through an access point.",
+          "The rule of choosing the most specific matching destination prefix.",
+          "The link-layer format used by Ethernet.",
+          "The addresses and ports that identify a transport conversation."
+        ],
+        "answer": 1,
+        "explain": "The rule of choosing the most specific matching destination prefix."
+      },
+      {
+        "q": "What is Router input port?",
+        "options": [
+          "Router component that receives packets and may do lookup.",
+          "A control-message protocol used for errors and diagnostics.",
+          "It connects access networks to larger Internet infrastructure.",
+          "Identifying a specific management variable."
+        ],
+        "answer": 0,
+        "explain": "Router component that receives packets and may do lookup."
+      },
+      {
+        "q": "What is Switching fabric?",
+        "options": [
+          "Routers may have outdated or inconsistent distance estimates.",
+          "The sender is idle while waiting for each ACK.",
+          "It identifies which part of an address is the network portion.",
+          "The internal router mechanism that transfers packets from input to output."
+        ],
+        "answer": 3,
+        "explain": "The internal router mechanism that transfers packets from input to output."
+      },
+      {
+        "q": "What is Router output port?",
+        "options": [
+          "It needs reliable and ordered delivery.",
+          "Dynamic Adaptive Streaming over HTTP, which adjusts video quality to network conditions.",
+          "Router component that queues and transmits packets on an outgoing link.",
+          "It verifies the subscriber to the carrier network."
+        ],
+        "answer": 2,
+        "explain": "Router component that queues and transmits packets on an outgoing link."
+      },
+      {
+        "q": "What is Queueing?",
+        "options": [
+          "A BGP attribute used inside an AS to prefer certain routes.",
+          "Packets waiting because the output link or processing path is busy.",
+          "The source MAC address of arriving frames.",
+          "Packets circulate because routers point traffic back toward each other."
+        ],
+        "answer": 1,
+        "explain": "Packets waiting because the output link or processing path is busy."
+      },
+      {
+        "q": "What is IPv4?",
+        "options": [
+          "The 32-bit Internet Protocol version still widely used.",
+          "A table mapping incoming labels to outgoing labels and interfaces.",
+          "SMTP sends mail, while IMAP retrieves and synchronizes mail.",
+          "HTTP protected by TLS."
+        ],
+        "answer": 0,
+        "explain": "The 32-bit Internet Protocol version still widely used."
+      },
+      {
+        "q": "What is IPv6?",
+        "options": [
+          "The Mobile IP component that forwards traffic to the mobile node.",
+          "A storage area representing intended device configuration.",
+          "To relieve congestion in the network.",
+          "The 128-bit Internet Protocol version designed for a much larger address space."
+        ],
+        "answer": 3,
+        "explain": "The 128-bit Internet Protocol version designed for a much larger address space."
+      },
+      {
+        "q": "What is Subnet?",
+        "options": [
+          "The logic that computes or installs forwarding behavior.",
+          "Carrying multiple VLANs between switches.",
+          "A logical IP address block within a network.",
+          "Clear To Send, a response allowing a sender to transmit."
+        ],
+        "answer": 2,
+        "explain": "A logical IP address block within a network."
+      },
+      {
+        "q": "What is CIDR?",
+        "options": [
+          "The process of a wireless host joining an access point.",
+          "Classless Inter-Domain Routing, notation for variable-length network prefixes.",
+          "Regularly asking devices for status information.",
+          "A database index used only for local searches."
+        ],
+        "answer": 1,
+        "explain": "Classless Inter-Domain Routing, notation for variable-length network prefixes."
+      },
+      {
+        "q": "What is DHCP?",
+        "options": [
+          "A protocol that dynamically assigns IP configuration to hosts.",
+          "Authentication Header, providing authentication and integrity without encryption.",
+          "Using multiple equal-cost paths.",
+          "HTTP protected by TLS."
+        ],
+        "answer": 0,
+        "explain": "A protocol that dynamically assigns IP configuration to hosts."
+      },
+      {
+        "q": "What is NAT?",
+        "options": [
+          "A shared medium heard by multiple nodes.",
+          "Eavesdropping and tampering when configured correctly.",
+          "Separating public services from internal networks.",
+          "Network Address Translation, which maps private internal addresses to public addresses."
+        ],
+        "answer": 3,
+        "explain": "Network Address Translation, which maps private internal addresses to public addresses."
+      },
+      {
+        "q": "What is ICMP?",
+        "options": [
+          "The set of devices that receive a layer-2 broadcast.",
+          "Symmetric keys are efficient for bulk data.",
+          "A control-message protocol used for errors and diagnostics.",
+          "Sending and receiving at the same time."
+        ],
+        "answer": 2,
+        "explain": "A control-message protocol used for errors and diagnostics."
+      },
+      {
+        "q": "What is Fragmentation?",
+        "options": [
+          "A server that queries DNS on behalf of a client.",
+          "Splitting an IP datagram into smaller pieces to fit a link MTU.",
+          "The top network layer where applications define messages and services.",
+          "Protection applied to IP packets or network paths."
+        ],
+        "answer": 1,
+        "explain": "Splitting an IP datagram into smaller pieces to fit a link MTU."
+      },
+      {
+        "q": "Why is longest-prefix match used?",
+        "options": [
+          "It selects the most specific route for a destination.",
+          "A small request can be sent quickly without connection setup.",
+          "Control information attached to a datagram for network-layer delivery.",
+          "The layer that provides logical communication between application processes."
+        ],
+        "answer": 0,
+        "explain": "It selects the most specific route for a destination."
+      },
+      {
+        "q": "What does DHCP provide besides an IP address?",
+        "options": [
+          "Subscriber identity module used for cellular identity and authentication.",
+          "Traffic or behavior that deviates from normal patterns.",
+          "A preferred route because it may generate revenue.",
+          "Configuration such as gateway and DNS server information."
+        ],
+        "answer": 3,
+        "explain": "Configuration such as gateway and DNS server information."
+      },
+      {
+        "q": "Why was IPv6 created?",
+        "options": [
+          "A packet switch that forwards network-layer datagrams between networks using IP information.",
+          "A lightweight connectionless transport protocol with no built-in reliability.",
+          "To provide a much larger address space and modernized IP design.",
+          "Lower-cost paths are preferred."
+        ],
+        "answer": 2,
+        "explain": "To provide a much larger address space and modernized IP design."
+      },
+      {
+        "q": "What is ICMP used for?",
+        "options": [
+          "Carrier Sense Multiple Access with Collision Avoidance, used in WiFi.",
+          "Reporting errors and supporting diagnostics.",
+          "Routers may have outdated or inconsistent distance estimates.",
+          "Cyclic Redundancy Check, a strong polynomial-based error detection method."
+        ],
+        "answer": 1,
+        "explain": "Reporting errors and supporting diagnostics."
+      },
+      {
+        "q": "Why can queueing delay increase?",
+        "options": [
+          "Packets arrive faster than they can be transmitted.",
+          "A device that receives packets and forwards them toward a destination.",
+          "Computing shortest paths in link-state routing.",
+          "Packets circulate because routers point traffic back toward each other."
+        ],
+        "answer": 0,
+        "explain": "Packets arrive faster than they can be transmitted."
+      },
+      {
+        "q": "What is a subnet mask or prefix for?",
+        "options": [
+          "The transport-layer unit that carries application data and a transport header.",
+          "A pipelined protocol that retransmits a lost packet and later packets in the window.",
+          "A suite of protocols that secures IP datagrams.",
+          "It identifies which part of an address is the network portion."
+        ],
+        "answer": 3,
+        "explain": "It identifies which part of an address is the network portion."
+      },
+      {
+        "q": "Why does NAT complicate end-to-end connectivity?",
+        "options": [
+          "The layer that provides logical communication between application processes.",
+          "The MPLS edge router that first adds a label.",
+          "Internal private hosts are hidden behind translated addresses.",
+          "Using a visited carrier network while subscribed to a home carrier."
+        ],
+        "answer": 2,
+        "explain": "Internal private hosts are hidden behind translated addresses."
+      },
+      {
+        "q": "What is an IP header?",
+        "options": [
+          "TCP phase where the congestion window grows more cautiously.",
+          "Control information attached to a datagram for network-layer delivery.",
+          "Reporting errors and supporting diagnostics.",
+          "The congestion window grows rapidly until a threshold or loss event."
+        ],
+        "answer": 1,
+        "explain": "Control information attached to a datagram for network-layer delivery."
+      },
+      {
+        "q": "What happens when an MTU is too small?",
+        "options": [
+          "Packets may need fragmentation or path MTU discovery.",
+          "They let TCP order data and detect missing bytes.",
+          "A virtual private network service that can be carried over shared infrastructure.",
+          "The layer that transfers frames across a single link or hop."
+        ],
+        "answer": 0,
+        "explain": "Packets may need fragmentation or path MTU discovery."
+      },
+      {
+        "q": "What is a default gateway?",
+        "options": [
+          "A private key to sign and a public key to verify.",
+          "A server that queries DNS on behalf of a client.",
+          "A method that prevents a receiver from being overwhelmed.",
+          "The router a host sends traffic to for destinations outside the local subnet."
+        ],
+        "answer": 3,
+        "explain": "The router a host sends traffic to for destinations outside the local subnet."
+      }
+    ]
+  },
+  {
+    "title": "3.1 Practice: Routing Algorithms and Intra-AS Routing",
+    "description": "30-item practice test for Routing Algorithms and Intra-AS Routing.",
+    "questions": [
+      {
+        "q": "What is Routing algorithm?",
+        "options": [
+          "A protocol commonly associated with real-time audio or video transport.",
+          "It increases slowly and decreases sharply after loss.",
+          "A method for computing paths through a network graph.",
+          "Eavesdropping and tampering when configured correctly."
+        ],
+        "answer": 2,
+        "explain": "A method for computing paths through a network graph."
+      },
+      {
+        "q": "What is Link-state?",
+        "options": [
+          "Management Information Base, a structured collection of managed variables.",
+          "A routing approach where routers learn network topology and compute shortest paths.",
+          "Request To Send, an optional control frame to reserve the medium.",
+          "They bind public keys to identities."
+        ],
+        "answer": 1,
+        "explain": "A routing approach where routers learn network topology and compute shortest paths."
+      },
+      {
+        "q": "What is Dijkstra algorithm?",
+        "options": [
+          "A shortest-path algorithm used in link-state routing.",
+          "TCP sender-side limit on how much data can be in flight due to congestion control.",
+          "The rule of choosing the most specific matching destination prefix.",
+          "Who created the message."
+        ],
+        "answer": 0,
+        "explain": "A shortest-path algorithm used in link-state routing."
+      },
+      {
+        "q": "What is Distance-vector?",
+        "options": [
+          "Round-trip time between sending data and receiving its acknowledgment.",
+          "It separates complex network work into smaller responsibilities.",
+          "A shortest-path algorithm used in link-state routing.",
+          "A routing approach where routers share distance estimates with neighbors."
+        ],
+        "answer": 3,
+        "explain": "A routing approach where routers share distance estimates with neighbors."
+      },
+      {
+        "q": "What is Bellman-Ford?",
+        "options": [
+          "Regularly asking devices for status information.",
+          "A frame an AP sends to announce network presence and parameters.",
+          "The algorithmic idea behind distance-vector route updates.",
+          "It tracks connection state, not only individual packets."
+        ],
+        "answer": 2,
+        "explain": "The algorithmic idea behind distance-vector route updates."
+      },
+      {
+        "q": "What is Routing table?",
+        "options": [
+          "Local Area Network, a network covering a limited area such as a room, home, or campus.",
+          "The table of selected routes used to forward packets.",
+          "TCP phase where the congestion window grows more cautiously.",
+          "BGP sessions between routers in different autonomous systems."
+        ],
+        "answer": 1,
+        "explain": "The table of selected routes used to forward packets."
+      },
+      {
+        "q": "What is Link cost?",
+        "options": [
+          "A value assigned to a link, often based on bandwidth, delay, or policy.",
+          "A server that queries DNS on behalf of a client.",
+          "A WiFi base station that connects wireless hosts to a LAN.",
+          "It tracks connection state, not only individual packets."
+        ],
+        "answer": 0,
+        "explain": "A value assigned to a link, often based on bandwidth, delay, or policy."
+      },
+      {
+        "q": "What is Convergence?",
+        "options": [
+          "A value used to detect bit errors in a segment.",
+          "Control information placed before the payload.",
+          "Access Control List, a list of permit or deny rules.",
+          "The point when routers agree on stable routing information."
+        ],
+        "answer": 3,
+        "explain": "The point when routers agree on stable routing information."
+      },
+      {
+        "q": "What is Count-to-infinity?",
+        "options": [
+          "The part of a mobile network connecting devices to the core.",
+          "Equal-Cost Multipath, using multiple equal-cost paths for traffic.",
+          "A distance-vector problem where bad news about a failed route spreads slowly.",
+          "A lightweight connectionless transport protocol with no built-in reliability."
+        ],
+        "answer": 2,
+        "explain": "A distance-vector problem where bad news about a failed route spreads slowly."
+      },
+      {
+        "q": "What is Poisoned reverse?",
+        "options": [
+          "A sharing method where packets from many users take turns using links.",
+          "A technique that helps reduce certain distance-vector loops.",
+          "A method for computing paths through a network graph.",
+          "TCP phase where the congestion window grows more cautiously."
+        ],
+        "answer": 1,
+        "explain": "A technique that helps reduce certain distance-vector loops."
+      },
+      {
+        "q": "What is Intra-AS routing?",
+        "options": [
+          "Routing performed within one autonomous system.",
+          "A BGP attribute identifying the next router to reach a prefix.",
+          "The ability to keep network service while changing attachment points.",
+          "A shared medium heard by multiple nodes."
+        ],
+        "answer": 0,
+        "explain": "Routing performed within one autonomous system."
+      },
+      {
+        "q": "What is Autonomous system?",
+        "options": [
+          "Walls, distance, and reflections weaken signals.",
+          "The link-layer format used by Ethernet.",
+          "A public-key mechanism proving origin and integrity.",
+          "A network or group of networks under one administrative control."
+        ],
+        "answer": 3,
+        "explain": "A network or group of networks under one administrative control."
+      },
+      {
+        "q": "What is OSPF?",
+        "options": [
+          "A switch table mapping MAC addresses to ports.",
+          "A method that prevents a receiver from being overwhelmed.",
+          "An intra-AS link-state routing protocol.",
+          "Information that a destination prefix can be reached."
+        ],
+        "answer": 2,
+        "explain": "An intra-AS link-state routing protocol."
+      },
+      {
+        "q": "What is Link-state advertisement?",
+        "options": [
+          "Protection applied to IP packets or network paths.",
+          "Information flooded by routers describing their links and costs.",
+          "TCP behavior after packet loss detected by duplicate ACKs.",
+          "Distributing traffic across multiple paths or servers."
+        ],
+        "answer": 1,
+        "explain": "Information flooded by routers describing their links and costs."
+      },
+      {
+        "q": "What is Area hierarchy?",
+        "options": [
+          "A design that divides OSPF networks into areas for scalability.",
+          "The mesh of packet switches and links that carries traffic across networks.",
+          "The physical or base IP network that carries overlay traffic.",
+          "A routing approach where routers share distance estimates with neighbors."
+        ],
+        "answer": 0,
+        "explain": "A design that divides OSPF networks into areas for scalability."
+      },
+      {
+        "q": "What is RIP?",
+        "options": [
+          "The sender is idle while waiting for each ACK.",
+          "A classic TCP version using slow start, congestion avoidance, fast retransmit, and fast recovery.",
+          "BGP sessions between routers in different autonomous systems.",
+          "An older distance-vector routing protocol using hop count."
+        ],
+        "answer": 3,
+        "explain": "An older distance-vector routing protocol using hop count."
+      },
+      {
+        "q": "What is IS-IS?",
+        "options": [
+          "The host can send frames through the AP.",
+          "Known attack patterns.",
+          "A link-state routing protocol used in some large provider networks.",
+          "Software-Defined Networking, separating control logic from forwarding behavior."
+        ],
+        "answer": 2,
+        "explain": "A link-state routing protocol used in some large provider networks."
+      },
+      {
+        "q": "What is Equal-cost multipath?",
+        "options": [
+          "It identifies a resource and how to access it.",
+          "Using multiple paths with the same cost to share traffic.",
+          "The actual running condition and measured status of a device.",
+          "TCP setup using SYN, SYN-ACK, and ACK messages."
+        ],
+        "answer": 1,
+        "explain": "Using multiple paths with the same cost to share traffic."
+      },
+      {
+        "q": "What is Route recomputation?",
+        "options": [
+          "The recalculation of paths after topology or cost changes.",
+          "Routers may have outdated or inconsistent distance estimates.",
+          "The communication channel between neighboring nodes.",
+          "The ability to keep network service while changing attachment points."
+        ],
+        "answer": 0,
+        "explain": "The recalculation of paths after topology or cost changes."
+      },
+      {
+        "q": "What is Topology database?",
+        "options": [
+          "Packets circulate because routers point traffic back toward each other.",
+          "Packets may need fragmentation or path MTU discovery.",
+          "The divisor pattern used in CRC computation.",
+          "The collected link-state view used to compute routes."
+        ],
+        "answer": 3,
+        "explain": "The collected link-state view used to compute routes."
+      },
+      {
+        "q": "Why does OSPF use areas?",
+        "options": [
+          "YANG gives shared meaning and structure to configuration data.",
+          "The network a roaming user currently attaches to.",
+          "To improve scalability and reduce routing overhead.",
+          "Propagation delay"
+        ],
+        "answer": 2,
+        "explain": "To improve scalability and reduce routing overhead."
+      },
+      {
+        "q": "What does Dijkstra compute?",
+        "options": [
+          "They let TCP order data and detect missing bytes.",
+          "Shortest paths from one source to all destinations.",
+          "Distributing traffic across multiple paths or servers.",
+          "The data link layer unit that carries a network-layer packet."
+        ],
+        "answer": 1,
+        "explain": "Shortest paths from one source to all destinations."
+      },
+      {
+        "q": "Why can distance-vector routing loop?",
+        "options": [
+          "Routers may have outdated or inconsistent distance estimates.",
+          "The standards organization that develops many Internet protocols through RFCs.",
+          "HTTP behavior that reuses a TCP connection for multiple objects.",
+          "It identifies which part of an address is the network portion."
+        ],
+        "answer": 0,
+        "explain": "Routers may have outdated or inconsistent distance estimates."
+      },
+      {
+        "q": "What does convergence mean?",
+        "options": [
+          "Classless Inter-Domain Routing, notation for variable-length network prefixes.",
+          "Cellular radio equipment that connects user devices to the carrier network.",
+          "Traffic or behavior that deviates from normal patterns.",
+          "Routing information has stabilized after changes."
+        ],
+        "answer": 3,
+        "explain": "Routing information has stabilized after changes."
+      },
+      {
+        "q": "How can link cost affect routing?",
+        "options": [
+          "A switch port that carries traffic for multiple VLANs using tags.",
+          "Routers in different autonomous systems.",
+          "Lower-cost paths are preferred.",
+          "A shared medium heard by multiple nodes."
+        ],
+        "answer": 2,
+        "explain": "Lower-cost paths are preferred."
+      },
+      {
+        "q": "What is a topology database used for?",
+        "options": [
+          "Keeping message contents hidden from unauthorized parties.",
+          "Computing shortest paths in link-state routing.",
+          "A logical network built on top of another network.",
+          "A device at the edge of the network that runs applications, such as a phone, laptop, server, or camera."
+        ],
+        "answer": 1,
+        "explain": "Computing shortest paths in link-state routing."
+      },
+      {
+        "q": "What does equal-cost multipath allow?",
+        "options": [
+          "Traffic sharing across multiple equally good paths.",
+          "An intra-AS link-state routing protocol.",
+          "To provide a much larger address space and modernized IP design.",
+          "A protocol for installing, changing, and retrieving network device configuration."
+        ],
+        "answer": 0,
+        "explain": "Traffic sharing across multiple equally good paths."
+      },
+      {
+        "q": "Why is RIP limited in large networks?",
+        "options": [
+          "A design that divides OSPF networks into areas for scalability.",
+          "HTTP over TLS.",
+          "A switch port that carries traffic for multiple VLANs using tags.",
+          "Hop-count metrics and small maximum hop counts limit scalability."
+        ],
+        "answer": 3,
+        "explain": "Hop-count metrics and small maximum hop counts limit scalability."
+      },
+      {
+        "q": "What is a routing loop?",
+        "options": [
+          "Internet routing follows business and administrative relationships.",
+          "Information that a destination prefix can be reached.",
+          "Packets circulate because routers point traffic back toward each other.",
+          "The router a host sends traffic to for destinations outside the local subnet."
+        ],
+        "answer": 2,
+        "explain": "Packets circulate because routers point traffic back toward each other."
+      },
+      {
+        "q": "Why is route recomputation necessary?",
+        "options": [
+          "Choosing the closest exit point from an AS to hand traffic off quickly.",
+          "Links, costs, or routers can fail or change.",
+          "A radio access point connecting wireless devices to network infrastructure.",
+          "The top network layer where applications define messages and services."
+        ],
+        "answer": 1,
+        "explain": "Links, costs, or routers can fail or change."
+      }
+    ]
+  },
+  {
+    "title": "3.2 Practice: ISP Routing and BGP",
+    "description": "30-item practice test for ISP Routing and BGP.",
+    "questions": [
+      {
+        "q": "What is Inter-AS routing?",
+        "options": [
+          "Routing between autonomous systems.",
+          "Streaming or exporting operational data for monitoring.",
+          "BGP sessions between routers inside the same autonomous system.",
+          "Mobile IP entity that assists a mobile node in a visited network."
+        ],
+        "answer": 0,
+        "explain": "Routing between autonomous systems."
+      },
+      {
+        "q": "What is BGP?",
+        "options": [
+          "IDS method that matches known attack patterns.",
+          "The naming system that translates domain names into IP addresses.",
+          "An estimate of RTT variation used to set safer timeouts.",
+          "Border Gateway Protocol, the main interdomain routing protocol of the Internet."
+        ],
+        "answer": 3,
+        "explain": "Border Gateway Protocol, the main interdomain routing protocol of the Internet."
+      },
+      {
+        "q": "What is eBGP?",
+        "options": [
+          "A local packet switch that forwards frames inside a LAN using MAC addresses.",
+          "When packets are dropped because of errors, congestion, or failed paths.",
+          "BGP sessions between routers in different autonomous systems.",
+          "The divisor pattern used in CRC computation."
+        ],
+        "answer": 2,
+        "explain": "BGP sessions between routers in different autonomous systems."
+      },
+      {
+        "q": "What is iBGP?",
+        "options": [
+          "Management Information Base, a structured collection of managed variables.",
+          "BGP sessions between routers inside the same autonomous system.",
+          "IDS method that looks for deviations from normal behavior.",
+          "A separated network zone for publicly reachable services."
+        ],
+        "answer": 1,
+        "explain": "BGP sessions between routers inside the same autonomous system."
+      },
+      {
+        "q": "What is AS-PATH?",
+        "options": [
+          "A BGP attribute listing autonomous systems a route advertisement has traversed.",
+          "Multiple devices may try to transmit at the same time.",
+          "A high-speed network connecting large numbers of servers.",
           "Transmission delay"
         ],
         "answer": 0,
-        "explain": "Layering: Dividing networking into layers with separate responsibilities."
+        "explain": "A BGP attribute listing autonomous systems a route advertisement has traversed."
       },
       {
-        "q": "Which term best matches this description: Wrapping data with headers and trailers as it moves down the protocol stack.",
+        "q": "What is NEXT-HOP?",
         "options": [
-          "Link-layer switch",
-          "Encapsulation",
-          "Network core",
-          "Processing delay"
+          "Information flooded by routers describing their links and costs.",
+          "Wireless devices may not hear collisions while transmitting.",
+          "Packets arrive faster than they can be transmitted.",
+          "A BGP attribute identifying the next router to reach a prefix."
+        ],
+        "answer": 3,
+        "explain": "A BGP attribute identifying the next router to reach a prefix."
+      },
+      {
+        "q": "What is Prefix?",
+        "options": [
+          "A shared medium heard by multiple nodes.",
+          "A pipelined protocol that retransmits only specific missing packets.",
+          "A block of IP addresses advertised as reachable.",
+          "TCP phase where the congestion window grows quickly from a small value."
+        ],
+        "answer": 2,
+        "explain": "A block of IP addresses advertised as reachable."
+      },
+      {
+        "q": "What is Reachability?",
+        "options": [
+          "A host, router, switch, or access point connected to a link.",
+          "Information that a destination prefix can be reached.",
+          "A one-way security relationship defining IPsec parameters and keys.",
+          "To spread traffic and avoid hot spots."
         ],
         "answer": 1,
-        "explain": "Encapsulation: Wrapping data with headers and trailers as it moves down the protocol stack."
+        "explain": "Information that a destination prefix can be reached."
+      },
+      {
+        "q": "What is Routing policy?",
+        "options": [
+          "Business or administrative rules that influence route selection.",
+          "Wireless devices may not hear collisions while transmitting.",
+          "The VLAN to which the frame belongs.",
+          "Moving data from one node to its immediate neighbor."
+        ],
+        "answer": 0,
+        "explain": "Business or administrative rules that influence route selection."
+      },
+      {
+        "q": "What is Hot-potato routing?",
+        "options": [
+          "Identifying a specific management variable.",
+          "A user interface setting unrelated to network communication.",
+          "Splitting an IP datagram into smaller pieces to fit a link MTU.",
+          "Choosing the closest exit point from an AS to hand traffic off quickly."
+        ],
+        "answer": 3,
+        "explain": "Choosing the closest exit point from an AS to hand traffic off quickly."
+      },
+      {
+        "q": "What is Route advertisement?",
+        "options": [
+          "A router that forwards MPLS traffic based on label values.",
+          "A protocol for installing, changing, and retrieving network device configuration.",
+          "A BGP message announcing reachability to a prefix.",
+          "The IEEE family of WiFi standards."
+        ],
+        "answer": 2,
+        "explain": "A BGP message announcing reachability to a prefix."
+      },
+      {
+        "q": "What is Route withdrawal?",
+        "options": [
+          "Lower-cost paths are preferred.",
+          "A BGP message removing a previously advertised route.",
+          "The receiver's ability to accept data.",
+          "Packets waiting because the output link or processing path is busy."
+        ],
+        "answer": 1,
+        "explain": "A BGP message removing a previously advertised route."
+      },
+      {
+        "q": "What is Peering?",
+        "options": [
+          "An agreement where networks exchange traffic, often without payment.",
+          "IPsec mode that protects the payload of the original IP datagram.",
+          "It organizes manageable device variables.",
+          "The web protocol used by browsers and servers to request and send objects."
+        ],
+        "answer": 0,
+        "explain": "An agreement where networks exchange traffic, often without payment."
+      },
+      {
+        "q": "What is Transit?",
+        "options": [
+          "The actual rate at which useful data is delivered.",
+          "The ability to keep network service while changing attachment points.",
+          "It resolves MAC addresses only within a LAN/broadcast domain.",
+          "A paid service where one network carries another network's traffic to the Internet."
+        ],
+        "answer": 3,
+        "explain": "A paid service where one network carries another network's traffic to the Internet."
+      },
+      {
+        "q": "What is Provider?",
+        "options": [
+          "A method for computing paths through a network graph.",
+          "It catches more burst and pattern errors.",
+          "A network that sells transit or connectivity.",
+          "The layer that transfers frames across a single link or hop."
+        ],
+        "answer": 2,
+        "explain": "A network that sells transit or connectivity."
+      },
+      {
+        "q": "What is Customer?",
+        "options": [
+          "A router connecting an AS to other autonomous systems.",
+          "A network that buys connectivity or transit from another network.",
+          "Splitting an IP datagram into smaller pieces to fit a link MTU.",
+          "After multiple duplicate ACKs indicate likely loss."
+        ],
+        "answer": 1,
+        "explain": "A network that buys connectivity or transit from another network."
+      },
+      {
+        "q": "What is Local preference?",
+        "options": [
+          "A BGP attribute used inside an AS to prefer certain routes.",
+          "Computing or installing network behavior.",
+          "An ACK that confirms all data up to a certain point.",
+          "The dominant wired LAN technology."
+        ],
+        "answer": 0,
+        "explain": "A BGP attribute used inside an AS to prefer certain routes."
+      },
+      {
+        "q": "What is MED?",
+        "options": [
+          "Encapsulating packets inside other packets to reach a mobile location.",
+          "Computing or installing network behavior.",
+          "A small request can be sent quickly without connection setup.",
+          "Multi-Exit Discriminator, a hint about preferred entry points into an AS."
+        ],
+        "answer": 3,
+        "explain": "Multi-Exit Discriminator, a hint about preferred entry points into an AS."
+      },
+      {
+        "q": "What is Route aggregation?",
+        "options": [
+          "Routing between autonomous systems.",
+          "Out-of-order packets may arrive before missing packets are retransmitted.",
+          "Combining multiple prefixes into a shorter summary advertisement.",
+          "The mesh of packet switches and links that carries traffic across networks."
+        ],
+        "answer": 2,
+        "explain": "Combining multiple prefixes into a shorter summary advertisement."
+      },
+      {
+        "q": "What is Gateway router?",
+        "options": [
+          "Mobile IP entity that assists a mobile node in a visited network.",
+          "A router connecting an AS to other autonomous systems.",
+          "A newer cellular generation with enhanced capacity, latency, and service flexibility.",
+          "A temporary symmetric key used after secure setup."
+        ],
+        "answer": 1,
+        "explain": "A router connecting an AS to other autonomous systems."
+      },
+      {
+        "q": "Why is BGP policy-based?",
+        "options": [
+          "Internet routing follows business and administrative relationships.",
+          "A logical IP address block within a network.",
+          "The MPLS edge router that first adds a label.",
+          "A device that cannot hear another transmitter but can still collide at the receiver."
+        ],
+        "answer": 0,
+        "explain": "Internet routing follows business and administrative relationships."
+      },
+      {
+        "q": "How does AS-PATH help avoid loops?",
+        "options": [
+          "A one-way security relationship defining IPsec parameters and keys.",
+          "To spread traffic and avoid hot spots.",
+          "A host, router, switch, or access point connected to a link.",
+          "A router rejects routes containing its own AS number."
+        ],
+        "answer": 3,
+        "explain": "A router rejects routes containing its own AS number."
+      },
+      {
+        "q": "What does eBGP connect?",
+        "options": [
+          "They need many high-capacity paths between servers.",
+          "Wrapping one packet inside another packet.",
+          "Routers in different autonomous systems.",
+          "Another name for a host because it sits at an end of communication and creates or receives data."
+        ],
+        "answer": 2,
+        "explain": "Routers in different autonomous systems."
+      },
+      {
+        "q": "What does iBGP distribute?",
+        "options": [
+          "A reliable connection-oriented transport protocol with ordering and control mechanisms.",
+          "BGP-learned routes inside one autonomous system.",
+          "Regularly asking devices for status information.",
+          "A preferred route because it may generate revenue."
+        ],
+        "answer": 1,
+        "explain": "BGP-learned routes inside one autonomous system."
+      },
+      {
+        "q": "Why do providers aggregate routes?",
+        "options": [
+          "To reduce routing table size.",
+          "TCP sender-side limit on how much data can be in flight due to congestion control.",
+          "The web protocol used by browsers and servers to request and send objects.",
+          "A newer cellular generation with enhanced capacity, latency, and service flexibility."
+        ],
+        "answer": 0,
+        "explain": "To reduce routing table size."
+      },
+      {
+        "q": "What is a customer route usually treated as?",
+        "options": [
+          "Reusing a valid message later to trick a protocol.",
+          "An ACK repeated for the same data, often hinting that later data arrived but a gap exists.",
+          "The interface a controller uses to program network devices.",
+          "A preferred route because it may generate revenue."
+        ],
+        "answer": 3,
+        "explain": "A preferred route because it may generate revenue."
+      },
+      {
+        "q": "What does route withdrawal signal?",
+        "options": [
+          "A sender that cannot hear another sender but can collide at the receiver.",
+          "The rule of choosing the most specific matching destination prefix.",
+          "A prefix is no longer reachable through that path.",
+          "After multiple duplicate ACKs indicate likely loss."
+        ],
+        "answer": 2,
+        "explain": "A prefix is no longer reachable through that path."
+      },
+      {
+        "q": "Why is BGP slow to converge sometimes?",
+        "options": [
+          "It identifies which part of an address is the network portion.",
+          "Policy, path exploration, and distributed updates take time.",
+          "A reliable connection-oriented transport protocol with ordering and control mechanisms.",
+          "The web protocol used by browsers and servers to request and send objects."
+        ],
+        "answer": 1,
+        "explain": "Policy, path exploration, and distributed updates take time."
+      },
+      {
+        "q": "What is peering used for?",
+        "options": [
+          "Exchanging traffic directly between networks.",
+          "A server that queries DNS on behalf of a client.",
+          "Policy, path exploration, and distributed updates take time.",
+          "Splitting an IP datagram into smaller pieces to fit a link MTU."
+        ],
+        "answer": 0,
+        "explain": "Exchanging traffic directly between networks."
+      },
+      {
+        "q": "What is transit used for?",
+        "options": [
+          "Collecting data from many processes so they can share the network.",
+          "A protocol that dynamically assigns IP configuration to hosts.",
+          "A fixed-length identifier used by MPLS routers to forward packets.",
+          "Paying another network to reach the broader Internet."
+        ],
+        "answer": 3,
+        "explain": "Paying another network to reach the broader Internet."
       }
     ]
   },
   {
-    "title": "Application Layer — 30-item Practice Test",
+    "title": "3.3 Practice: Network Management, SDN, SNMP, NETCONF, and YANG",
+    "description": "30-item practice test for Network Management, SDN, SNMP, NETCONF, and YANG.",
     "questions": [
       {
-        "q": "Which term best matches this description: The layer where network applications and their protocols operate.",
+        "q": "What is Network management?",
         "options": [
-          "HTTP",
-          "Application layer",
-          "DNS",
-          "IMAP"
-        ],
-        "answer": 1,
-        "explain": "Application layer: The layer where network applications and their protocols operate."
-      },
-      {
-        "q": "Which term best matches this description: A running program that sends or receives network messages.",
-        "options": [
-          "HTTP request",
-          "DNS resolver",
-          "Process",
-          "POP3"
+          "The logic that computes or installs forwarding behavior.",
+          "A network that buys connectivity or transit from another network.",
+          "The process of monitoring, configuring, and controlling network systems.",
+          "Programmable and centralized network control."
         ],
         "answer": 2,
-        "explain": "Process: A running program that sends or receives network messages."
+        "explain": "The process of monitoring, configuring, and controlling network systems."
       },
       {
-        "q": "Which term best matches this description: A process that initiates communication or requests a service.",
+        "q": "What is Managing server?",
         "options": [
-          "HTTP response",
-          "Root DNS server",
-          "P2P scalability",
-          "Client"
+          "It scales name resolution across the global Internet.",
+          "The system used by administrators to monitor and control devices.",
+          "Announcing AP information and SSID availability.",
+          "A scalable data-center topology with leaf access switches and spine core switches."
         ],
-        "answer": 3,
-        "explain": "Client: A process that initiates communication or requests a service."
+        "answer": 1,
+        "explain": "The system used by administrators to monitor and control devices."
       },
       {
-        "q": "Which term best matches this description: A process that waits for and responds to client requests.",
+        "q": "What is Managed device?",
         "options": [
-          "Server",
-          "Persistent HTTP",
-          "TLD server",
-          "BitTorrent"
+          "A router, switch, server, or access point being monitored or configured.",
+          "An attacker secretly intercepting and possibly altering communication.",
+          "Routing between autonomous systems.",
+          "HTTP protected by TLS."
         ],
         "answer": 0,
-        "explain": "Server: A process that waits for and responds to client requests."
+        "explain": "A router, switch, server, or access point being monitored or configured."
       },
       {
-        "q": "Which term best matches this description: An app design with always-on servers serving many clients.",
+        "q": "What is Agent?",
         "options": [
-          "Non-persistent HTTP",
-          "Client-server architecture",
-          "Authoritative DNS server",
-          "CDN"
-        ],
-        "answer": 1,
-        "explain": "Client-server architecture: An app design with always-on servers serving many clients."
-      },
-      {
-        "q": "Which term best matches this description: An app design where end systems communicate directly as peers.",
-        "options": [
-          "Cookie",
-          "DNS cache",
-          "Peer-to-peer architecture",
-          "Adaptive streaming"
-        ],
-        "answer": 2,
-        "explain": "Peer-to-peer architecture: An app design where end systems communicate directly as peers."
-      },
-      {
-        "q": "Which term best matches this description: A software interface between an application process and transport service.",
-        "options": [
-          "Web cache",
-          "SMTP",
-          "Application layer",
-          "Socket"
+          "Link utilization and throughput.",
+          "They adjust quality when available throughput changes.",
+          "A protocol commonly associated with real-time audio or video transport.",
+          "Software on a managed device that provides management information."
         ],
         "answer": 3,
-        "explain": "Socket: A software interface between an application process and transport service."
+        "explain": "Software on a managed device that provides management information."
       },
       {
-        "q": "Which term best matches this description: A network-layer address used to identify a host or interface.",
+        "q": "What is MIB?",
         "options": [
-          "IP address",
-          "DNS",
-          "IMAP",
-          "Process"
-        ],
-        "answer": 0,
-        "explain": "IP address: A network-layer address used to identify a host or interface."
-      },
-      {
-        "q": "Which term best matches this description: A transport-layer number used to identify a receiving process.",
-        "options": [
-          "DNS resolver",
-          "Port number",
-          "POP3",
-          "Client"
-        ],
-        "answer": 1,
-        "explain": "Port number: A transport-layer number used to identify a receiving process."
-      },
-      {
-        "q": "Which term best matches this description: Rules that define application message types, syntax, semantics, and timing.",
-        "options": [
-          "Root DNS server",
-          "P2P scalability",
-          "Application protocol",
-          "Server"
+          "TCP behavior that retransmits after enough duplicate ACKs, before timeout.",
+          "Lower-cost paths are preferred.",
+          "Management Information Base, a structured collection of managed variables.",
+          "The layer that provides logical communication between application processes."
         ],
         "answer": 2,
-        "explain": "Application protocol: Rules that define application message types, syntax, semantics, and timing."
+        "explain": "Management Information Base, a structured collection of managed variables."
       },
       {
-        "q": "Which term best matches this description: The Web protocol used for browser requests and server responses.",
+        "q": "What is SNMP?",
         "options": [
-          "TLD server",
-          "BitTorrent",
-          "Client-server architecture",
-          "HTTP"
+          "A simple mail access protocol that downloads messages from a server.",
+          "A protocol used to query and modify management data and receive notifications.",
+          "The 32-bit Internet Protocol version still widely used.",
+          "Wireless devices may not hear collisions while transmitting."
+        ],
+        "answer": 1,
+        "explain": "A protocol used to query and modify management data and receive notifications."
+      },
+      {
+        "q": "What is SNMP Get?",
+        "options": [
+          "An operation that reads management information from a device.",
+          "The collected link-state view used to compute routes.",
+          "A separated network zone for publicly reachable services.",
+          "Multi-Exit Discriminator, a hint about preferred entry points into an AS."
+        ],
+        "answer": 0,
+        "explain": "An operation that reads management information from a device."
+      },
+      {
+        "q": "What is SNMP Set?",
+        "options": [
+          "Keys and parameters for IPsec security associations.",
+          "The network name advertised by a WiFi access point.",
+          "A secret key kept by its owner in asymmetric cryptography.",
+          "An operation that changes a management variable on a device."
         ],
         "answer": 3,
-        "explain": "HTTP: The Web protocol used for browser requests and server responses."
+        "explain": "An operation that changes a management variable on a device."
       },
       {
-        "q": "Which term best matches this description: A client message asking a server for a web object or action.",
+        "q": "What is SNMP Trap?",
         "options": [
-          "HTTP request",
-          "Authoritative DNS server",
-          "CDN",
-          "Peer-to-peer architecture"
-        ],
-        "answer": 0,
-        "explain": "HTTP request: A client message asking a server for a web object or action."
-      },
-      {
-        "q": "Which term best matches this description: A server message returning status information and content.",
-        "options": [
-          "DNS cache",
-          "HTTP response",
-          "Adaptive streaming",
-          "Socket"
-        ],
-        "answer": 1,
-        "explain": "HTTP response: A server message returning status information and content."
-      },
-      {
-        "q": "Which term best matches this description: HTTP behavior that reuses a TCP connection for multiple objects.",
-        "options": [
-          "SMTP",
-          "Application layer",
-          "Persistent HTTP",
-          "IP address"
+          "Using multiple equal-cost paths.",
+          "They compactly acknowledge a continuous byte stream.",
+          "An unsolicited notification sent by an agent to a manager.",
+          "Programmable and centralized network control."
         ],
         "answer": 2,
-        "explain": "Persistent HTTP: HTTP behavior that reuses a TCP connection for multiple objects."
+        "explain": "An unsolicited notification sent by an agent to a manager."
       },
       {
-        "q": "Which term best matches this description: HTTP behavior that opens a separate TCP connection for each object.",
+        "q": "What is OID?",
         "options": [
-          "IMAP",
-          "Process",
-          "Port number",
-          "Non-persistent HTTP"
+          "Out-of-order packets may arrive before missing packets are retransmitted.",
+          "Object Identifier, a numeric name for a managed variable.",
+          "The overall switching infrastructure of a data center.",
+          "Flow control protects the receiver; congestion control protects the network."
+        ],
+        "answer": 1,
+        "explain": "Object Identifier, a numeric name for a managed variable."
+      },
+      {
+        "q": "What is Polling?",
+        "options": [
+          "Regularly asking devices for status information.",
+          "The MPLS label is removed.",
+          "A user interface setting unrelated to network communication.",
+          "An older distance-vector routing protocol using hop count."
+        ],
+        "answer": 0,
+        "explain": "Regularly asking devices for status information."
+      },
+      {
+        "q": "What is Telemetry?",
+        "options": [
+          "A graphics rendering technique for web pages.",
+          "Internet routing follows business and administrative relationships.",
+          "Ethernet error detection field.",
+          "Streaming or exporting operational data for monitoring."
         ],
         "answer": 3,
-        "explain": "Non-persistent HTTP: HTTP behavior that opens a separate TCP connection for each object."
+        "explain": "Streaming or exporting operational data for monitoring."
       },
       {
-        "q": "Which term best matches this description: A small identifier that lets websites maintain state across requests.",
+        "q": "What is NETCONF?",
         "options": [
-          "Cookie",
-          "POP3",
-          "Client",
-          "Application protocol"
-        ],
-        "answer": 0,
-        "explain": "Cookie: A small identifier that lets websites maintain state across requests."
-      },
-      {
-        "q": "Which term best matches this description: A proxy that stores copies of web objects to reduce delay and traffic.",
-        "options": [
-          "P2P scalability",
-          "Web cache",
-          "Server",
-          "HTTP"
-        ],
-        "answer": 1,
-        "explain": "Web cache: A proxy that stores copies of web objects to reduce delay and traffic."
-      },
-      {
-        "q": "Which term best matches this description: The distributed system that maps domain names to IP addresses.",
-        "options": [
-          "BitTorrent",
-          "Client-server architecture",
-          "DNS",
-          "HTTP request"
+          "A data modeling language for configuration and operational state.",
+          "The physical or wireless path that carries bits between devices.",
+          "A protocol for installing, changing, and retrieving network device configuration.",
+          "The network name advertised by a WiFi access point."
         ],
         "answer": 2,
-        "explain": "DNS: The distributed system that maps domain names to IP addresses."
+        "explain": "A protocol for installing, changing, and retrieving network device configuration."
       },
       {
-        "q": "Which term best matches this description: A client-side DNS component that asks DNS servers for name mappings.",
+        "q": "What is YANG?",
         "options": [
-          "CDN",
-          "Peer-to-peer architecture",
-          "HTTP response",
-          "DNS resolver"
+          "Routing between autonomous systems.",
+          "A data modeling language for configuration and operational state.",
+          "A link-state routing protocol used in some large provider networks.",
+          "Who created the message."
+        ],
+        "answer": 1,
+        "explain": "A data modeling language for configuration and operational state."
+      },
+      {
+        "q": "What is RPC?",
+        "options": [
+          "Remote Procedure Call, a structured request used by protocols such as NETCONF.",
+          "The set of devices that receive a layer-2 broadcast.",
+          "Using multiple paths with the same cost to share traffic.",
+          "A distance-vector problem where bad news about a failed route spreads slowly."
+        ],
+        "answer": 0,
+        "explain": "Remote Procedure Call, a structured request used by protocols such as NETCONF."
+      },
+      {
+        "q": "What is Configuration datastore?",
+        "options": [
+          "Interoperability between different systems and vendors.",
+          "An ACK that confirms all data up to a certain point.",
+          "A device that receives packets and forwards them toward a destination.",
+          "A storage area representing intended device configuration."
         ],
         "answer": 3,
-        "explain": "DNS resolver: A client-side DNS component that asks DNS servers for name mappings."
+        "explain": "A storage area representing intended device configuration."
       },
       {
-        "q": "Which term best matches this description: A top-level starting point in the DNS lookup hierarchy.",
+        "q": "What is Operational state?",
         "options": [
-          "Root DNS server",
-          "Adaptive streaming",
-          "Socket",
-          "Persistent HTTP"
-        ],
-        "answer": 0,
-        "explain": "Root DNS server: A top-level starting point in the DNS lookup hierarchy."
-      },
-      {
-        "q": "Which term best matches this description: A DNS server responsible for top-level domains such as .com or .org.",
-        "options": [
-          "Application layer",
-          "TLD server",
-          "IP address",
-          "Non-persistent HTTP"
-        ],
-        "answer": 1,
-        "explain": "TLD server: A DNS server responsible for top-level domains such as .com or .org."
-      },
-      {
-        "q": "Which term best matches this description: The DNS server with official records for a domain.",
-        "options": [
-          "Process",
-          "Port number",
-          "Authoritative DNS server",
-          "Cookie"
+          "A pipelined protocol that retransmits a lost packet and later packets in the window.",
+          "A suite of protocols that secures IP datagrams.",
+          "The actual running condition and measured status of a device.",
+          "The transport-layer unit that carries application data and a transport header."
         ],
         "answer": 2,
-        "explain": "Authoritative DNS server: The DNS server with official records for a domain."
+        "explain": "The actual running condition and measured status of a device."
       },
       {
-        "q": "Which term best matches this description: Stored DNS answers reused to avoid repeated lookups.",
+        "q": "What is SDN?",
         "options": [
-          "Client",
-          "Application protocol",
-          "Web cache",
-          "DNS cache"
+          "Multiple devices may try to transmit at the same time.",
+          "Software-Defined Networking, separating control logic from forwarding behavior.",
+          "Quickly moving traffic to a backup path after failure.",
+          "After multiple duplicate ACKs indicate likely loss."
+        ],
+        "answer": 1,
+        "explain": "Software-Defined Networking, separating control logic from forwarding behavior."
+      },
+      {
+        "q": "What is Controller?",
+        "options": [
+          "The software control point in an SDN architecture.",
+          "A local packet switch that forwards frames inside a LAN using MAC addresses.",
+          "A logical path that behaves like a dedicated circuit.",
+          "The internal router mechanism that transfers packets from input to output."
+        ],
+        "answer": 0,
+        "explain": "The software control point in an SDN architecture."
+      },
+      {
+        "q": "What is Southbound API?",
+        "options": [
+          "The network-layer packet, especially in IP networks.",
+          "Detecting unauthorized changes to data.",
+          "A shared medium area where simultaneous transmissions can collide.",
+          "The interface a controller uses to program network devices."
         ],
         "answer": 3,
-        "explain": "DNS cache: Stored DNS answers reused to avoid repeated lookups."
+        "explain": "The interface a controller uses to program network devices."
       },
       {
-        "q": "Which term best matches this description: The protocol used to transfer email between mail servers.",
+        "q": "Why is a MIB useful?",
         "options": [
-          "SMTP",
-          "Server",
-          "HTTP",
-          "DNS"
-        ],
-        "answer": 0,
-        "explain": "SMTP: The protocol used to transfer email between mail servers."
-      },
-      {
-        "q": "Which term best matches this description: A protocol for retrieving and synchronizing email from a mail server.",
-        "options": [
-          "Client-server architecture",
-          "IMAP",
-          "HTTP request",
-          "DNS resolver"
-        ],
-        "answer": 1,
-        "explain": "IMAP: A protocol for retrieving and synchronizing email from a mail server."
-      },
-      {
-        "q": "Which term best matches this description: A simple email retrieval protocol.",
-        "options": [
-          "Peer-to-peer architecture",
-          "HTTP response",
-          "POP3",
-          "Root DNS server"
+          "Private connectivity over shared infrastructure.",
+          "A device that receives packets and forwards them toward a destination.",
+          "It organizes manageable device variables.",
+          "A data modeling language for configuration and operational state."
         ],
         "answer": 2,
-        "explain": "POP3: A simple email retrieval protocol."
+        "explain": "It organizes manageable device variables."
       },
       {
-        "q": "Which term best matches this description: The ability of peer systems to grow because peers contribute resources.",
+        "q": "What is the difference between polling and traps?",
         "options": [
-          "Socket",
-          "Persistent HTTP",
-          "TLD server",
-          "P2P scalability"
+          "Small data used by websites to maintain state across otherwise stateless HTTP requests.",
+          "Polling asks regularly; traps are sent when events occur.",
+          "A logical IP address block within a network.",
+          "Carrier Sense Multiple Access with Collision Avoidance, used in WiFi."
+        ],
+        "answer": 1,
+        "explain": "Polling asks regularly; traps are sent when events occur."
+      },
+      {
+        "q": "Why use YANG with NETCONF?",
+        "options": [
+          "YANG gives shared meaning and structure to configuration data.",
+          "Carrying multiple VLANs between switches.",
+          "It reduces outage time after a failure.",
+          "A radio access point connecting wireless devices to network infrastructure."
+        ],
+        "answer": 0,
+        "explain": "YANG gives shared meaning and structure to configuration data."
+      },
+      {
+        "q": "What does SDN make easier?",
+        "options": [
+          "The geographic coverage area served by a base station.",
+          "The naming system that translates domain names into IP addresses.",
+          "An intra-AS link-state routing protocol.",
+          "Programmable and centralized network control."
         ],
         "answer": 3,
-        "explain": "P2P scalability: The ability of peer systems to grow because peers contribute resources."
+        "explain": "Programmable and centralized network control."
       },
       {
-        "q": "Which term best matches this description: A P2P protocol where peers exchange pieces of a file.",
+        "q": "What is operational state?",
         "options": [
-          "BitTorrent",
-          "IP address",
-          "Non-persistent HTTP",
-          "Authoritative DNS server"
-        ],
-        "answer": 0,
-        "explain": "BitTorrent: A P2P protocol where peers exchange pieces of a file."
-      },
-      {
-        "q": "Which term best matches this description: Content Delivery Network, a set of distributed servers near users.",
-        "options": [
-          "Port number",
-          "CDN",
-          "Cookie",
-          "DNS cache"
-        ],
-        "answer": 1,
-        "explain": "CDN: Content Delivery Network, a set of distributed servers near users."
-      },
-      {
-        "q": "Which term best matches this description: A video technique that changes quality based on available bandwidth.",
-        "options": [
-          "Application protocol",
-          "Web cache",
-          "Adaptive streaming",
-          "SMTP"
+          "Information flooded by routers describing their links and costs.",
+          "Software-Defined Networking, separating control logic from forwarding behavior.",
+          "What the device is actually doing now.",
+          "The process of wrapping data with headers as it moves down network layers."
         ],
         "answer": 2,
-        "explain": "Adaptive streaming: A video technique that changes quality based on available bandwidth."
+        "explain": "What the device is actually doing now."
+      },
+      {
+        "q": "What is intended configuration?",
+        "options": [
+          "Quickly moving traffic to a backup path after failure.",
+          "What the admin wants the device to run.",
+          "The part of a mobile network connecting devices to the core.",
+          "Authentication Header, providing authentication and integrity without encryption."
+        ],
+        "answer": 1,
+        "explain": "What the admin wants the device to run."
+      },
+      {
+        "q": "What is an OID used for?",
+        "options": [
+          "Identifying a specific management variable.",
+          "A lightweight connectionless transport protocol with no built-in reliability.",
+          "A BGP attribute used inside an AS to prefer certain routes.",
+          "A rule set defining message format, message order, and actions when messages are sent or received."
+        ],
+        "answer": 0,
+        "explain": "Identifying a specific management variable."
+      },
+      {
+        "q": "Why is telemetry useful?",
+        "options": [
+          "The MPLS edge router that first adds a label.",
+          "Sending a frame out multiple ports when the destination is unknown or broadcast.",
+          "A technique that helps reduce certain distance-vector loops.",
+          "It can provide timely performance and state data."
+        ],
+        "answer": 3,
+        "explain": "It can provide timely performance and state data."
+      },
+      {
+        "q": "What is a controller responsible for?",
+        "options": [
+          "HTTP protected by TLS.",
+          "A cellular generation using packet-switched IP-based design.",
+          "Computing or installing network behavior.",
+          "A simple mail access protocol that downloads messages from a server."
+        ],
+        "answer": 2,
+        "explain": "Computing or installing network behavior."
+      },
+      {
+        "q": "Why should changes be verified?",
+        "options": [
+          "The link-layer format used by Ethernet.",
+          "A configuration command may fail or produce unexpected state.",
+          "The data link layer unit that carries a network-layer packet.",
+          "The carrier network handling mobility, authentication, and Internet access."
+        ],
+        "answer": 1,
+        "explain": "A configuration command may fail or produce unexpected state."
       }
     ]
   },
   {
-    "title": "Transport Layer Basics — 30-item Practice Test",
+    "title": "4.1 Practice: Data Link Layer Control, Packetizing, and Error Detection",
+    "description": "30-item practice test for Data Link Layer Control, Packetizing, and Error Detection.",
     "questions": [
       {
-        "q": "Which term best matches this description: The layer that provides logical communication between application processes.",
+        "q": "What is Data link layer?",
         "options": [
-          "NAK",
-          "Congestion window",
-          "Transport layer",
-          "Best-effort delivery"
-        ],
-        "answer": 2,
-        "explain": "Transport layer: The layer that provides logical communication between application processes."
-      },
-      {
-        "q": "Which term best matches this description: A transport-layer data unit containing application data and transport headers.",
-        "options": [
-          "Sequence number",
-          "MSS",
-          "Transport checksum",
-          "Segment"
-        ],
-        "answer": 3,
-        "explain": "Segment: A transport-layer data unit containing application data and transport headers."
-      },
-      {
-        "q": "Which term best matches this description: Combining data from many sockets for transmission through the network.",
-        "options": [
-          "Multiplexing",
-          "Timeout",
-          "RTT",
-          "Socket pair"
+          "The layer that transfers frames across a single link or hop.",
+          "Interoperability between different systems and vendors.",
+          "An ACK that confirms all data up to a certain point.",
+          "A device that receives packets and forwards them toward a destination."
         ],
         "answer": 0,
-        "explain": "Multiplexing: Combining data from many sockets for transmission through the network."
+        "explain": "The layer that transfers frames across a single link or hop."
       },
       {
-        "q": "Which term best matches this description: Delivering received segments to the correct socket or process.",
+        "q": "What is Node?",
         "options": [
-          "Retransmission",
-          "Demultiplexing",
-          "Pipeline",
-          "Transport layer"
-        ],
-        "answer": 1,
-        "explain": "Demultiplexing: Delivering received segments to the correct socket or process."
-      },
-      {
-        "q": "Which term best matches this description: The port number identifying the sending process.",
-        "options": [
-          "Flow control",
-          "Stop-and-wait",
-          "Source port",
-          "Segment"
-        ],
-        "answer": 2,
-        "explain": "Source port: The port number identifying the sending process."
-      },
-      {
-        "q": "Which term best matches this description: The port number identifying the receiving process.",
-        "options": [
-          "Receive window",
-          "Connectionless service",
-          "Multiplexing",
-          "Destination port"
+          "The system used by administrators to monitor and control devices.",
+          "A high-speed network connecting large numbers of servers.",
+          "A service model that tries to deliver data but gives no guarantee.",
+          "A host, router, switch, or access point connected to a link."
         ],
         "answer": 3,
-        "explain": "Destination port: The port number identifying the receiving process."
+        "explain": "A host, router, switch, or access point connected to a link."
       },
       {
-        "q": "Which term best matches this description: A connectionless transport protocol with low overhead and best-effort delivery.",
+        "q": "What is Link?",
         "options": [
-          "UDP",
-          "Congestion control",
-          "Connection-oriented service",
-          "Demultiplexing"
+          "The layer that provides logical communication between application processes.",
+          "An older distance-vector routing protocol using hop count.",
+          "The communication channel between neighboring nodes.",
+          "A logical IP address block within a network."
+        ],
+        "answer": 2,
+        "explain": "The communication channel between neighboring nodes."
+      },
+      {
+        "q": "What is Frame?",
+        "options": [
+          "A routing approach where routers share distance estimates with neighbors.",
+          "The data link layer unit that carries a network-layer packet.",
+          "A nearby server that delivers cached content to users.",
+          "A network or group of networks under one administrative control."
+        ],
+        "answer": 1,
+        "explain": "The data link layer unit that carries a network-layer packet."
+      },
+      {
+        "q": "What is Framing?",
+        "options": [
+          "Adding boundaries and link-layer information around data.",
+          "A shared medium heard by multiple nodes.",
+          "Router buffers can overflow and drop packets.",
+          "A scalable data-center topology with leaf access switches and spine core switches."
         ],
         "answer": 0,
-        "explain": "UDP: A connectionless transport protocol with low overhead and best-effort delivery."
+        "explain": "Adding boundaries and link-layer information around data."
       },
       {
-        "q": "Which term best matches this description: A field used to detect errors in UDP segments.",
+        "q": "What is Packetizing?",
         "options": [
-          "Congestion window",
-          "UDP checksum",
-          "Best-effort delivery",
-          "Source port"
-        ],
-        "answer": 1,
-        "explain": "UDP checksum: A field used to detect errors in UDP segments."
-      },
-      {
-        "q": "Which term best matches this description: A connection-oriented transport protocol with reliable ordered delivery.",
-        "options": [
-          "MSS",
-          "Transport checksum",
-          "TCP",
-          "Destination port"
-        ],
-        "answer": 2,
-        "explain": "TCP: A connection-oriented transport protocol with reliable ordered delivery."
-      },
-      {
-        "q": "Which term best matches this description: A logical communication state between two TCP endpoints.",
-        "options": [
-          "RTT",
-          "Socket pair",
-          "UDP",
-          "TCP connection"
+          "Encapsulating packets inside other packets to reach a mobile location.",
+          "Shortest paths from one source to all destinations.",
+          "The wireless medium for a transmission.",
+          "Organizing data into packet or frame units for transmission."
         ],
         "answer": 3,
-        "explain": "TCP connection: A logical communication state between two TCP endpoints."
+        "explain": "Organizing data into packet or frame units for transmission."
       },
       {
-        "q": "Which term best matches this description: TCP setup using SYN, SYN-ACK, and ACK messages.",
+        "q": "What is Header?",
         "options": [
-          "Three-way handshake",
-          "Pipeline",
-          "Transport layer",
-          "UDP checksum"
+          "It reduces outage time after a failure.",
+          "Local Area Network, a network covering a limited area such as a room, home, or campus.",
+          "Control information placed before the payload.",
+          "A BGP attribute listing autonomous systems a route advertisement has traversed."
+        ],
+        "answer": 2,
+        "explain": "Control information placed before the payload."
+      },
+      {
+        "q": "What is Trailer?",
+        "options": [
+          "It catches more burst and pattern errors.",
+          "Control information placed after the payload, often for error detection.",
+          "The congestion window grows rapidly until a threshold or loss event.",
+          "IDS method that looks for deviations from normal behavior."
+        ],
+        "answer": 1,
+        "explain": "Control information placed after the payload, often for error detection."
+      },
+      {
+        "q": "What is Error detection?",
+        "options": [
+          "Techniques that identify whether transmitted bits may be corrupted.",
+          "The collected link-state view used to compute routes.",
+          "The interface a controller uses to program network devices.",
+          "Router buffers can overflow and drop packets."
         ],
         "answer": 0,
-        "explain": "Three-way handshake: TCP setup using SYN, SYN-ACK, and ACK messages."
+        "explain": "Techniques that identify whether transmitted bits may be corrupted."
       },
       {
-        "q": "Which term best matches this description: A service that delivers data correctly and in order despite loss or errors.",
+        "q": "What is Parity bit?",
         "options": [
-          "Stop-and-wait",
-          "Reliable data transfer",
-          "Segment",
-          "TCP"
-        ],
-        "answer": 1,
-        "explain": "Reliable data transfer: A service that delivers data correctly and in order despite loss or errors."
-      },
-      {
-        "q": "Which term best matches this description: Acknowledgment, a message confirming data was received.",
-        "options": [
-          "Connectionless service",
-          "Multiplexing",
-          "ACK",
-          "TCP connection"
-        ],
-        "answer": 2,
-        "explain": "ACK: Acknowledgment, a message confirming data was received."
-      },
-      {
-        "q": "Which term best matches this description: Negative acknowledgment, a message indicating data was not received correctly.",
-        "options": [
-          "Connection-oriented service",
-          "Demultiplexing",
-          "Three-way handshake",
-          "NAK"
+          "Multiprotocol Label Switching, a forwarding method based on short labels.",
+          "The congestion window grows rapidly until a threshold or loss event.",
+          "A 4G data-plane anchor that forwards user traffic.",
+          "A simple bit added to make the number of ones even or odd."
         ],
         "answer": 3,
-        "explain": "NAK: Negative acknowledgment, a message indicating data was not received correctly."
+        "explain": "A simple bit added to make the number of ones even or odd."
       },
       {
-        "q": "Which term best matches this description: A number used to identify byte or packet order.",
+        "q": "What is Two-dimensional parity?",
         "options": [
-          "Sequence number",
-          "Best-effort delivery",
-          "Source port",
-          "Reliable data transfer"
+          "Each request can be handled without remembering previous requests.",
+          "TCP phase where the congestion window grows more cautiously.",
+          "A parity method that can detect and sometimes locate bit errors using rows and columns.",
+          "ESP can encrypt payloads."
+        ],
+        "answer": 2,
+        "explain": "A parity method that can detect and sometimes locate bit errors using rows and columns."
+      },
+      {
+        "q": "What is Checksum?",
+        "options": [
+          "A public-key mechanism proving origin and integrity.",
+          "A sum-based error detection value.",
+          "A one-way security relationship defining IPsec parameters and keys.",
+          "A router rejects routes containing its own AS number."
+        ],
+        "answer": 1,
+        "explain": "A sum-based error detection value."
+      },
+      {
+        "q": "What is CRC?",
+        "options": [
+          "Cyclic Redundancy Check, a strong polynomial-based error detection method.",
+          "A hardware power mode for reducing electricity use.",
+          "The part of the network that connects end systems to the first router.",
+          "An ACK repeated for the same data, often hinting that later data arrived but a gap exists."
         ],
         "answer": 0,
-        "explain": "Sequence number: A number used to identify byte or packet order."
+        "explain": "Cyclic Redundancy Check, a strong polynomial-based error detection method."
       },
       {
-        "q": "Which term best matches this description: A timer expiration that can trigger retransmission.",
+        "q": "What is Generator polynomial?",
         "options": [
-          "Transport checksum",
-          "Timeout",
-          "Destination port",
-          "ACK"
-        ],
-        "answer": 1,
-        "explain": "Timeout: A timer expiration that can trigger retransmission."
-      },
-      {
-        "q": "Which term best matches this description: Sending data again after suspected loss or corruption.",
-        "options": [
-          "Socket pair",
-          "UDP",
-          "Retransmission",
-          "NAK"
-        ],
-        "answer": 2,
-        "explain": "Retransmission: Sending data again after suspected loss or corruption."
-      },
-      {
-        "q": "Which term best matches this description: Preventing a sender from overwhelming the receiver.",
-        "options": [
-          "Transport layer",
-          "UDP checksum",
-          "Sequence number",
-          "Flow control"
+          "It tracks connection state, not only individual packets.",
+          "A switch table mapping MAC addresses to ports.",
+          "Wireless devices may not hear collisions while transmitting.",
+          "The divisor pattern used in CRC computation."
         ],
         "answer": 3,
-        "explain": "Flow control: Preventing a sender from overwhelming the receiver."
+        "explain": "The divisor pattern used in CRC computation."
       },
       {
-        "q": "Which term best matches this description: TCP field indicating how much data the receiver can accept.",
+        "q": "What is Flow control?",
         "options": [
-          "Receive window",
-          "Segment",
-          "TCP",
-          "Timeout"
+          "A WiFi acknowledgment that confirms frame reception.",
+          "A protocol concept allowing a host to keep a permanent address while moving.",
+          "A method that prevents a receiver from being overwhelmed.",
+          "A device that receives packets and forwards them toward a destination."
+        ],
+        "answer": 2,
+        "explain": "A method that prevents a receiver from being overwhelmed."
+      },
+      {
+        "q": "What is Medium access control?",
+        "options": [
+          "They let TCP order data and detect missing bytes.",
+          "Rules for deciding who can transmit on a shared medium.",
+          "Sending and receiving at the same time.",
+          "TCP sender-side limit on how much data can be in flight due to congestion control."
+        ],
+        "answer": 1,
+        "explain": "Rules for deciding who can transmit on a shared medium."
+      },
+      {
+        "q": "What is Broadcast link?",
+        "options": [
+          "A link where multiple nodes share the same communication medium.",
+          "What the admin wants the device to run.",
+          "A firewall that tracks connection state when filtering traffic.",
+          "A BGP message removing a previously advertised route."
         ],
         "answer": 0,
-        "explain": "Receive window: TCP field indicating how much data the receiver can accept."
+        "explain": "A link where multiple nodes share the same communication medium."
       },
       {
-        "q": "Which term best matches this description: Adjusting sending rate to avoid overwhelming the network.",
+        "q": "What is Point-to-point link?",
         "options": [
-          "Multiplexing",
-          "Congestion control",
-          "TCP connection",
-          "Retransmission"
-        ],
-        "answer": 1,
-        "explain": "Congestion control: Adjusting sending rate to avoid overwhelming the network."
-      },
-      {
-        "q": "Which term best matches this description: TCP sender-side limit based on perceived network congestion.",
-        "options": [
-          "Demultiplexing",
-          "Three-way handshake",
-          "Congestion window",
-          "Flow control"
-        ],
-        "answer": 2,
-        "explain": "Congestion window: TCP sender-side limit based on perceived network congestion."
-      },
-      {
-        "q": "Which term best matches this description: Maximum Segment Size, the largest TCP payload in one segment.",
-        "options": [
-          "Source port",
-          "Reliable data transfer",
-          "Receive window",
-          "MSS"
+          "It needs a reasonable retransmission timeout.",
+          "Information that a destination prefix can be reached.",
+          "Programmable and centralized network control.",
+          "A direct link between two nodes."
         ],
         "answer": 3,
-        "explain": "MSS: Maximum Segment Size, the largest TCP payload in one segment."
+        "explain": "A direct link between two nodes."
       },
       {
-        "q": "Which term best matches this description: Round-trip time, the time for data to go out and an acknowledgment to return.",
+        "q": "What is Half-duplex?",
         "options": [
-          "RTT",
-          "Destination port",
-          "ACK",
-          "Congestion control"
+          "A fixed-length identifier used by MPLS routers to forward packets.",
+          "Flow control protects the receiver; congestion control protects the network.",
+          "Communication where a device cannot send and receive at the same time.",
+          "A direct connection between two nodes."
+        ],
+        "answer": 2,
+        "explain": "Communication where a device cannot send and receive at the same time."
+      },
+      {
+        "q": "What is Full-duplex?",
+        "options": [
+          "A device that cannot hear another transmitter but can still collide at the receiver.",
+          "Communication where sending and receiving can happen simultaneously.",
+          "A logical IP address block within a network.",
+          "The MPLS edge router that first adds a label."
+        ],
+        "answer": 1,
+        "explain": "Communication where sending and receiving can happen simultaneously."
+      },
+      {
+        "q": "Why is CRC stronger than parity?",
+        "options": [
+          "It catches more burst and pattern errors.",
+          "A network that buys connectivity or transit from another network.",
+          "IDS method that looks for deviations from normal behavior.",
+          "A protocol commonly associated with real-time audio or video transport."
         ],
         "answer": 0,
-        "explain": "RTT: Round-trip time, the time for data to go out and an acknowledgment to return."
+        "explain": "It catches more burst and pattern errors."
       },
       {
-        "q": "Which term best matches this description: Sending multiple packets before waiting for acknowledgments.",
+        "q": "What does a trailer often contain?",
         "options": [
-          "UDP",
-          "Pipeline",
-          "NAK",
-          "Congestion window"
-        ],
-        "answer": 1,
-        "explain": "Pipeline: Sending multiple packets before waiting for acknowledgments."
-      },
-      {
-        "q": "Which term best matches this description: A protocol that sends one packet and waits for its acknowledgment.",
-        "options": [
-          "UDP checksum",
-          "Sequence number",
-          "Stop-and-wait",
-          "MSS"
-        ],
-        "answer": 2,
-        "explain": "Stop-and-wait: A protocol that sends one packet and waits for its acknowledgment."
-      },
-      {
-        "q": "Which term best matches this description: A service that sends messages without prior setup.",
-        "options": [
-          "TCP",
-          "Timeout",
-          "RTT",
-          "Connectionless service"
+          "IPsec mode that protects the payload of the original IP datagram.",
+          "A router, switch, server, or access point being monitored or configured.",
+          "A block of IP addresses advertised as reachable.",
+          "Error detection information such as a CRC."
         ],
         "answer": 3,
-        "explain": "Connectionless service: A service that sends messages without prior setup."
+        "explain": "Error detection information such as a CRC."
       },
       {
-        "q": "Which term best matches this description: A service that establishes state before data transfer.",
+        "q": "Why do shared links need MAC rules?",
         "options": [
-          "Connection-oriented service",
-          "TCP connection",
-          "Retransmission",
-          "Pipeline"
+          "A simple method that sends one packet then waits for an ACK.",
+          "The base stations and radio systems connecting devices.",
+          "Multiple devices may try to transmit at the same time.",
+          "A value assigned to a link, often based on bandwidth, delay, or policy."
+        ],
+        "answer": 2,
+        "explain": "Multiple devices may try to transmit at the same time."
+      },
+      {
+        "q": "What is one-hop delivery?",
+        "options": [
+          "Packets waiting because the output link or processing path is busy.",
+          "Moving data from one node to its immediate neighbor.",
+          "Controlling paths to meet performance or policy goals.",
+          "What the device is actually doing now."
+        ],
+        "answer": 1,
+        "explain": "Moving data from one node to its immediate neighbor."
+      },
+      {
+        "q": "Why is packetizing useful?",
+        "options": [
+          "It organizes streams into manageable transmission units.",
+          "The software control point in an SDN architecture.",
+          "The addresses and ports that identify a transport conversation.",
+          "A packet switch that forwards network-layer datagrams between networks using IP information."
         ],
         "answer": 0,
-        "explain": "Connection-oriented service: A service that establishes state before data transfer."
+        "explain": "It organizes streams into manageable transmission units."
       },
       {
-        "q": "Which term best matches this description: Delivery with no guarantee of reliability, order, or timing.",
+        "q": "What does half-duplex restrict?",
         "options": [
-          "Three-way handshake",
-          "Best-effort delivery",
-          "Flow control",
-          "Stop-and-wait"
-        ],
-        "answer": 1,
-        "explain": "Best-effort delivery: Delivery with no guarantee of reliability, order, or timing."
-      },
-      {
-        "q": "Which term best matches this description: An error-detection field in transport headers.",
-        "options": [
-          "Reliable data transfer",
-          "Receive window",
-          "Transport checksum",
-          "Connectionless service"
-        ],
-        "answer": 2,
-        "explain": "Transport checksum: An error-detection field in transport headers."
-      },
-      {
-        "q": "Which term best matches this description: The combination of source/destination IP addresses and ports that identifies a conversation.",
-        "options": [
-          "ACK",
-          "Congestion control",
-          "Connection-oriented service",
-          "Socket pair"
+          "Unwanted signals that disrupt communication.",
+          "To detect corrupted frames.",
+          "A number that identifies byte positions for ordering and reliability.",
+          "Sending and receiving at the same time."
         ],
         "answer": 3,
-        "explain": "Socket pair: The combination of source/destination IP addresses and ports that identifies a conversation."
+        "explain": "Sending and receiving at the same time."
+      },
+      {
+        "q": "What is a point-to-point link?",
+        "options": [
+          "A logical network running over an underlay.",
+          "Information that a destination prefix can be reached.",
+          "A direct connection between two nodes.",
+          "The 128-bit Internet Protocol version designed for a much larger address space."
+        ],
+        "answer": 2,
+        "explain": "A direct connection between two nodes."
+      },
+      {
+        "q": "What is a broadcast link?",
+        "options": [
+          "A gateway connecting the cellular network to external packet data networks.",
+          "A shared medium heard by multiple nodes.",
+          "Sending a frame out multiple ports when the destination is unknown or broadcast.",
+          "A link where multiple nodes share the same communication medium."
+        ],
+        "answer": 1,
+        "explain": "A shared medium heard by multiple nodes."
+      },
+      {
+        "q": "What can error detection not always do?",
+        "options": [
+          "It may detect but not correct errors.",
+          "A classic TCP version using slow start, congestion avoidance, fast retransmit, and fast recovery.",
+          "A protocol used to query and modify management data and receive notifications.",
+          "A file compression method unrelated to routing."
+        ],
+        "answer": 0,
+        "explain": "It may detect but not correct errors."
+      },
+      {
+        "q": "What does flow control protect?",
+        "options": [
+          "An operation that reads management information from a device.",
+          "The process of wrapping data with headers as it moves down network layers.",
+          "A simple method that sends one packet then waits for an ACK.",
+          "The receiver's ability to accept data."
+        ],
+        "answer": 3,
+        "explain": "The receiver's ability to accept data."
       }
     ]
   },
   {
-    "title": "Reliable Data Transfer and TCP Control — 30-item Practice Test",
+    "title": "4.2 Practice: LANs, Ethernet, ARP, Switches, VLANs, and CSMA",
+    "description": "30-item practice test for LANs, Ethernet, ARP, Switches, VLANs, and CSMA.",
     "questions": [
       {
-        "q": "Which term best matches this description: Reliable data transfer, a model for correct delivery over unreliable channels.",
+        "q": "What is LAN?",
         "options": [
-          "Estimated RTT",
-          "AIMD",
-          "Sender window",
-          "rdt"
-        ],
-        "answer": 3,
-        "explain": "rdt: Reliable data transfer, a model for correct delivery over unreliable channels."
-      },
-      {
-        "q": "Which term best matches this description: A value used to detect bit errors in data.",
-        "options": [
-          "Checksum",
-          "DevRTT",
-          "ssthresh",
-          "Receiver window"
-        ],
-        "answer": 0,
-        "explain": "Checksum: A value used to detect bit errors in data."
-      },
-      {
-        "q": "Which term best matches this description: A condition where bits are changed during transmission.",
-        "options": [
-          "Timeout interval",
-          "Corruption",
-          "TCP Reno",
-          "Go-Back-N"
-        ],
-        "answer": 1,
-        "explain": "Corruption: A condition where bits are changed during transmission."
-      },
-      {
-        "q": "Which term best matches this description: A repeated packet caused by retransmission or delayed delivery.",
-        "options": [
-          "Fast retransmit",
-          "TCP fairness",
-          "Duplicate packet",
-          "Cumulative ACK"
+          "A configuration command may fail or produce unexpected state.",
+          "Walls, distance, and reflections weaken signals.",
+          "Local Area Network, a network covering a limited area such as a room, home, or campus.",
+          "IP address and port information."
         ],
         "answer": 2,
-        "explain": "Duplicate packet: A repeated packet caused by retransmission or delayed delivery."
+        "explain": "Local Area Network, a network covering a limited area such as a room, home, or campus."
       },
       {
-        "q": "Which term best matches this description: A simple reliable protocol with one outstanding packet.",
+        "q": "What is MAC address?",
         "options": [
-          "Duplicate ACK",
-          "Flow-control limit",
-          "Selective Repeat",
-          "Stop-and-wait rdt"
-        ],
-        "answer": 3,
-        "explain": "Stop-and-wait rdt: A simple reliable protocol with one outstanding packet."
-      },
-      {
-        "q": "Which term best matches this description: A reliable protocol allowing multiple outstanding packets.",
-        "options": [
-          "Pipelined rdt",
-          "Slow start",
-          "Congestion-control limit",
-          "Individual ACK"
-        ],
-        "answer": 0,
-        "explain": "Pipelined rdt: A reliable protocol allowing multiple outstanding packets."
-      },
-      {
-        "q": "Which term best matches this description: A moving range of packets or bytes allowed to be sent.",
-        "options": [
-          "Congestion avoidance",
-          "Sliding window",
-          "Effective send window",
-          "TCP byte stream"
+          "A fresh random value used to prevent replay.",
+          "A link-layer hardware address used for local frame delivery.",
+          "The original datagram payload.",
+          "The recalculation of paths after topology or cost changes."
         ],
         "answer": 1,
-        "explain": "Sliding window: A moving range of packets or bytes allowed to be sent."
+        "explain": "A link-layer hardware address used for local frame delivery."
       },
       {
-        "q": "Which term best matches this description: The range of data the sender may transmit without more ACKs.",
+        "q": "What is ARP?",
         "options": [
-          "AIMD",
-          "rdt",
-          "Sender window",
-          "TCP sequence number"
-        ],
-        "answer": 2,
-        "explain": "Sender window: The range of data the sender may transmit without more ACKs."
-      },
-      {
-        "q": "Which term best matches this description: The range of data the receiver is prepared to accept.",
-        "options": [
-          "ssthresh",
-          "Checksum",
-          "TCP ACK number",
-          "Receiver window"
-        ],
-        "answer": 3,
-        "explain": "Receiver window: The range of data the receiver is prepared to accept."
-      },
-      {
-        "q": "Which term best matches this description: A sliding-window protocol that retransmits a lost packet and all following packets.",
-        "options": [
-          "Go-Back-N",
-          "TCP Reno",
-          "Corruption",
-          "Estimated RTT"
+          "Address Resolution Protocol, which maps local IP addresses to MAC addresses.",
+          "Sending and receiving at the same time.",
+          "Management Information Base, a structured collection of managed variables.",
+          "The transport-layer unit that carries application data and a transport header."
         ],
         "answer": 0,
-        "explain": "Go-Back-N: A sliding-window protocol that retransmits a lost packet and all following packets."
+        "explain": "Address Resolution Protocol, which maps local IP addresses to MAC addresses."
       },
       {
-        "q": "Which term best matches this description: An ACK that confirms receipt of all data up to a point.",
+        "q": "What is ARP table?",
         "options": [
-          "TCP fairness",
-          "Cumulative ACK",
-          "Duplicate packet",
-          "DevRTT"
+          "They bind public keys to identities.",
+          "An ACK repeated for the same data, often hinting that later data arrived but a gap exists.",
+          "A switch table mapping MAC addresses to ports.",
+          "A cache of IP-to-MAC mappings."
+        ],
+        "answer": 3,
+        "explain": "A cache of IP-to-MAC mappings."
+      },
+      {
+        "q": "What is Ethernet?",
+        "options": [
+          "Border Gateway Protocol, the main interdomain routing protocol of the Internet.",
+          "TCP phase where the congestion window grows quickly from a small value.",
+          "The dominant wired LAN technology.",
+          "Packets arrive faster than they can be transmitted."
+        ],
+        "answer": 2,
+        "explain": "The dominant wired LAN technology."
+      },
+      {
+        "q": "What is Ethernet frame?",
+        "options": [
+          "TCP's smoothed estimate of round-trip time.",
+          "The link-layer format used by Ethernet.",
+          "Request To Send, an optional control frame to reserve the medium.",
+          "Router component that receives packets and may do lookup."
         ],
         "answer": 1,
-        "explain": "Cumulative ACK: An ACK that confirms receipt of all data up to a point."
+        "explain": "The link-layer format used by Ethernet."
       },
       {
-        "q": "Which term best matches this description: A sliding-window protocol that individually acknowledges and retransmits packets.",
+        "q": "What is Preamble?",
         "options": [
-          "Flow-control limit",
-          "Stop-and-wait rdt",
-          "Selective Repeat",
-          "Timeout interval"
-        ],
-        "answer": 2,
-        "explain": "Selective Repeat: A sliding-window protocol that individually acknowledges and retransmits packets."
-      },
-      {
-        "q": "Which term best matches this description: An ACK for a specific packet rather than all earlier data.",
-        "options": [
-          "Congestion-control limit",
-          "Pipelined rdt",
-          "Fast retransmit",
-          "Individual ACK"
-        ],
-        "answer": 3,
-        "explain": "Individual ACK: An ACK for a specific packet rather than all earlier data."
-      },
-      {
-        "q": "Which term best matches this description: TCP treats data as an ordered stream of bytes.",
-        "options": [
-          "TCP byte stream",
-          "Effective send window",
-          "Sliding window",
-          "Duplicate ACK"
+          "Bits at the start of an Ethernet frame used for synchronization.",
+          "A BGP message announcing reachability to a prefix.",
+          "Classless Inter-Domain Routing, notation for variable-length network prefixes.",
+          "The part of the network that connects end systems to the first router."
         ],
         "answer": 0,
-        "explain": "TCP byte stream: TCP treats data as an ordered stream of bytes."
+        "explain": "Bits at the start of an Ethernet frame used for synchronization."
       },
       {
-        "q": "Which term best matches this description: The byte-stream number of the first byte in a TCP segment.",
+        "q": "What is Type field?",
         "options": [
-          "rdt",
-          "TCP sequence number",
-          "Sender window",
-          "Slow start"
+          "Link utilization and throughput.",
+          "An ACK that confirms all data up to a certain point.",
+          "Additive Increase Multiplicative Decrease, TCP's classic congestion behavior.",
+          "Ethernet field identifying the upper-layer protocol carried in the frame."
+        ],
+        "answer": 3,
+        "explain": "Ethernet field identifying the upper-layer protocol carried in the frame."
+      },
+      {
+        "q": "What is CRC field?",
+        "options": [
+          "The recalculation of paths after topology or cost changes.",
+          "The layered model of application, transport, network, link, and physical responsibilities.",
+          "Ethernet error detection field.",
+          "Ethernet field identifying the upper-layer protocol carried in the frame."
+        ],
+        "answer": 2,
+        "explain": "Ethernet error detection field."
+      },
+      {
+        "q": "What is Switch?",
+        "options": [
+          "TCP behavior that retransmits after enough duplicate ACKs, before timeout.",
+          "A LAN device that forwards frames based on MAC addresses.",
+          "The internal router mechanism that transfers packets from input to output.",
+          "A selected frequency range used for wireless communication."
         ],
         "answer": 1,
-        "explain": "TCP sequence number: The byte-stream number of the first byte in a TCP segment."
+        "explain": "A LAN device that forwards frames based on MAC addresses."
       },
       {
-        "q": "Which term best matches this description: The next byte number the receiver expects.",
+        "q": "What is MAC learning?",
         "options": [
-          "Checksum",
-          "Receiver window",
-          "TCP ACK number",
-          "Congestion avoidance"
-        ],
-        "answer": 2,
-        "explain": "TCP ACK number: The next byte number the receiver expects."
-      },
-      {
-        "q": "Which term best matches this description: TCP's smoothed estimate of round-trip time.",
-        "options": [
-          "Corruption",
-          "Go-Back-N",
-          "AIMD",
-          "Estimated RTT"
-        ],
-        "answer": 3,
-        "explain": "Estimated RTT: TCP's smoothed estimate of round-trip time."
-      },
-      {
-        "q": "Which term best matches this description: TCP's estimate of round-trip time variation.",
-        "options": [
-          "DevRTT",
-          "Duplicate packet",
-          "Cumulative ACK",
-          "ssthresh"
+          "A switch process that records which MAC addresses are reachable through which ports.",
+          "A service is useless if legitimate users cannot reach it.",
+          "Border Gateway Protocol, the main interdomain routing protocol of the Internet.",
+          "Organizing data into packet or frame units for transmission."
         ],
         "answer": 0,
-        "explain": "DevRTT: TCP's estimate of round-trip time variation."
+        "explain": "A switch process that records which MAC addresses are reachable through which ports."
       },
       {
-        "q": "Which term best matches this description: TCP's retransmission timer based on estimated RTT and variation.",
+        "q": "What is Forwarding table?",
         "options": [
-          "Stop-and-wait rdt",
-          "Timeout interval",
-          "Selective Repeat",
-          "TCP Reno"
+          "A database storing active security associations.",
+          "Communication where a device cannot send and receive at the same time.",
+          "A WiFi acknowledgment that confirms frame reception.",
+          "A switch table mapping MAC addresses to ports."
+        ],
+        "answer": 3,
+        "explain": "A switch table mapping MAC addresses to ports."
+      },
+      {
+        "q": "What is Flooding?",
+        "options": [
+          "A logical IP address block within a network.",
+          "A value assigned to a link, often based on bandwidth, delay, or policy.",
+          "Sending a frame out multiple ports when the destination is unknown or broadcast.",
+          "Router buffers can overflow and drop packets."
+        ],
+        "answer": 2,
+        "explain": "Sending a frame out multiple ports when the destination is unknown or broadcast."
+      },
+      {
+        "q": "What is Broadcast domain?",
+        "options": [
+          "An intra-AS link-state routing protocol.",
+          "The set of devices that receive a layer-2 broadcast.",
+          "It identifies a resource and how to access it.",
+          "It connects access networks to larger Internet infrastructure."
         ],
         "answer": 1,
-        "explain": "Timeout interval: TCP's retransmission timer based on estimated RTT and variation."
+        "explain": "The set of devices that receive a layer-2 broadcast."
       },
       {
-        "q": "Which term best matches this description: TCP retransmission triggered by duplicate ACKs before timeout.",
+        "q": "What is Collision domain?",
         "options": [
-          "Pipelined rdt",
-          "Individual ACK",
-          "Fast retransmit",
-          "TCP fairness"
-        ],
-        "answer": 2,
-        "explain": "Fast retransmit: TCP retransmission triggered by duplicate ACKs before timeout."
-      },
-      {
-        "q": "Which term best matches this description: An ACK repeating the same expected byte number.",
-        "options": [
-          "Sliding window",
-          "TCP byte stream",
-          "Flow-control limit",
-          "Duplicate ACK"
-        ],
-        "answer": 3,
-        "explain": "Duplicate ACK: An ACK repeating the same expected byte number."
-      },
-      {
-        "q": "Which term best matches this description: TCP phase where congestion window grows rapidly from a low value.",
-        "options": [
-          "Slow start",
-          "Sender window",
-          "TCP sequence number",
-          "Congestion-control limit"
+          "A shared medium area where simultaneous transmissions can collide.",
+          "A Request for Comments document that records Internet standards and protocol specifications.",
+          "Request To Send, an optional control frame to reserve the medium.",
+          "A programming style that does not affect packet delivery."
         ],
         "answer": 0,
-        "explain": "Slow start: TCP phase where congestion window grows rapidly from a low value."
+        "explain": "A shared medium area where simultaneous transmissions can collide."
       },
       {
-        "q": "Which term best matches this description: TCP phase where the congestion window grows more slowly.",
+        "q": "What is CSMA/CD?",
         "options": [
-          "Receiver window",
-          "Congestion avoidance",
-          "TCP ACK number",
-          "Effective send window"
+          "WiFi's collision avoidance medium access method.",
+          "A virtual private network service that can be carried over shared infrastructure.",
+          "A link-state routing protocol used in some large provider networks.",
+          "Carrier Sense Multiple Access with Collision Detection, used in classic shared Ethernet."
+        ],
+        "answer": 3,
+        "explain": "Carrier Sense Multiple Access with Collision Detection, used in classic shared Ethernet."
+      },
+      {
+        "q": "What is CSMA/CA?",
+        "options": [
+          "Local Area Network, a network covering a limited area such as a room, home, or campus.",
+          "Mobility Management Entity, a 4G control-plane component.",
+          "Carrier Sense Multiple Access with Collision Avoidance, used in WiFi.",
+          "They connect application processes to transport services."
+        ],
+        "answer": 2,
+        "explain": "Carrier Sense Multiple Access with Collision Avoidance, used in WiFi."
+      },
+      {
+        "q": "What is VLAN?",
+        "options": [
+          "Connecting an end device to one VLAN.",
+          "A logical LAN that separates traffic within the same physical switching infrastructure.",
+          "Bottlenecks, congestion, and protocol overhead reduce useful delivery rate.",
+          "Equal-Cost Multipath, using multiple equal-cost paths for traffic."
         ],
         "answer": 1,
-        "explain": "Congestion avoidance: TCP phase where the congestion window grows more slowly."
+        "explain": "A logical LAN that separates traffic within the same physical switching infrastructure."
       },
       {
-        "q": "Which term best matches this description: Additive Increase Multiplicative Decrease, a TCP congestion-control pattern.",
+        "q": "What is Trunk port?",
         "options": [
-          "Go-Back-N",
-          "Estimated RTT",
-          "AIMD",
-          "rdt"
-        ],
-        "answer": 2,
-        "explain": "AIMD: Additive Increase Multiplicative Decrease, a TCP congestion-control pattern."
-      },
-      {
-        "q": "Which term best matches this description: Slow-start threshold separating slow start from congestion avoidance.",
-        "options": [
-          "Cumulative ACK",
-          "DevRTT",
-          "Checksum",
-          "ssthresh"
-        ],
-        "answer": 3,
-        "explain": "ssthresh: Slow-start threshold separating slow start from congestion avoidance."
-      },
-      {
-        "q": "Which term best matches this description: A classic TCP congestion-control variant using AIMD and fast recovery.",
-        "options": [
-          "TCP Reno",
-          "Selective Repeat",
-          "Timeout interval",
-          "Corruption"
+          "A switch port that carries traffic for multiple VLANs using tags.",
+          "IPsec mode that protects the payload of the original IP datagram.",
+          "An agreement where networks exchange traffic, often without payment.",
+          "The part of the network that connects end systems to the first router."
         ],
         "answer": 0,
-        "explain": "TCP Reno: A classic TCP congestion-control variant using AIMD and fast recovery."
+        "explain": "A switch port that carries traffic for multiple VLANs using tags."
       },
       {
-        "q": "Which term best matches this description: The tendency for competing TCP flows to share bandwidth.",
+        "q": "What is Access port?",
         "options": [
-          "Individual ACK",
-          "TCP fairness",
-          "Fast retransmit",
-          "Duplicate packet"
+          "IDS method that looks for deviations from normal behavior.",
+          "A shared medium area where simultaneous transmissions can collide.",
+          "The communication channel between neighboring nodes.",
+          "A switch port assigned to one VLAN for an end device."
+        ],
+        "answer": 3,
+        "explain": "A switch port assigned to one VLAN for an end device."
+      },
+      {
+        "q": "Why does a switch flood unknown destinations?",
+        "options": [
+          "Who created the message.",
+          "The dominant wired LAN technology.",
+          "It does not yet know the destination MAC's port.",
+          "Forwarding packets to the mobile node's current location."
+        ],
+        "answer": 2,
+        "explain": "It does not yet know the destination MAC's port."
+      },
+      {
+        "q": "Why do VLANs improve segmentation?",
+        "options": [
+          "A rule set defining message format, message order, and actions when messages are sent or received.",
+          "They separate broadcast domains logically.",
+          "A lightweight connectionless transport protocol with no built-in reliability.",
+          "A BGP attribute used inside an AS to prefer certain routes."
         ],
         "answer": 1,
-        "explain": "TCP fairness: The tendency for competing TCP flows to share bandwidth."
+        "explain": "They separate broadcast domains logically."
       },
       {
-        "q": "Which term best matches this description: A limit based on receiver capacity.",
+        "q": "What is a trunk port for?",
         "options": [
-          "TCP byte stream",
-          "Duplicate ACK",
-          "Flow-control limit",
-          "Stop-and-wait rdt"
-        ],
-        "answer": 2,
-        "explain": "Flow-control limit: A limit based on receiver capacity."
-      },
-      {
-        "q": "Which term best matches this description: A limit based on network capacity.",
-        "options": [
-          "TCP sequence number",
-          "Slow start",
-          "Pipelined rdt",
-          "Congestion-control limit"
-        ],
-        "answer": 3,
-        "explain": "Congestion-control limit: A limit based on network capacity."
-      },
-      {
-        "q": "Which term best matches this description: The smaller of the receive window and congestion window.",
-        "options": [
-          "Effective send window",
-          "TCP ACK number",
-          "Congestion avoidance",
-          "Sliding window"
+          "Carrying multiple VLANs between switches.",
+          "A device communicating over a wireless link.",
+          "The process of monitoring, configuring, and controlling network systems.",
+          "Regularly asking devices for status information."
         ],
         "answer": 0,
-        "explain": "Effective send window: The smaller of the receive window and congestion window."
+        "explain": "Carrying multiple VLANs between switches."
+      },
+      {
+        "q": "What is an access port for?",
+        "options": [
+          "TCP behavior after packet loss detected by duplicate ACKs.",
+          "A simple bit added to make the number of ones even or odd.",
+          "A physical cable type used only for local wiring.",
+          "Connecting an end device to one VLAN."
+        ],
+        "answer": 3,
+        "explain": "Connecting an end device to one VLAN."
+      },
+      {
+        "q": "Why does Ethernet include a CRC?",
+        "options": [
+          "A method that prevents senders from overwhelming the network.",
+          "The system used by administrators to monitor and control devices.",
+          "To detect corrupted frames.",
+          "A label is added to the packet."
+        ],
+        "answer": 2,
+        "explain": "To detect corrupted frames."
+      },
+      {
+        "q": "What does MAC learning use?",
+        "options": [
+          "Moving an active device connection from one base station to another.",
+          "The source MAC address of arriving frames.",
+          "A service is useless if legitimate users cannot reach it.",
+          "A link-layer hardware address used for local frame delivery."
+        ],
+        "answer": 1,
+        "explain": "The source MAC address of arriving frames."
+      },
+      {
+        "q": "Why is ARP limited to the local network?",
+        "options": [
+          "It resolves MAC addresses only within a LAN/broadcast domain.",
+          "A network that buys connectivity or transit from another network.",
+          "The top network layer where applications define messages and services.",
+          "Who created the message."
+        ],
+        "answer": 0,
+        "explain": "It resolves MAC addresses only within a LAN/broadcast domain."
+      },
+      {
+        "q": "What is a broadcast MAC address used for?",
+        "options": [
+          "TCP phase where the congestion window grows more cautiously.",
+          "HTTP behavior that reuses a TCP connection for multiple objects.",
+          "A number that identifies byte positions for ordering and reliability.",
+          "Sending a frame to all devices in a LAN segment."
+        ],
+        "answer": 3,
+        "explain": "Sending a frame to all devices in a LAN segment."
+      },
+      {
+        "q": "Why does WiFi avoid collisions instead of detecting them?",
+        "options": [
+          "A BGP message announcing reachability to a prefix.",
+          "Detecting unauthorized changes to data.",
+          "Wireless devices may not hear collisions while transmitting.",
+          "Rules for deciding who can transmit on a shared medium."
+        ],
+        "answer": 2,
+        "explain": "Wireless devices may not hear collisions while transmitting."
+      },
+      {
+        "q": "What does a VLAN tag identify?",
+        "options": [
+          "Access Control List, a list of permit or deny rules.",
+          "The VLAN to which the frame belongs.",
+          "An ACK repeated for the same data, often hinting that later data arrived but a gap exists.",
+          "It organizes manageable device variables."
+        ],
+        "answer": 1,
+        "explain": "The VLAN to which the frame belongs."
       }
     ]
   },
   {
-    "title": "Network Layer and Router Architecture — 30-item Practice Test",
+    "title": "4.3 Practice: Link Virtualization, MPLS, and Data Center Networks",
+    "description": "30-item practice test for Link Virtualization, MPLS, and Data Center Networks.",
     "questions": [
       {
-        "q": "Which term best matches this description: The layer that delivers packets from sending host to receiving host.",
+        "q": "What is Link virtualization?",
         "options": [
-          "Network layer",
-          "Buffer overflow",
-          "SDN control plane",
-          "Routing"
+          "Making a network path behave like a logical link or service.",
+          "A network or group of networks under one administrative control.",
+          "A link-layer hardware address used for local frame delivery.",
+          "The recalculation of paths after topology or cost changes."
         ],
         "answer": 0,
-        "explain": "Network layer: The layer that delivers packets from sending host to receiving host."
+        "explain": "Making a network path behave like a logical link or service."
       },
       {
-        "q": "Which term best matches this description: A network-layer packet, especially in IP networks.",
+        "q": "What is MPLS?",
         "options": [
-          "Fragmentation",
-          "Datagram",
-          "Flow table",
-          "Forwarding table"
-        ],
-        "answer": 1,
-        "explain": "Datagram: A network-layer packet, especially in IP networks."
-      },
-      {
-        "q": "Which term best matches this description: Moving a packet from an input link to the correct output link.",
-        "options": [
-          "MTU",
-          "Match-action rule",
-          "Forwarding",
-          "Routing algorithm"
-        ],
-        "answer": 2,
-        "explain": "Forwarding: Moving a packet from an input link to the correct output link."
-      },
-      {
-        "q": "Which term best matches this description: Computing the path packets should take through the network.",
-        "options": [
-          "IP service model",
-          "Router buffer",
-          "Data plane",
-          "Routing"
+          "Regularly asking devices for status information.",
+          "Network Address Translation, which maps private internal addresses to public addresses.",
+          "Clear To Send, a response allowing a sender to transmit.",
+          "Multiprotocol Label Switching, a forwarding method based on short labels."
         ],
         "answer": 3,
-        "explain": "Routing: Computing the path packets should take through the network."
+        "explain": "Multiprotocol Label Switching, a forwarding method based on short labels."
       },
       {
-        "q": "Which term best matches this description: A table used by routers to choose output links.",
+        "q": "What is Label?",
         "options": [
-          "Forwarding table",
-          "Best-effort network",
-          "Network layer",
-          "Control plane"
-        ],
-        "answer": 0,
-        "explain": "Forwarding table: A table used by routers to choose output links."
-      },
-      {
-        "q": "Which term best matches this description: A method for computing paths through a network.",
-        "options": [
-          "Virtual circuit network",
-          "Routing algorithm",
-          "Datagram",
-          "Router input port"
-        ],
-        "answer": 1,
-        "explain": "Routing algorithm: A method for computing paths through a network."
-      },
-      {
-        "q": "Which term best matches this description: The per-router function that forwards packets.",
-        "options": [
-          "Datagram network",
-          "Forwarding",
-          "Data plane",
-          "Switching fabric"
+          "The top network layer where applications define messages and services.",
+          "A small chunk of data plus headers that can be forwarded through a network.",
+          "A fixed-length identifier used by MPLS routers to forward packets.",
+          "Recovering readable data from ciphertext."
         ],
         "answer": 2,
-        "explain": "Data plane: The per-router function that forwards packets."
+        "explain": "A fixed-length identifier used by MPLS routers to forward packets."
       },
       {
-        "q": "Which term best matches this description: The network-wide logic that determines routing behavior.",
+        "q": "What is Label-switched router?",
         "options": [
-          "SDN control plane",
-          "Routing",
-          "Router output port",
-          "Control plane"
-        ],
-        "answer": 3,
-        "explain": "Control plane: The network-wide logic that determines routing behavior."
-      },
-      {
-        "q": "Which term best matches this description: Router component that receives packets and performs lookup.",
-        "options": [
-          "Router input port",
-          "Flow table",
-          "Forwarding table",
-          "Longest-prefix matching"
-        ],
-        "answer": 0,
-        "explain": "Router input port: Router component that receives packets and performs lookup."
-      },
-      {
-        "q": "Which term best matches this description: Router component that transfers packets from input to output ports.",
-        "options": [
-          "Match-action rule",
-          "Switching fabric",
-          "Routing algorithm",
-          "Queueing"
+          "A simple bit added to make the number of ones even or odd.",
+          "A router that forwards MPLS traffic based on label values.",
+          "Streaming or exporting operational data for monitoring.",
+          "Information that a destination prefix can be reached."
         ],
         "answer": 1,
-        "explain": "Switching fabric: Router component that transfers packets from input to output ports."
+        "explain": "A router that forwards MPLS traffic based on label values."
       },
       {
-        "q": "Which term best matches this description: Router component that buffers and transmits packets onto links.",
+        "q": "What is Label forwarding table?",
         "options": [
-          "Router buffer",
-          "Data plane",
-          "Router output port",
-          "Head-of-line blocking"
+          "A table mapping incoming labels to outgoing labels and interfaces.",
+          "Keeping message contents hidden from unauthorized parties.",
+          "IPsec mode that protects the entire original datagram inside a new datagram.",
+          "A Request for Comments document that records Internet standards and protocol specifications."
+        ],
+        "answer": 0,
+        "explain": "A table mapping incoming labels to outgoing labels and interfaces."
+      },
+      {
+        "q": "What is LSP?",
+        "options": [
+          "The mobile device, such as a phone or cellular modem.",
+          "The ability to keep network service while changing attachment points.",
+          "What the device is actually doing now.",
+          "Label Switched Path, the route MPLS packets follow through a network."
+        ],
+        "answer": 3,
+        "explain": "Label Switched Path, the route MPLS packets follow through a network."
+      },
+      {
+        "q": "What is Ingress router?",
+        "options": [
+          "To improve scalability and reduce routing overhead.",
+          "The wireless medium for a transmission.",
+          "The MPLS edge router that first adds a label.",
+          "The data link layer unit that carries a network-layer packet."
         ],
         "answer": 2,
-        "explain": "Router output port: Router component that buffers and transmits packets onto links."
+        "explain": "The MPLS edge router that first adds a label."
       },
       {
-        "q": "Which term best matches this description: Choosing the forwarding-table entry with the most specific matching prefix.",
+        "q": "What is Egress router?",
         "options": [
-          "Network layer",
-          "Control plane",
-          "Packet scheduler",
-          "Longest-prefix matching"
-        ],
-        "answer": 3,
-        "explain": "Longest-prefix matching: Choosing the forwarding-table entry with the most specific matching prefix."
-      },
-      {
-        "q": "Which term best matches this description: Waiting in a buffer when traffic arrives faster than it can leave.",
-        "options": [
-          "Queueing",
-          "Datagram",
-          "Router input port",
-          "FIFO scheduling"
-        ],
-        "answer": 0,
-        "explain": "Queueing: Waiting in a buffer when traffic arrives faster than it can leave."
-      },
-      {
-        "q": "Which term best matches this description: Delay caused when a packet at the front blocks packets behind it.",
-        "options": [
-          "Forwarding",
-          "Head-of-line blocking",
-          "Switching fabric",
-          "Priority scheduling"
+          "BGP-learned routes inside one autonomous system.",
+          "The MPLS edge router that removes the label.",
+          "The local action of moving a packet from a router input to an output interface.",
+          "The carrier network handling mobility, authentication, and Internet access."
         ],
         "answer": 1,
-        "explain": "Head-of-line blocking: Delay caused when a packet at the front blocks packets behind it."
+        "explain": "The MPLS edge router that removes the label."
       },
       {
-        "q": "Which term best matches this description: A mechanism that chooses which queued packet to send next.",
+        "q": "What is Traffic engineering?",
         "options": [
-          "Routing",
-          "Router output port",
-          "Packet scheduler",
-          "Round-robin scheduling"
+          "Controlling paths to meet performance or policy goals.",
+          "Carrier Sense Multiple Access with Collision Detection, used in classic shared Ethernet.",
+          "A router rejects routes containing its own AS number.",
+          "Classless Inter-Domain Routing, notation for variable-length network prefixes."
+        ],
+        "answer": 0,
+        "explain": "Controlling paths to meet performance or policy goals."
+      },
+      {
+        "q": "What is Fast reroute?",
+        "options": [
+          "Sending a frame out multiple ports when the destination is unknown or broadcast.",
+          "A prefix is no longer reachable through that path.",
+          "TCP setup using SYN, SYN-ACK, and ACK messages.",
+          "Quickly moving traffic to a backup path after failure."
+        ],
+        "answer": 3,
+        "explain": "Quickly moving traffic to a backup path after failure."
+      },
+      {
+        "q": "What is VPN?",
+        "options": [
+          "The local action of moving a packet from a router input to an output interface.",
+          "Collecting data from many processes so they can share the network.",
+          "A virtual private network service that can be carried over shared infrastructure.",
+          "A gateway connecting the cellular network to external packet data networks."
         ],
         "answer": 2,
-        "explain": "Packet scheduler: A mechanism that chooses which queued packet to send next."
+        "explain": "A virtual private network service that can be carried over shared infrastructure."
       },
       {
-        "q": "Which term best matches this description: First-In First-Out packet scheduling.",
+        "q": "What is Virtual circuit?",
         "options": [
-          "Forwarding table",
-          "Longest-prefix matching",
-          "WFQ",
-          "FIFO scheduling"
-        ],
-        "answer": 3,
-        "explain": "FIFO scheduling: First-In First-Out packet scheduling."
-      },
-      {
-        "q": "Which term best matches this description: Scheduling that serves higher-priority traffic first.",
-        "options": [
-          "Priority scheduling",
-          "Routing algorithm",
-          "Queueing",
-          "Buffer overflow"
-        ],
-        "answer": 0,
-        "explain": "Priority scheduling: Scheduling that serves higher-priority traffic first."
-      },
-      {
-        "q": "Which term best matches this description: Scheduling that cycles through queues.",
-        "options": [
-          "Data plane",
-          "Round-robin scheduling",
-          "Head-of-line blocking",
-          "Fragmentation"
+          "A rule set defining message format, message order, and actions when messages are sent or received.",
+          "A logical path that behaves like a dedicated circuit.",
+          "The table of selected routes used to forward packets.",
+          "A graphics rendering technique for web pages."
         ],
         "answer": 1,
-        "explain": "Round-robin scheduling: Scheduling that cycles through queues."
+        "explain": "A logical path that behaves like a dedicated circuit."
       },
       {
-        "q": "Which term best matches this description: Weighted Fair Queueing, scheduling that gives configured shares to classes.",
+        "q": "What is Overlay network?",
         "options": [
-          "Control plane",
-          "Packet scheduler",
-          "WFQ",
-          "MTU"
+          "A logical network built on top of another network.",
+          "Programmable and centralized network control.",
+          "The logic that computes or installs forwarding behavior.",
+          "A link where multiple nodes share the same communication medium."
+        ],
+        "answer": 0,
+        "explain": "A logical network built on top of another network."
+      },
+      {
+        "q": "What is Underlay network?",
+        "options": [
+          "The table of selected routes used to forward packets.",
+          "The IPsec AH header used for integrity and authentication.",
+          "TCP setup using SYN, SYN-ACK, and ACK messages.",
+          "The physical or base IP network that carries overlay traffic."
+        ],
+        "answer": 3,
+        "explain": "The physical or base IP network that carries overlay traffic."
+      },
+      {
+        "q": "What is Data center network?",
+        "options": [
+          "Using a visited carrier network while subscribed to a home carrier.",
+          "The network name advertised by a WiFi access point.",
+          "A high-speed network connecting large numbers of servers.",
+          "Interoperability between different systems and vendors."
         ],
         "answer": 2,
-        "explain": "WFQ: Weighted Fair Queueing, scheduling that gives configured shares to classes."
+        "explain": "A high-speed network connecting large numbers of servers."
       },
       {
-        "q": "Which term best matches this description: A condition where a full queue causes arriving packets to be dropped.",
+        "q": "What is Top-of-rack switch?",
         "options": [
-          "Router input port",
-          "FIFO scheduling",
-          "IP service model",
-          "Buffer overflow"
-        ],
-        "answer": 3,
-        "explain": "Buffer overflow: A condition where a full queue causes arriving packets to be dropped."
-      },
-      {
-        "q": "Which term best matches this description: Splitting a large datagram into smaller pieces.",
-        "options": [
-          "Fragmentation",
-          "Switching fabric",
-          "Priority scheduling",
-          "Best-effort network"
-        ],
-        "answer": 0,
-        "explain": "Fragmentation: Splitting a large datagram into smaller pieces."
-      },
-      {
-        "q": "Which term best matches this description: Maximum Transmission Unit, the largest frame payload allowed on a link.",
-        "options": [
-          "Router output port",
-          "MTU",
-          "Round-robin scheduling",
-          "Virtual circuit network"
+          "Policy, path exploration, and distributed updates take time.",
+          "A switch placed near or inside a server rack.",
+          "It establishes connection state before data transfer.",
+          "A configuration command may fail or produce unexpected state."
         ],
         "answer": 1,
-        "explain": "MTU: Maximum Transmission Unit, the largest frame payload allowed on a link."
+        "explain": "A switch placed near or inside a server rack."
       },
       {
-        "q": "Which term best matches this description: Best-effort datagram delivery with no guaranteed bandwidth or timing.",
+        "q": "What is Leaf-spine?",
         "options": [
-          "Longest-prefix matching",
-          "WFQ",
-          "IP service model",
-          "Datagram network"
+          "A scalable data-center topology with leaf access switches and spine core switches.",
+          "It reduces response time and upstream traffic.",
+          "The source MAC address of arriving frames.",
+          "The network name advertised by a WiFi access point."
+        ],
+        "answer": 0,
+        "explain": "A scalable data-center topology with leaf access switches and spine core switches."
+      },
+      {
+        "q": "What is Load balancing?",
+        "options": [
+          "A fixed-length identifier used by MPLS routers to forward packets.",
+          "Symmetric keys are efficient for bulk data.",
+          "A nearby server that delivers cached content to users.",
+          "Distributing traffic across multiple paths or servers."
+        ],
+        "answer": 3,
+        "explain": "Distributing traffic across multiple paths or servers."
+      },
+      {
+        "q": "What is ECMP?",
+        "options": [
+          "TCP sender-side limit on how much data can be in flight due to congestion control.",
+          "Multiple devices use the same radio medium.",
+          "Equal-Cost Multipath, using multiple equal-cost paths for traffic.",
+          "A table mapping incoming labels to outgoing labels and interfaces."
         ],
         "answer": 2,
-        "explain": "IP service model: Best-effort datagram delivery with no guaranteed bandwidth or timing."
+        "explain": "Equal-Cost Multipath, using multiple equal-cost paths for traffic."
       },
       {
-        "q": "Which term best matches this description: A network that tries to deliver but gives no strict guarantees.",
+        "q": "What is Fabric?",
         "options": [
-          "Queueing",
-          "Buffer overflow",
-          "SDN control plane",
-          "Best-effort network"
-        ],
-        "answer": 3,
-        "explain": "Best-effort network: A network that tries to deliver but gives no strict guarantees."
-      },
-      {
-        "q": "Which term best matches this description: A network where path state is established before data transfer.",
-        "options": [
-          "Virtual circuit network",
-          "Head-of-line blocking",
-          "Fragmentation",
-          "Flow table"
-        ],
-        "answer": 0,
-        "explain": "Virtual circuit network: A network where path state is established before data transfer."
-      },
-      {
-        "q": "Which term best matches this description: A network where each packet carries its destination address and is routed independently.",
-        "options": [
-          "Packet scheduler",
-          "Datagram network",
-          "MTU",
-          "Match-action rule"
+          "A newer cellular generation with enhanced capacity, latency, and service flexibility.",
+          "The overall switching infrastructure of a data center.",
+          "A Request for Comments document that records Internet standards and protocol specifications.",
+          "A device that cannot hear another transmitter but can still collide at the receiver."
         ],
         "answer": 1,
-        "explain": "Datagram network: A network where each packet carries its destination address and is routed independently."
+        "explain": "The overall switching infrastructure of a data center."
       },
       {
-        "q": "Which term best matches this description: A control model where a controller programs forwarding behavior.",
+        "q": "Why can MPLS help traffic engineering?",
         "options": [
-          "FIFO scheduling",
-          "IP service model",
-          "SDN control plane",
-          "Router buffer"
+          "Operators can steer flows over selected paths.",
+          "The transport-layer unit that carries application data and a transport header.",
+          "They compactly acknowledge a continuous byte stream.",
+          "Distributing traffic across multiple paths or servers."
+        ],
+        "answer": 0,
+        "explain": "Operators can steer flows over selected paths."
+      },
+      {
+        "q": "What does an LSR do?",
+        "options": [
+          "A switch placed near or inside a server rack.",
+          "Maximum Transmission Unit, the largest frame payload a link can carry.",
+          "How strong the signal is compared with noise.",
+          "It forwards packets based on labels."
+        ],
+        "answer": 3,
+        "explain": "It forwards packets based on labels."
+      },
+      {
+        "q": "What happens at the MPLS ingress?",
+        "options": [
+          "A logical IP address block within a network.",
+          "Access Control List, a list of permit or deny rules.",
+          "A label is added to the packet.",
+          "IP address and port information."
         ],
         "answer": 2,
-        "explain": "SDN control plane: A control model where a controller programs forwarding behavior."
+        "explain": "A label is added to the packet."
       },
       {
-        "q": "Which term best matches this description: An SDN table containing match-action rules.",
+        "q": "What happens at the MPLS egress?",
         "options": [
-          "Priority scheduling",
-          "Best-effort network",
-          "Network layer",
-          "Flow table"
-        ],
-        "answer": 3,
-        "explain": "Flow table: An SDN table containing match-action rules."
-      },
-      {
-        "q": "Which term best matches this description: A rule that matches packet fields and specifies an action.",
-        "options": [
-          "Match-action rule",
-          "Round-robin scheduling",
-          "Virtual circuit network",
-          "Datagram"
-        ],
-        "answer": 0,
-        "explain": "Match-action rule: A rule that matches packet fields and specifies an action."
-      },
-      {
-        "q": "Which term best matches this description: Memory used to hold packets during congestion or scheduling.",
-        "options": [
-          "WFQ",
-          "Router buffer",
-          "Datagram network",
-          "Forwarding"
+          "The data link layer unit that carries a network-layer packet.",
+          "The MPLS label is removed.",
+          "A device communicating over a wireless link.",
+          "The local action of moving a packet from a router input to an output interface."
         ],
         "answer": 1,
-        "explain": "Router buffer: Memory used to hold packets during congestion or scheduling."
+        "explain": "The MPLS label is removed."
+      },
+      {
+        "q": "Why are data centers often built as fabrics?",
+        "options": [
+          "They need many high-capacity paths between servers.",
+          "Classless Inter-Domain Routing, notation for variable-length network prefixes.",
+          "A firewall that tracks connection state when filtering traffic.",
+          "A 4G data-plane anchor that forwards user traffic."
+        ],
+        "answer": 0,
+        "explain": "They need many high-capacity paths between servers."
+      },
+      {
+        "q": "What does ECMP allow?",
+        "options": [
+          "A firewall rule system that permits or denies packets by header fields.",
+          "Sending a frame to all devices in a LAN segment.",
+          "A sharing method where packets from many users take turns using links.",
+          "Using multiple equal-cost paths."
+        ],
+        "answer": 3,
+        "explain": "Using multiple equal-cost paths."
+      },
+      {
+        "q": "What is an overlay network?",
+        "options": [
+          "Announcing AP information and SSID availability.",
+          "A selected frequency range used for wireless communication.",
+          "A logical network running over an underlay.",
+          "A private key to sign and a public key to verify."
+        ],
+        "answer": 2,
+        "explain": "A logical network running over an underlay."
+      },
+      {
+        "q": "Why is fast reroute useful?",
+        "options": [
+          "Keeping services reachable for legitimate users.",
+          "It reduces outage time after a failure.",
+          "The IPsec AH header used for integrity and authentication.",
+          "A value assigned to a link, often based on bandwidth, delay, or policy."
+        ],
+        "answer": 1,
+        "explain": "It reduces outage time after a failure."
+      },
+      {
+        "q": "What is a VPN service in provider networks?",
+        "options": [
+          "Private connectivity over shared infrastructure.",
+          "It connects access networks to larger Internet infrastructure.",
+          "Transport Layer Security, commonly used to secure web connections.",
+          "The wireless medium for a transmission."
+        ],
+        "answer": 0,
+        "explain": "Private connectivity over shared infrastructure."
+      },
+      {
+        "q": "Why use load balancing in data centers?",
+        "options": [
+          "HTTP protected by TLS.",
+          "An architecture where end systems communicate directly and share roles.",
+          "A sharing method where packets from many users take turns using links.",
+          "To spread traffic and avoid hot spots."
+        ],
+        "answer": 3,
+        "explain": "To spread traffic and avoid hot spots."
       }
     ]
   },
   {
-    "title": "IP Addressing, IPv4, IPv6, DHCP, NAT, and ICMP — 30-item Practice Test",
+    "title": "5.1 Practice: Wireless Networks and WiFi",
+    "description": "30-item practice test for Wireless Networks and WiFi.",
     "questions": [
       {
-        "q": "Which term best matches this description: The 32-bit version of the Internet Protocol.",
+        "q": "What is Wireless host?",
         "options": [
-          "Traceroute",
-          "IPv4",
-          "Address aggregation",
-          "Host portion"
-        ],
-        "answer": 1,
-        "explain": "IPv4: The 32-bit version of the Internet Protocol."
-      },
-      {
-        "q": "Which term best matches this description: The 128-bit version of the Internet Protocol.",
-        "options": [
-          "TTL",
-          "IPv4",
-          "IPv6",
-          "CIDR"
+          "An ongoing session while the user moves.",
+          "It organizes streams into manageable transmission units.",
+          "A device communicating over a wireless link.",
+          "TCP setup using SYN, SYN-ACK, and ACK messages."
         ],
         "answer": 2,
-        "explain": "IPv6: The 128-bit version of the Internet Protocol."
+        "explain": "A device communicating over a wireless link."
       },
       {
-        "q": "Which term best matches this description: A logical address assigned to a network interface.",
+        "q": "What is Base station?",
         "options": [
-          "IPv4 header checksum",
-          "IPv6",
-          "Slash notation",
-          "IP address"
+          "Configuration such as gateway and DNS server information.",
+          "A radio access point connecting wireless devices to network infrastructure.",
+          "Each direction can have separate keys and parameters.",
+          "Internal private hosts are hidden behind translated addresses."
         ],
-        "answer": 3,
-        "explain": "IP address: A logical address assigned to a network interface."
+        "answer": 1,
+        "explain": "A radio access point connecting wireless devices to network infrastructure."
       },
       {
-        "q": "Which term best matches this description: A host or router connection point to a network.",
+        "q": "What is Access point?",
         "options": [
-          "Interface",
-          "IPv6 simplified header",
-          "IP address",
-          "Subnet mask"
+          "A WiFi base station that connects wireless hosts to a LAN.",
+          "Classless Inter-Domain Routing, notation for variable-length network prefixes.",
+          "Border Gateway Protocol, the main interdomain routing protocol of the Internet.",
+          "BGP sessions between routers inside the same autonomous system."
         ],
         "answer": 0,
-        "explain": "Interface: A host or router connection point to a network."
+        "explain": "A WiFi base station that connects wireless hosts to a LAN."
       },
       {
-        "q": "Which term best matches this description: A group of interfaces sharing the same network prefix.",
+        "q": "What is Infrastructure mode?",
         "options": [
-          "IPv6 flow label",
-          "Subnet",
-          "Interface",
-          "Default gateway"
-        ],
-        "answer": 1,
-        "explain": "Subnet: A group of interfaces sharing the same network prefix."
-      },
-      {
-        "q": "Which term best matches this description: The leftmost bits identifying a subnet or route.",
-        "options": [
-          "Tunneling",
-          "Subnet",
-          "Network prefix",
-          "DHCP"
-        ],
-        "answer": 2,
-        "explain": "Network prefix: The leftmost bits identifying a subnet or route."
-      },
-      {
-        "q": "Which term best matches this description: The address bits identifying an interface within a subnet.",
-        "options": [
-          "Dual stack",
-          "Network prefix",
-          "DHCP discover",
-          "Host portion"
+          "Making a network path behave like a logical link or service.",
+          "Keys and parameters for IPsec security associations.",
+          "A virtual private network service that can be carried over shared infrastructure.",
+          "Wireless mode where devices communicate through an access point."
         ],
         "answer": 3,
-        "explain": "Host portion: The address bits identifying an interface within a subnet."
+        "explain": "Wireless mode where devices communicate through an access point."
       },
       {
-        "q": "Which term best matches this description: Classless Inter-Domain Routing using slash notation prefixes.",
+        "q": "What is Ad hoc mode?",
         "options": [
-          "CIDR",
-          "Address aggregation",
-          "Host portion",
-          "DHCP offer"
-        ],
-        "answer": 0,
-        "explain": "CIDR: Classless Inter-Domain Routing using slash notation prefixes."
-      },
-      {
-        "q": "Which term best matches this description: Address notation such as 10.0.0.0/24 showing prefix length.",
-        "options": [
-          "IPv4",
-          "Slash notation",
-          "CIDR",
-          "DHCP request"
-        ],
-        "answer": 1,
-        "explain": "Slash notation: Address notation such as 10.0.0.0/24 showing prefix length."
-      },
-      {
-        "q": "Which term best matches this description: A mask indicating which address bits belong to the network prefix.",
-        "options": [
-          "IPv6",
-          "Slash notation",
-          "Subnet mask",
-          "DHCP ACK"
+          "Message Authentication Code, used to verify authenticity and integrity with a shared key.",
+          "Software on a managed device that provides management information.",
+          "Wireless mode where devices communicate directly without infrastructure.",
+          "Maximum Transmission Unit, the largest frame payload a link can carry."
         ],
         "answer": 2,
-        "explain": "Subnet mask: A mask indicating which address bits belong to the network prefix."
+        "explain": "Wireless mode where devices communicate directly without infrastructure."
       },
       {
-        "q": "Which term best matches this description: The router a host uses to reach outside its subnet.",
+        "q": "What is Wireless link?",
         "options": [
-          "IP address",
-          "Subnet mask",
-          "NAT",
-          "Default gateway"
+          "The rule of choosing the most specific matching destination prefix.",
+          "A radio channel carrying bits between devices.",
+          "An architecture where end systems communicate directly and share roles.",
+          "They reduce overlap and interference when planned well."
+        ],
+        "answer": 1,
+        "explain": "A radio channel carrying bits between devices."
+      },
+      {
+        "q": "What is Signal attenuation?",
+        "options": [
+          "Loss of signal strength over distance or through obstacles.",
+          "The hosts and access networks where users and applications connect.",
+          "The maximum transmission rate a link can support.",
+          "Collecting data from many processes so they can share the network."
+        ],
+        "answer": 0,
+        "explain": "Loss of signal strength over distance or through obstacles."
+      },
+      {
+        "q": "What is Interference?",
+        "options": [
+          "Mobile IP entity that assists a mobile node in a visited network.",
+          "A service that delivers data correctly and in order despite loss or corruption.",
+          "A separated network zone for publicly reachable services.",
+          "Unwanted signals that disrupt communication."
         ],
         "answer": 3,
-        "explain": "Default gateway: The router a host uses to reach outside its subnet."
+        "explain": "Unwanted signals that disrupt communication."
       },
       {
-        "q": "Which term best matches this description: Dynamic Host Configuration Protocol for automatic host configuration.",
+        "q": "What is Multipath?",
         "options": [
-          "DHCP",
-          "Interface",
-          "Default gateway",
-          "Private address"
-        ],
-        "answer": 0,
-        "explain": "DHCP: Dynamic Host Configuration Protocol for automatic host configuration."
-      },
-      {
-        "q": "Which term best matches this description: A broadcast message used by a client looking for a DHCP server.",
-        "options": [
-          "Subnet",
-          "DHCP discover",
-          "DHCP",
-          "Public address"
-        ],
-        "answer": 1,
-        "explain": "DHCP discover: A broadcast message used by a client looking for a DHCP server."
-      },
-      {
-        "q": "Which term best matches this description: A server response offering address configuration.",
-        "options": [
-          "Network prefix",
-          "DHCP discover",
-          "DHCP offer",
-          "NAT table"
+          "Carrier Sense Multiple Access with Collision Detection, used in classic shared Ethernet.",
+          "Router component that queues and transmits packets on an outgoing link.",
+          "Signal copies arriving by different paths because of reflection.",
+          "A logical network running over an underlay."
         ],
         "answer": 2,
-        "explain": "DHCP offer: A server response offering address configuration."
+        "explain": "Signal copies arriving by different paths because of reflection."
       },
       {
-        "q": "Which term best matches this description: A client message requesting offered configuration.",
+        "q": "What is SNR?",
         "options": [
-          "Host portion",
-          "DHCP offer",
-          "ICMP",
-          "DHCP request"
+          "Business or administrative rules that influence route selection.",
+          "Signal-to-noise ratio, a measure of signal quality.",
+          "The retransmission timer value derived from estimated RTT and variation.",
+          "A parity method that can detect and sometimes locate bit errors using rows and columns."
+        ],
+        "answer": 1,
+        "explain": "Signal-to-noise ratio, a measure of signal quality."
+      },
+      {
+        "q": "What is 802.11?",
+        "options": [
+          "The IEEE family of WiFi standards.",
+          "The physical or base IP network that carries overlay traffic.",
+          "To spread traffic and avoid hot spots.",
+          "A prefix is no longer reachable through that path."
+        ],
+        "answer": 0,
+        "explain": "The IEEE family of WiFi standards."
+      },
+      {
+        "q": "What is SSID?",
+        "options": [
+          "The divisor pattern used in CRC computation.",
+          "A temporary symmetric key used after secure setup.",
+          "It catches more burst and pattern errors.",
+          "The network name advertised by a WiFi access point."
         ],
         "answer": 3,
-        "explain": "DHCP request: A client message requesting offered configuration."
+        "explain": "The network name advertised by a WiFi access point."
       },
       {
-        "q": "Which term best matches this description: A server confirmation of assigned configuration.",
+        "q": "What is Association?",
         "options": [
-          "DHCP ACK",
-          "CIDR",
-          "DHCP request",
-          "Ping"
-        ],
-        "answer": 0,
-        "explain": "DHCP ACK: A server confirmation of assigned configuration."
-      },
-      {
-        "q": "Which term best matches this description: Network Address Translation, rewriting private/public address and port mappings.",
-        "options": [
-          "Slash notation",
-          "NAT",
-          "DHCP ACK",
-          "Traceroute"
-        ],
-        "answer": 1,
-        "explain": "NAT: Network Address Translation, rewriting private/public address and port mappings."
-      },
-      {
-        "q": "Which term best matches this description: An address reserved for internal networks and not globally routed.",
-        "options": [
-          "Subnet mask",
-          "NAT",
-          "Private address",
-          "TTL"
+          "A programming style that does not affect packet delivery.",
+          "Round-trip time between sending data and receiving its acknowledgment.",
+          "The process of a wireless host joining an access point.",
+          "A sum-based error detection value."
         ],
         "answer": 2,
-        "explain": "Private address: An address reserved for internal networks and not globally routed."
+        "explain": "The process of a wireless host joining an access point."
       },
       {
-        "q": "Which term best matches this description: A globally routable Internet address.",
+        "q": "What is Beacon frame?",
         "options": [
-          "Default gateway",
-          "Private address",
-          "IPv4 header checksum",
-          "Public address"
+          "Address Resolution Protocol, which maps local IP addresses to MAC addresses.",
+          "A frame an AP sends to announce network presence and parameters.",
+          "They adjust quality when available throughput changes.",
+          "A hardware power mode for reducing electricity use."
+        ],
+        "answer": 1,
+        "explain": "A frame an AP sends to announce network presence and parameters."
+      },
+      {
+        "q": "What is CSMA/CA?",
+        "options": [
+          "WiFi's collision avoidance medium access method.",
+          "Wireless mode where devices communicate directly without infrastructure.",
+          "They let TCP order data and detect missing bytes.",
+          "To reduce routing table size."
+        ],
+        "answer": 0,
+        "explain": "WiFi's collision avoidance medium access method."
+      },
+      {
+        "q": "What is RTS?",
+        "options": [
+          "Internet routing follows business and administrative relationships.",
+          "Dynamic Adaptive Streaming over HTTP, which adjusts video quality to network conditions.",
+          "Software-Defined Networking, separating control logic from forwarding behavior.",
+          "Request To Send, an optional control frame to reserve the medium."
         ],
         "answer": 3,
-        "explain": "Public address: A globally routable Internet address."
+        "explain": "Request To Send, an optional control frame to reserve the medium."
       },
       {
-        "q": "Which term best matches this description: A table mapping internal address-port pairs to external address-port pairs.",
+        "q": "What is CTS?",
         "options": [
-          "NAT table",
-          "DHCP",
-          "Public address",
-          "IPv6 simplified header"
-        ],
-        "answer": 0,
-        "explain": "NAT table: A table mapping internal address-port pairs to external address-port pairs."
-      },
-      {
-        "q": "Which term best matches this description: Internet Control Message Protocol for errors and diagnostics.",
-        "options": [
-          "DHCP discover",
-          "ICMP",
-          "NAT table",
-          "IPv6 flow label"
-        ],
-        "answer": 1,
-        "explain": "ICMP: Internet Control Message Protocol for errors and diagnostics."
-      },
-      {
-        "q": "Which term best matches this description: A reachability test using ICMP echo messages.",
-        "options": [
-          "DHCP offer",
-          "ICMP",
-          "Ping",
-          "Tunneling"
+          "To detect corrupted frames.",
+          "An ACK that confirms all data up to a certain point.",
+          "Clear To Send, a response allowing a sender to transmit.",
+          "An ACK repeated for the same data, often hinting that later data arrived but a gap exists."
         ],
         "answer": 2,
-        "explain": "Ping: A reachability test using ICMP echo messages."
+        "explain": "Clear To Send, a response allowing a sender to transmit."
       },
       {
-        "q": "Which term best matches this description: A diagnostic tool that discovers router hops using TTL behavior.",
+        "q": "What is ACK frame?",
         "options": [
-          "DHCP request",
-          "Ping",
-          "Dual stack",
-          "Traceroute"
+          "An operation that reads management information from a device.",
+          "A WiFi acknowledgment that confirms frame reception.",
+          "IDS method that looks for deviations from normal behavior.",
+          "A defined interface that lets software components request services or data."
+        ],
+        "answer": 1,
+        "explain": "A WiFi acknowledgment that confirms frame reception."
+      },
+      {
+        "q": "What is Hidden terminal?",
+        "options": [
+          "A device that cannot hear another transmitter but can still collide at the receiver.",
+          "Clear To Send, a response allowing a sender to transmit.",
+          "An agreement where networks exchange traffic, often without payment.",
+          "A reliable connection-oriented transport protocol with ordering and control mechanisms."
+        ],
+        "answer": 0,
+        "explain": "A device that cannot hear another transmitter but can still collide at the receiver."
+      },
+      {
+        "q": "What is Channel?",
+        "options": [
+          "It also includes service flexibility and core-network evolution.",
+          "A logical network built on top of another network.",
+          "An architecture where clients request service from an always-on server.",
+          "A selected frequency range used for wireless communication."
         ],
         "answer": 3,
-        "explain": "Traceroute: A diagnostic tool that discovers router hops using TTL behavior."
+        "explain": "A selected frequency range used for wireless communication."
       },
       {
-        "q": "Which term best matches this description: Time To Live, a field decreased by routers to prevent endless circulation.",
+        "q": "Why does WiFi use ACKs?",
         "options": [
-          "TTL",
-          "DHCP ACK",
-          "Traceroute",
-          "Address aggregation"
-        ],
-        "answer": 0,
-        "explain": "TTL: Time To Live, a field decreased by routers to prevent endless circulation."
-      },
-      {
-        "q": "Which term best matches this description: A field used to detect errors in an IPv4 header.",
-        "options": [
-          "NAT",
-          "IPv4 header checksum",
-          "TTL",
-          "IPv4"
-        ],
-        "answer": 1,
-        "explain": "IPv4 header checksum: A field used to detect errors in an IPv4 header."
-      },
-      {
-        "q": "Which term best matches this description: IPv6 design with fewer fixed header fields than IPv4.",
-        "options": [
-          "Private address",
-          "IPv4 header checksum",
-          "IPv6 simplified header",
-          "IPv6"
+          "The original datagram payload.",
+          "A selected frequency range used for wireless communication.",
+          "Wireless frames are more likely to be lost or corrupted.",
+          "Quickly moving traffic to a backup path after failure."
         ],
         "answer": 2,
-        "explain": "IPv6 simplified header: IPv6 design with fewer fixed header fields than IPv4."
+        "explain": "Wireless frames are more likely to be lost or corrupted."
       },
       {
-        "q": "Which term best matches this description: An IPv6 field that can identify flows needing special handling.",
+        "q": "Why are channels important?",
         "options": [
-          "Public address",
-          "IPv6 simplified header",
-          "IP address",
-          "IPv6 flow label"
+          "After multiple duplicate ACKs indicate likely loss.",
+          "They reduce overlap and interference when planned well.",
+          "Routing information has stabilized after changes.",
+          "Address Resolution Protocol, which maps local IP addresses to MAC addresses."
+        ],
+        "answer": 1,
+        "explain": "They reduce overlap and interference when planned well."
+      },
+      {
+        "q": "What is a hidden terminal?",
+        "options": [
+          "A sender that cannot hear another sender but can collide at the receiver.",
+          "A pipelined protocol that retransmits only specific missing packets.",
+          "Packets waiting because the output link or processing path is busy.",
+          "It reduces outage time after a failure."
+        ],
+        "answer": 0,
+        "explain": "A sender that cannot hear another sender but can collide at the receiver."
+      },
+      {
+        "q": "What does RTS/CTS reserve?",
+        "options": [
+          "Link utilization and throughput.",
+          "Multiprotocol Label Switching, a forwarding method based on short labels.",
+          "The hosts and access networks where users and applications connect.",
+          "The wireless medium for a transmission."
         ],
         "answer": 3,
-        "explain": "IPv6 flow label: An IPv6 field that can identify flows needing special handling."
+        "explain": "The wireless medium for a transmission."
       },
       {
-        "q": "Which term best matches this description: Carrying one protocol inside another during transitions or VPN use.",
+        "q": "Why does signal strength drop indoors?",
         "options": [
-          "Tunneling",
-          "NAT table",
-          "IPv6 flow label",
-          "Interface"
-        ],
-        "answer": 0,
-        "explain": "Tunneling: Carrying one protocol inside another during transitions or VPN use."
-      },
-      {
-        "q": "Which term best matches this description: Running IPv4 and IPv6 at the same time.",
-        "options": [
-          "ICMP",
-          "Dual stack",
-          "Tunneling",
-          "Subnet"
-        ],
-        "answer": 1,
-        "explain": "Dual stack: Running IPv4 and IPv6 at the same time."
-      },
-      {
-        "q": "Which term best matches this description: Combining prefixes to reduce routing-table size.",
-        "options": [
-          "Ping",
-          "Dual stack",
-          "Address aggregation",
-          "Network prefix"
+          "To spread traffic and avoid hot spots.",
+          "A family of teaching protocols used to explain reliability mechanisms.",
+          "Walls, distance, and reflections weaken signals.",
+          "TCP behavior that retransmits after enough duplicate ACKs, before timeout."
         ],
         "answer": 2,
-        "explain": "Address aggregation: Combining prefixes to reduce routing-table size."
+        "explain": "Walls, distance, and reflections weaken signals."
+      },
+      {
+        "q": "What does SNR indicate?",
+        "options": [
+          "They compactly acknowledge a continuous byte stream.",
+          "How strong the signal is compared with noise.",
+          "A WiFi acknowledgment that confirms frame reception.",
+          "Sending a frame to all devices in a LAN segment."
+        ],
+        "answer": 1,
+        "explain": "How strong the signal is compared with noise."
+      },
+      {
+        "q": "What is the role of beacon frames?",
+        "options": [
+          "Announcing AP information and SSID availability.",
+          "Software on a managed device that provides management information.",
+          "A device that receives packets and forwards them toward a destination.",
+          "A simple mail access protocol that downloads messages from a server."
+        ],
+        "answer": 0,
+        "explain": "Announcing AP information and SSID availability."
+      },
+      {
+        "q": "What is ad hoc mode useful for?",
+        "options": [
+          "Wireless frames are more likely to be lost or corrupted.",
+          "The part of a mobile network connecting devices to the core.",
+          "Cellular radio equipment that connects user devices to the carrier network.",
+          "Direct wireless communication without an AP."
+        ],
+        "answer": 3,
+        "explain": "Direct wireless communication without an AP."
+      },
+      {
+        "q": "Why is wireless shared by nature?",
+        "options": [
+          "Each direction can have separate keys and parameters.",
+          "Transforming readable data into protected ciphertext.",
+          "Multiple devices use the same radio medium.",
+          "A server that queries DNS on behalf of a client."
+        ],
+        "answer": 2,
+        "explain": "Multiple devices use the same radio medium."
+      },
+      {
+        "q": "What happens after successful association?",
+        "options": [
+          "Wrapping one packet inside another packet.",
+          "The host can send frames through the AP.",
+          "A pipelined protocol that retransmits a lost packet and later packets in the window.",
+          "Software on a managed device that provides management information."
+        ],
+        "answer": 1,
+        "explain": "The host can send frames through the AP."
       }
     ]
   },
   {
-    "title": "Routing Algorithms, OSPF, BGP, and SDN — 30-item Practice Test",
+    "title": "5.2 Practice: Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP",
+    "description": "30-item practice test for Mobile Networks, 4G/5G, Roaming, Handoffs, and Mobile IP.",
     "questions": [
       {
-        "q": "Which term best matches this description: A model of routers as nodes and links as edges.",
+        "q": "What is Mobility?",
         "options": [
-          "Hot potato routing",
-          "Least-cost path",
-          "Routing graph",
-          "Poisoned reverse"
-        ],
-        "answer": 2,
-        "explain": "Routing graph: A model of routers as nodes and links as edges."
-      },
-      {
-        "q": "Which term best matches this description: A number representing preference or expense of using a link.",
-        "options": [
-          "SDN",
-          "Link-state routing",
-          "Routing loop",
-          "Link cost"
-        ],
-        "answer": 3,
-        "explain": "Link cost: A number representing preference or expense of using a link."
-      },
-      {
-        "q": "Which term best matches this description: The path with the lowest total link cost.",
-        "options": [
-          "Least-cost path",
-          "SDN controller",
-          "Dijkstra algorithm",
-          "Autonomous system"
+          "The ability to keep network service while changing attachment points.",
+          "Wireless frames are more likely to be lost or corrupted.",
+          "Adding boundaries and link-layer information around data.",
+          "The naming system that translates domain names into IP addresses."
         ],
         "answer": 0,
-        "explain": "Least-cost path: The path with the lowest total link cost."
+        "explain": "The ability to keep network service while changing attachment points."
       },
       {
-        "q": "Which term best matches this description: Routing where each router knows network topology and link costs.",
+        "q": "What is User equipment?",
         "options": [
-          "OpenFlow",
-          "Link-state routing",
-          "Link-state advertisement",
-          "Intra-AS routing"
-        ],
-        "answer": 1,
-        "explain": "Link-state routing: Routing where each router knows network topology and link costs."
-      },
-      {
-        "q": "Which term best matches this description: A link-state algorithm for computing shortest paths.",
-        "options": [
-          "Control application",
-          "Distance-vector routing",
-          "Dijkstra algorithm",
-          "Inter-AS routing"
-        ],
-        "answer": 2,
-        "explain": "Dijkstra algorithm: A link-state algorithm for computing shortest paths."
-      },
-      {
-        "q": "Which term best matches this description: Information a router floods about its links and costs.",
-        "options": [
-          "Routing graph",
-          "Bellman-Ford equation",
-          "OSPF",
-          "Link-state advertisement"
+          "A LAN device that forwards frames based on MAC addresses.",
+          "A one-way security relationship defining IPsec parameters and keys.",
+          "A database index used only for local searches.",
+          "The mobile device, such as a phone or cellular modem."
         ],
         "answer": 3,
-        "explain": "Link-state advertisement: Information a router floods about its links and costs."
+        "explain": "The mobile device, such as a phone or cellular modem."
       },
       {
-        "q": "Which term best matches this description: Routing where routers exchange distance estimates with neighbors.",
+        "q": "What is SIM?",
         "options": [
-          "Distance-vector routing",
-          "Link cost",
-          "Count-to-infinity problem",
-          "OSPF area"
+          "A label is added to the packet.",
+          "A radio access point connecting wireless devices to network infrastructure.",
+          "Subscriber identity module used for cellular identity and authentication.",
+          "Recovering readable data from ciphertext."
+        ],
+        "answer": 2,
+        "explain": "Subscriber identity module used for cellular identity and authentication."
+      },
+      {
+        "q": "What is Base station?",
+        "options": [
+          "The layer that provides logical communication between application processes.",
+          "Cellular radio equipment that connects user devices to the carrier network.",
+          "Walls, distance, and reflections weaken signals.",
+          "It identifies which part of an address is the network portion."
+        ],
+        "answer": 1,
+        "explain": "Cellular radio equipment that connects user devices to the carrier network."
+      },
+      {
+        "q": "What is Cell?",
+        "options": [
+          "The geographic coverage area served by a base station.",
+          "A switch table mapping MAC addresses to ports.",
+          "Cellular radio equipment that connects user devices to the carrier network.",
+          "The recalculation of paths after topology or cost changes."
         ],
         "answer": 0,
-        "explain": "Distance-vector routing: Routing where routers exchange distance estimates with neighbors."
+        "explain": "The geographic coverage area served by a base station."
       },
       {
-        "q": "Which term best matches this description: The recurrence used in distance-vector path computation.",
+        "q": "What is Radio access network?",
         "options": [
-          "Least-cost path",
-          "Bellman-Ford equation",
-          "Poisoned reverse",
-          "Border router"
-        ],
-        "answer": 1,
-        "explain": "Bellman-Ford equation: The recurrence used in distance-vector path computation."
-      },
-      {
-        "q": "Which term best matches this description: A distance-vector problem where bad news spreads slowly.",
-        "options": [
-          "Link-state routing",
-          "Routing loop",
-          "Count-to-infinity problem",
-          "Gateway router"
-        ],
-        "answer": 2,
-        "explain": "Count-to-infinity problem: A distance-vector problem where bad news spreads slowly."
-      },
-      {
-        "q": "Which term best matches this description: A technique to reduce certain routing loops.",
-        "options": [
-          "Dijkstra algorithm",
-          "Autonomous system",
-          "BGP",
-          "Poisoned reverse"
+          "They reduce overlap and interference when planned well.",
+          "The entire original IP datagram.",
+          "BGP-learned routes inside one autonomous system.",
+          "The part of a mobile network connecting devices to the core."
         ],
         "answer": 3,
-        "explain": "Poisoned reverse: A technique to reduce certain routing loops."
+        "explain": "The part of a mobile network connecting devices to the core."
       },
       {
-        "q": "Which term best matches this description: A condition where packets circulate among routers.",
+        "q": "What is Core network?",
         "options": [
-          "Routing loop",
-          "Link-state advertisement",
-          "Intra-AS routing",
-          "eBGP"
+          "A pipelined protocol that retransmits only specific missing packets.",
+          "An Internet Service Provider that connects customers and other networks to the Internet.",
+          "The carrier network handling mobility, authentication, and Internet access.",
+          "The MPLS edge router that removes the label."
+        ],
+        "answer": 2,
+        "explain": "The carrier network handling mobility, authentication, and Internet access."
+      },
+      {
+        "q": "What is 4G LTE?",
+        "options": [
+          "Carrying multiple VLANs between switches.",
+          "A cellular generation using packet-switched IP-based design.",
+          "A shared secret key used for both encryption and decryption.",
+          "A switch placed near or inside a server rack."
+        ],
+        "answer": 1,
+        "explain": "A cellular generation using packet-switched IP-based design."
+      },
+      {
+        "q": "What is 5G?",
+        "options": [
+          "A newer cellular generation with enhanced capacity, latency, and service flexibility.",
+          "A cellular generation using packet-switched IP-based design.",
+          "A parity method that can detect and sometimes locate bit errors using rows and columns.",
+          "A transport identifier that helps deliver data to the correct application process."
         ],
         "answer": 0,
-        "explain": "Routing loop: A condition where packets circulate among routers."
+        "explain": "A newer cellular generation with enhanced capacity, latency, and service flexibility."
       },
       {
-        "q": "Which term best matches this description: A network or group of networks under one administrative control.",
+        "q": "What is MME?",
         "options": [
-          "Distance-vector routing",
-          "Autonomous system",
-          "Inter-AS routing",
-          "iBGP"
-        ],
-        "answer": 1,
-        "explain": "Autonomous system: A network or group of networks under one administrative control."
-      },
-      {
-        "q": "Which term best matches this description: Routing inside one autonomous system.",
-        "options": [
-          "Bellman-Ford equation",
-          "OSPF",
-          "Intra-AS routing",
-          "BGP route advertisement"
-        ],
-        "answer": 2,
-        "explain": "Intra-AS routing: Routing inside one autonomous system."
-      },
-      {
-        "q": "Which term best matches this description: Routing between autonomous systems.",
-        "options": [
-          "Count-to-infinity problem",
-          "OSPF area",
-          "AS-PATH",
-          "Inter-AS routing"
+          "The network currently serving a roaming user.",
+          "Multiple devices may try to transmit at the same time.",
+          "The divisor pattern used in CRC computation.",
+          "Mobility Management Entity, a 4G control-plane component."
         ],
         "answer": 3,
-        "explain": "Inter-AS routing: Routing between autonomous systems."
+        "explain": "Mobility Management Entity, a 4G control-plane component."
       },
       {
-        "q": "Which term best matches this description: Open Shortest Path First, a link-state intra-AS routing protocol.",
+        "q": "What is Serving gateway?",
         "options": [
-          "OSPF",
-          "Poisoned reverse",
-          "Border router",
-          "NEXT-HOP"
+          "Ethernet error detection field.",
+          "The recalculation of paths after topology or cost changes.",
+          "A 4G data-plane anchor that forwards user traffic.",
+          "Information that a destination prefix can be reached."
+        ],
+        "answer": 2,
+        "explain": "A 4G data-plane anchor that forwards user traffic."
+      },
+      {
+        "q": "What is PDN gateway?",
+        "options": [
+          "A table a router uses to choose an output link.",
+          "A gateway connecting the cellular network to external packet data networks.",
+          "To improve scalability and reduce routing overhead.",
+          "A switch table mapping MAC addresses to ports."
+        ],
+        "answer": 1,
+        "explain": "A gateway connecting the cellular network to external packet data networks."
+      },
+      {
+        "q": "What is Handoff?",
+        "options": [
+          "Moving an active device connection from one base station to another.",
+          "Quickly moving traffic to a backup path after failure.",
+          "Control information placed before the payload.",
+          "The MPLS edge router that first adds a label."
         ],
         "answer": 0,
-        "explain": "OSPF: Open Shortest Path First, a link-state intra-AS routing protocol."
+        "explain": "Moving an active device connection from one base station to another."
       },
       {
-        "q": "Which term best matches this description: A subdivision used to scale OSPF routing.",
+        "q": "What is Roaming?",
         "options": [
-          "Routing loop",
-          "OSPF area",
-          "Gateway router",
-          "BGP policy"
-        ],
-        "answer": 1,
-        "explain": "OSPF area: A subdivision used to scale OSPF routing."
-      },
-      {
-        "q": "Which term best matches this description: A router connecting an AS to other ASes.",
-        "options": [
-          "Autonomous system",
-          "BGP",
-          "Border router",
-          "Hot potato routing"
-        ],
-        "answer": 2,
-        "explain": "Border router: A router connecting an AS to other ASes."
-      },
-      {
-        "q": "Which term best matches this description: A router that connects to another AS or external network.",
-        "options": [
-          "Intra-AS routing",
-          "eBGP",
-          "SDN",
-          "Gateway router"
+          "A private key to sign and a public key to verify.",
+          "The network a roaming user currently attaches to.",
+          "Remote Procedure Call, a structured request used by protocols such as NETCONF.",
+          "Using a visited carrier network while subscribed to a home carrier."
         ],
         "answer": 3,
-        "explain": "Gateway router: A router that connects to another AS or external network."
+        "explain": "Using a visited carrier network while subscribed to a home carrier."
       },
       {
-        "q": "Which term best matches this description: Border Gateway Protocol, the Internet inter-AS routing protocol.",
+        "q": "What is Home network?",
         "options": [
-          "BGP",
-          "Inter-AS routing",
-          "iBGP",
-          "SDN controller"
+          "Operators can steer flows over selected paths.",
+          "A design that divides OSPF networks into areas for scalability.",
+          "The subscriber's original carrier network.",
+          "The host can send frames through the AP."
+        ],
+        "answer": 2,
+        "explain": "The subscriber's original carrier network."
+      },
+      {
+        "q": "What is Visited network?",
+        "options": [
+          "A high-speed network connecting large numbers of servers.",
+          "The network a roaming user currently attaches to.",
+          "Peers contribute resources as more users join.",
+          "Queuing delay"
+        ],
+        "answer": 1,
+        "explain": "The network a roaming user currently attaches to."
+      },
+      {
+        "q": "What is Mobile IP?",
+        "options": [
+          "A protocol concept allowing a host to keep a permanent address while moving.",
+          "The MPLS edge router that removes the label.",
+          "A pipelined protocol that retransmits only specific missing packets.",
+          "An Internet Service Provider that connects customers and other networks to the Internet."
         ],
         "answer": 0,
-        "explain": "BGP: Border Gateway Protocol, the Internet inter-AS routing protocol."
+        "explain": "A protocol concept allowing a host to keep a permanent address while moving."
       },
       {
-        "q": "Which term best matches this description: BGP session between routers in different autonomous systems.",
+        "q": "What is Home agent?",
         "options": [
-          "OSPF",
-          "eBGP",
-          "BGP route advertisement",
-          "OpenFlow"
-        ],
-        "answer": 1,
-        "explain": "eBGP: BGP session between routers in different autonomous systems."
-      },
-      {
-        "q": "Which term best matches this description: BGP session between routers inside the same autonomous system.",
-        "options": [
-          "OSPF area",
-          "AS-PATH",
-          "iBGP",
-          "Control application"
-        ],
-        "answer": 2,
-        "explain": "iBGP: BGP session between routers inside the same autonomous system."
-      },
-      {
-        "q": "Which term best matches this description: A message announcing reachability to a network prefix.",
-        "options": [
-          "Border router",
-          "NEXT-HOP",
-          "Routing graph",
-          "BGP route advertisement"
+          "Keeping message contents hidden from unauthorized parties.",
+          "IPsec mode that protects the entire original datagram inside a new datagram.",
+          "A Request for Comments document that records Internet standards and protocol specifications.",
+          "Mobile IP entity that tracks the mobile node and forwards packets."
         ],
         "answer": 3,
-        "explain": "BGP route advertisement: A message announcing reachability to a network prefix."
+        "explain": "Mobile IP entity that tracks the mobile node and forwards packets."
       },
       {
-        "q": "Which term best matches this description: A BGP attribute listing autonomous systems on a path.",
+        "q": "What is Foreign agent?",
         "options": [
-          "AS-PATH",
-          "Gateway router",
-          "BGP policy",
-          "Link cost"
+          "TCP's smoothed estimate of round-trip time.",
+          "A simple mail access protocol that downloads messages from a server.",
+          "Mobile IP entity that assists a mobile node in a visited network.",
+          "Internal private hosts are hidden behind translated addresses."
+        ],
+        "answer": 2,
+        "explain": "Mobile IP entity that assists a mobile node in a visited network."
+      },
+      {
+        "q": "What is Tunneling?",
+        "options": [
+          "It reduces outage time after a failure.",
+          "Encapsulating packets inside other packets to reach a mobile location.",
+          "Wireless devices may not hear collisions while transmitting.",
+          "A table mapping incoming labels to outgoing labels and interfaces."
+        ],
+        "answer": 1,
+        "explain": "Encapsulating packets inside other packets to reach a mobile location."
+      },
+      {
+        "q": "Why is SIM authentication important?",
+        "options": [
+          "It verifies the subscriber to the carrier network.",
+          "What the device is actually doing now.",
+          "The software interface between an application process and the transport layer.",
+          "A protocol for installing, changing, and retrieving network device configuration."
         ],
         "answer": 0,
-        "explain": "AS-PATH: A BGP attribute listing autonomous systems on a path."
+        "explain": "It verifies the subscriber to the carrier network."
       },
       {
-        "q": "Which term best matches this description: A BGP attribute identifying the next router to reach a prefix.",
+        "q": "What does handoff try to preserve?",
         "options": [
-          "BGP",
-          "NEXT-HOP",
-          "Hot potato routing",
-          "Least-cost path"
-        ],
-        "answer": 1,
-        "explain": "NEXT-HOP: A BGP attribute identifying the next router to reach a prefix."
-      },
-      {
-        "q": "Which term best matches this description: Rules controlling which routes are accepted, preferred, or advertised.",
-        "options": [
-          "eBGP",
-          "SDN",
-          "BGP policy",
-          "Link-state routing"
-        ],
-        "answer": 2,
-        "explain": "BGP policy: Rules controlling which routes are accepted, preferred, or advertised."
-      },
-      {
-        "q": "Which term best matches this description: Choosing the closest exit point from an AS.",
-        "options": [
-          "iBGP",
-          "SDN controller",
-          "Dijkstra algorithm",
-          "Hot potato routing"
+          "Sending a frame out multiple ports when the destination is unknown or broadcast.",
+          "It identifies a resource and how to access it.",
+          "A device that cannot hear another transmitter but can still collide at the receiver.",
+          "An ongoing session while the user moves."
         ],
         "answer": 3,
-        "explain": "Hot potato routing: Choosing the closest exit point from an AS."
+        "explain": "An ongoing session while the user moves."
       },
       {
-        "q": "Which term best matches this description: Software-Defined Networking, separating control from forwarding.",
+        "q": "What is a visited network?",
         "options": [
-          "SDN",
-          "BGP route advertisement",
-          "OpenFlow",
-          "Link-state advertisement"
+          "TCP behavior after packet loss detected by duplicate ACKs.",
+          "Encapsulating Security Payload, providing confidentiality plus optional integrity and authentication.",
+          "The network currently serving a roaming user.",
+          "A routing approach where routers share distance estimates with neighbors."
+        ],
+        "answer": 2,
+        "explain": "The network currently serving a roaming user."
+      },
+      {
+        "q": "What is tunneling used for in mobility?",
+        "options": [
+          "Local Area Network, a network covering a limited area such as a room, home, or campus.",
+          "Forwarding packets to the mobile node's current location.",
+          "To spread traffic and avoid hot spots.",
+          "Keys and parameters for IPsec security associations."
+        ],
+        "answer": 1,
+        "explain": "Forwarding packets to the mobile node's current location."
+      },
+      {
+        "q": "Why can mobility affect TCP?",
+        "options": [
+          "Handoffs and wireless loss can look like congestion.",
+          "Error detection information such as a CRC.",
+          "A simple method that sends one packet then waits for an ACK.",
+          "A LAN device that forwards frames based on MAC addresses."
         ],
         "answer": 0,
-        "explain": "SDN: Software-Defined Networking, separating control from forwarding."
+        "explain": "Handoffs and wireless loss can look like congestion."
       },
       {
-        "q": "Which term best matches this description: Software that computes and installs forwarding rules.",
+        "q": "What is the radio access network?",
         "options": [
-          "AS-PATH",
-          "SDN controller",
-          "Control application",
-          "Distance-vector routing"
-        ],
-        "answer": 1,
-        "explain": "SDN controller: Software that computes and installs forwarding rules."
-      },
-      {
-        "q": "Which term best matches this description: A protocol for controlling flow-table entries in SDN switches.",
-        "options": [
-          "NEXT-HOP",
-          "Routing graph",
-          "OpenFlow",
-          "Bellman-Ford equation"
-        ],
-        "answer": 2,
-        "explain": "OpenFlow: A protocol for controlling flow-table entries in SDN switches."
-      },
-      {
-        "q": "Which term best matches this description: SDN software that implements routing, access control, or traffic engineering.",
-        "options": [
-          "BGP policy",
-          "Link cost",
-          "Count-to-infinity problem",
-          "Control application"
+          "Detecting unauthorized changes to data.",
+          "Packets may need fragmentation or path MTU discovery.",
+          "HTTP behavior that reuses a TCP connection for multiple objects.",
+          "The base stations and radio systems connecting devices."
         ],
         "answer": 3,
-        "explain": "Control application: SDN software that implements routing, access control, or traffic engineering."
+        "explain": "The base stations and radio systems connecting devices."
+      },
+      {
+        "q": "What does the core network handle?",
+        "options": [
+          "A fixed-length identifier used by MPLS routers to forward packets.",
+          "Cellular radio equipment that connects user devices to the carrier network.",
+          "Identity, mobility, gateways, and Internet connectivity.",
+          "A BGP attribute listing autonomous systems a route advertisement has traversed."
+        ],
+        "answer": 2,
+        "explain": "Identity, mobility, gateways, and Internet connectivity."
+      },
+      {
+        "q": "What is a home agent?",
+        "options": [
+          "Sending multiple packets before waiting for all acknowledgments.",
+          "The Mobile IP component that forwards traffic to the mobile node.",
+          "The 32-bit Internet Protocol version still widely used.",
+          "The point when routers agree on stable routing information."
+        ],
+        "answer": 1,
+        "explain": "The Mobile IP component that forwards traffic to the mobile node."
+      },
+      {
+        "q": "Why do cellular networks divide areas into cells?",
+        "options": [
+          "To reuse spectrum and manage coverage.",
+          "A service model that tries to deliver data but gives no guarantee.",
+          "A logical network built on top of another network.",
+          "Shortest paths from one source to all destinations."
+        ],
+        "answer": 0,
+        "explain": "To reuse spectrum and manage coverage."
+      },
+      {
+        "q": "Why is 5G not only faster radio?",
+        "options": [
+          "The ability to keep network service while changing attachment points.",
+          "Adding boundaries and link-layer information around data.",
+          "Splitting an IP datagram into smaller pieces to fit a link MTU.",
+          "It also includes service flexibility and core-network evolution."
+        ],
+        "answer": 3,
+        "explain": "It also includes service flexibility and core-network evolution."
       }
     ]
   },
   {
-    "title": "Network Management, SNMP, NETCONF, and YANG — 30-item Practice Test",
+    "title": "6.1 / 6.2 Practice: Security Basics, Cryptography, Authentication, and TLS",
+    "description": "30-item practice test for Security Basics, Cryptography, Authentication, and TLS.",
     "questions": [
       {
-        "q": "Which term best matches this description: Monitoring, configuring, controlling, and troubleshooting network systems.",
+        "q": "What is Confidentiality?",
         "options": [
-          "Telemetry",
-          "OID",
-          "SNMP Trap",
-          "Network management"
-        ],
-        "answer": 3,
-        "explain": "Network management: Monitoring, configuring, controlling, and troubleshooting network systems."
-      },
-      {
-        "q": "Which term best matches this description: A system used by administrators to control managed devices.",
-        "options": [
-          "Managing server",
-          "Intent-based management",
-          "SNMP",
-          "Polling"
-        ],
-        "answer": 0,
-        "explain": "Managing server: A system used by administrators to control managed devices."
-      },
-      {
-        "q": "Which term best matches this description: A router, switch, server, or other network element being monitored.",
-        "options": [
-          "Network management",
-          "Managed device",
-          "SNMP manager",
-          "Event notification"
-        ],
-        "answer": 1,
-        "explain": "Managed device: A router, switch, server, or other network element being monitored."
-      },
-      {
-        "q": "Which term best matches this description: Software on a managed device that exposes data and actions.",
-        "options": [
-          "Managing server",
-          "SNMP agent",
-          "Management agent",
-          "Fault management"
+          "The overall switching infrastructure of a data center.",
+          "Identity, mobility, gateways, and Internet connectivity.",
+          "Keeping message contents hidden from unauthorized parties.",
+          "Multiprotocol Label Switching, a forwarding method based on short labels."
         ],
         "answer": 2,
-        "explain": "Management agent: Software on a managed device that exposes data and actions."
+        "explain": "Keeping message contents hidden from unauthorized parties."
       },
       {
-        "q": "Which term best matches this description: Management Information Base, a structured collection of managed variables.",
+        "q": "What is Authentication?",
         "options": [
-          "Managed device",
-          "SNMP Get",
-          "Configuration management",
-          "MIB"
-        ],
-        "answer": 3,
-        "explain": "MIB: Management Information Base, a structured collection of managed variables."
-      },
-      {
-        "q": "Which term best matches this description: Object Identifier, a hierarchical name for a managed object.",
-        "options": [
-          "OID",
-          "Management agent",
-          "SNMP Set",
-          "Performance management"
-        ],
-        "answer": 0,
-        "explain": "OID: Object Identifier, a hierarchical name for a managed object."
-      },
-      {
-        "q": "Which term best matches this description: Simple Network Management Protocol for device monitoring and control.",
-        "options": [
-          "MIB",
-          "SNMP",
-          "SNMP Response",
-          "Security management"
+          "The wireless medium for a transmission.",
+          "Proving an identity or verifying the source of a message.",
+          "IPsec mode that protects the payload of the original IP datagram.",
+          "The software interface between an application process and the transport layer."
         ],
         "answer": 1,
-        "explain": "SNMP: Simple Network Management Protocol for device monitoring and control."
+        "explain": "Proving an identity or verifying the source of a message."
       },
       {
-        "q": "Which term best matches this description: The system that sends SNMP requests and receives notifications.",
+        "q": "What is Integrity?",
         "options": [
-          "OID",
-          "SNMP Trap",
-          "SNMP manager",
-          "Accounting management"
-        ],
-        "answer": 2,
-        "explain": "SNMP manager: The system that sends SNMP requests and receives notifications."
-      },
-      {
-        "q": "Which term best matches this description: The device-side software responding to SNMP operations.",
-        "options": [
-          "SNMP",
-          "Polling",
-          "NETCONF",
-          "SNMP agent"
-        ],
-        "answer": 3,
-        "explain": "SNMP agent: The device-side software responding to SNMP operations."
-      },
-      {
-        "q": "Which term best matches this description: A request to read a managed object value.",
-        "options": [
-          "SNMP Get",
-          "SNMP manager",
-          "Event notification",
-          "RPC"
+          "Detecting unauthorized changes to data.",
+          "They need many high-capacity paths between servers.",
+          "A firewall rule system that permits or denies packets by header fields.",
+          "Routing information has stabilized after changes."
         ],
         "answer": 0,
-        "explain": "SNMP Get: A request to read a managed object value."
+        "explain": "Detecting unauthorized changes to data."
       },
       {
-        "q": "Which term best matches this description: A request to change a managed object value.",
+        "q": "What is Availability?",
         "options": [
-          "SNMP agent",
-          "SNMP Set",
-          "Fault management",
-          "Datastore"
+          "It reduces response time and upstream traffic.",
+          "It forwards packets based on labels.",
+          "The host can send frames through the AP.",
+          "Keeping services reachable for legitimate users."
+        ],
+        "answer": 3,
+        "explain": "Keeping services reachable for legitimate users."
+      },
+      {
+        "q": "What is Encryption?",
+        "options": [
+          "Identity, mobility, gateways, and Internet connectivity.",
+          "A server that queries DNS on behalf of a client.",
+          "Transforming readable data into protected ciphertext.",
+          "They reduce overlap and interference when planned well."
+        ],
+        "answer": 2,
+        "explain": "Transforming readable data into protected ciphertext."
+      },
+      {
+        "q": "What is Decryption?",
+        "options": [
+          "Local Area Network, a network covering a limited area such as a room, home, or campus.",
+          "Recovering readable data from ciphertext.",
+          "TCP phase where the congestion window grows more cautiously.",
+          "Encapsulating packets inside other packets to reach a mobile location."
         ],
         "answer": 1,
-        "explain": "SNMP Set: A request to change a managed object value."
+        "explain": "Recovering readable data from ciphertext."
       },
       {
-        "q": "Which term best matches this description: The answer returned by an SNMP agent.",
+        "q": "What is Symmetric key?",
         "options": [
-          "SNMP Get",
-          "Configuration management",
-          "SNMP Response",
-          "Running configuration"
-        ],
-        "answer": 2,
-        "explain": "SNMP Response: The answer returned by an SNMP agent."
-      },
-      {
-        "q": "Which term best matches this description: An unsolicited alert sent by an agent to a manager.",
-        "options": [
-          "SNMP Set",
-          "Performance management",
-          "Candidate configuration",
-          "SNMP Trap"
-        ],
-        "answer": 3,
-        "explain": "SNMP Trap: An unsolicited alert sent by an agent to a manager."
-      },
-      {
-        "q": "Which term best matches this description: Regularly asking devices for state or counters.",
-        "options": [
-          "Polling",
-          "SNMP Response",
-          "Security management",
-          "Commit"
+          "A shared secret key used for both encryption and decryption.",
+          "WiFi's collision avoidance medium access method.",
+          "The physical or base IP network that carries overlay traffic.",
+          "A high-speed network connecting large numbers of servers."
         ],
         "answer": 0,
-        "explain": "Polling: Regularly asking devices for state or counters."
+        "explain": "A shared secret key used for both encryption and decryption."
       },
       {
-        "q": "Which term best matches this description: A device-generated alert about a significant condition.",
+        "q": "What is Public key?",
         "options": [
-          "SNMP Trap",
-          "Event notification",
-          "Accounting management",
-          "YANG"
+          "Collecting data from many processes so they can share the network.",
+          "Intrusion Detection System that monitors for suspicious activity.",
+          "It scales name resolution across the global Internet.",
+          "A key that can be shared publicly in asymmetric cryptography."
+        ],
+        "answer": 3,
+        "explain": "A key that can be shared publicly in asymmetric cryptography."
+      },
+      {
+        "q": "What is Private key?",
+        "options": [
+          "A label is added to the packet.",
+          "An intra-AS link-state routing protocol.",
+          "A secret key kept by its owner in asymmetric cryptography.",
+          "A private key to sign and a public key to verify."
+        ],
+        "answer": 2,
+        "explain": "A secret key kept by its owner in asymmetric cryptography."
+      },
+      {
+        "q": "What is Hash function?",
+        "options": [
+          "A temporary symmetric key used after secure setup.",
+          "A one-way function producing a fixed-size digest from data.",
+          "They compactly acknowledge a continuous byte stream.",
+          "Mobility Management Entity, a 4G control-plane component."
         ],
         "answer": 1,
-        "explain": "Event notification: A device-generated alert about a significant condition."
+        "explain": "A one-way function producing a fixed-size digest from data."
       },
       {
-        "q": "Which term best matches this description: Detecting, isolating, and correcting network problems.",
+        "q": "What is MAC?",
         "options": [
-          "Polling",
-          "NETCONF",
-          "Fault management",
-          "YANG module"
-        ],
-        "answer": 2,
-        "explain": "Fault management: Detecting, isolating, and correcting network problems."
-      },
-      {
-        "q": "Which term best matches this description: Maintaining intended device settings.",
-        "options": [
-          "Event notification",
-          "RPC",
-          "Telemetry",
-          "Configuration management"
-        ],
-        "answer": 3,
-        "explain": "Configuration management: Maintaining intended device settings."
-      },
-      {
-        "q": "Which term best matches this description: Measuring throughput, errors, utilization, and delay.",
-        "options": [
-          "Performance management",
-          "Fault management",
-          "Datastore",
-          "Intent-based management"
+          "Message Authentication Code, used to verify authenticity and integrity with a shared key.",
+          "It needs reliable and ordered delivery.",
+          "Forwarding packets to the mobile node's current location.",
+          "Label Switched Path, the route MPLS packets follow through a network."
         ],
         "answer": 0,
-        "explain": "Performance management: Measuring throughput, errors, utilization, and delay."
+        "explain": "Message Authentication Code, used to verify authenticity and integrity with a shared key."
       },
       {
-        "q": "Which term best matches this description: Controlling access and protecting management systems.",
+        "q": "What is Digital signature?",
         "options": [
-          "Configuration management",
-          "Security management",
-          "Running configuration",
-          "Network management"
+          "The hosts and access networks where users and applications connect.",
+          "It sends arriving data to the correct application process.",
+          "A switch table mapping MAC addresses to ports.",
+          "A public-key mechanism proving origin and integrity."
+        ],
+        "answer": 3,
+        "explain": "A public-key mechanism proving origin and integrity."
+      },
+      {
+        "q": "What is Certificate?",
+        "options": [
+          "A pipelined protocol that retransmits only specific missing packets.",
+          "A firewall rule system that permits or denies packets by header fields.",
+          "A signed statement binding an identity to a public key.",
+          "Links, costs, or routers can fail or change."
+        ],
+        "answer": 2,
+        "explain": "A signed statement binding an identity to a public key."
+      },
+      {
+        "q": "What is Certificate authority?",
+        "options": [
+          "Another name for a host because it sits at an end of communication and creates or receives data.",
+          "A trusted party that signs certificates.",
+          "Packets arrive faster than they can be transmitted.",
+          "The network a roaming user currently attaches to."
         ],
         "answer": 1,
-        "explain": "Security management: Controlling access and protecting management systems."
+        "explain": "A trusted party that signs certificates."
       },
       {
-        "q": "Which term best matches this description: Tracking resource use for billing or analysis.",
+        "q": "What is Nonce?",
         "options": [
-          "Performance management",
-          "Candidate configuration",
-          "Accounting management",
-          "Managing server"
-        ],
-        "answer": 2,
-        "explain": "Accounting management: Tracking resource use for billing or analysis."
-      },
-      {
-        "q": "Which term best matches this description: A protocol for installing, manipulating, and deleting device configuration.",
-        "options": [
-          "Security management",
-          "Commit",
-          "Managed device",
-          "NETCONF"
-        ],
-        "answer": 3,
-        "explain": "NETCONF: A protocol for installing, manipulating, and deleting device configuration."
-      },
-      {
-        "q": "Which term best matches this description: Remote Procedure Call, a request-response method used by NETCONF.",
-        "options": [
-          "RPC",
-          "Accounting management",
-          "YANG",
-          "Management agent"
+          "A fresh random value used to prevent replay.",
+          "The system used by administrators to monitor and control devices.",
+          "Packets waiting because the output link or processing path is busy.",
+          "Keys and parameters for IPsec security associations."
         ],
         "answer": 0,
-        "explain": "RPC: Remote Procedure Call, a request-response method used by NETCONF."
+        "explain": "A fresh random value used to prevent replay."
       },
       {
-        "q": "Which term best matches this description: A NETCONF configuration storage area such as running or candidate.",
+        "q": "What is Replay attack?",
         "options": [
-          "NETCONF",
-          "Datastore",
-          "YANG module",
-          "MIB"
+          "The geographic coverage area served by a base station.",
+          "A timer event that can trigger retransmission when an ACK is missing.",
+          "TCP behavior that retransmits after enough duplicate ACKs, before timeout.",
+          "Reusing a valid message later to trick a protocol."
+        ],
+        "answer": 3,
+        "explain": "Reusing a valid message later to trick a protocol."
+      },
+      {
+        "q": "What is Man-in-the-middle?",
+        "options": [
+          "It resolves MAC addresses only within a LAN/broadcast domain.",
+          "A reliable connection-oriented transport protocol with ordering and control mechanisms.",
+          "An attacker secretly intercepting and possibly altering communication.",
+          "When packets are dropped because of errors, congestion, or failed paths."
+        ],
+        "answer": 2,
+        "explain": "An attacker secretly intercepting and possibly altering communication."
+      },
+      {
+        "q": "What is TLS?",
+        "options": [
+          "TCP behavior after packet loss detected by duplicate ACKs.",
+          "Transport Layer Security, commonly used to secure web connections.",
+          "Wireless frames are more likely to be lost or corrupted.",
+          "The layer that transfers frames across a single link or hop."
         ],
         "answer": 1,
-        "explain": "Datastore: A NETCONF configuration storage area such as running or candidate."
+        "explain": "Transport Layer Security, commonly used to secure web connections."
       },
       {
-        "q": "Which term best matches this description: The active configuration currently used by a device.",
+        "q": "What is HTTPS?",
         "options": [
-          "RPC",
-          "Telemetry",
-          "Running configuration",
-          "OID"
-        ],
-        "answer": 2,
-        "explain": "Running configuration: The active configuration currently used by a device."
-      },
-      {
-        "q": "Which term best matches this description: A proposed configuration that can be edited before commit.",
-        "options": [
-          "Datastore",
-          "Intent-based management",
-          "SNMP",
-          "Candidate configuration"
-        ],
-        "answer": 3,
-        "explain": "Candidate configuration: A proposed configuration that can be edited before commit."
-      },
-      {
-        "q": "Which term best matches this description: A NETCONF operation that applies candidate configuration.",
-        "options": [
-          "Commit",
-          "Running configuration",
-          "Network management",
-          "SNMP manager"
+          "HTTP over TLS.",
+          "A storage area representing intended device configuration.",
+          "The actual running condition and measured status of a device.",
+          "Choosing the closest exit point from an AS to hand traffic off quickly."
         ],
         "answer": 0,
-        "explain": "Commit: A NETCONF operation that applies candidate configuration."
+        "explain": "HTTP over TLS."
       },
       {
-        "q": "Which term best matches this description: A modeling language for configuration and operational data.",
+        "q": "What is Session key?",
         "options": [
-          "Candidate configuration",
-          "YANG",
-          "Managing server",
-          "SNMP agent"
+          "It organizes streams into manageable transmission units.",
+          "A running program that sends or receives messages through a socket.",
+          "Mobile IP entity that tracks the mobile node and forwards packets.",
+          "A temporary symmetric key used after secure setup."
+        ],
+        "answer": 3,
+        "explain": "A temporary symmetric key used after secure setup."
+      },
+      {
+        "q": "Why are nonces used?",
+        "options": [
+          "The set of devices that receive a layer-2 broadcast.",
+          "An Internet Service Provider that connects customers and other networks to the Internet.",
+          "To prove freshness and block replay attacks.",
+          "A design that divides OSPF networks into areas for scalability."
+        ],
+        "answer": 2,
+        "explain": "To prove freshness and block replay attacks."
+      },
+      {
+        "q": "Why are certificates needed?",
+        "options": [
+          "Moving an active device connection from one base station to another.",
+          "They bind public keys to identities.",
+          "A packet switch that forwards network-layer datagrams between networks using IP information.",
+          "The network name advertised by a WiFi access point."
         ],
         "answer": 1,
-        "explain": "YANG: A modeling language for configuration and operational data."
+        "explain": "They bind public keys to identities."
       },
       {
-        "q": "Which term best matches this description: A reusable data model defining network configuration structure.",
+        "q": "What is HTTPS?",
         "options": [
-          "Commit",
-          "Managed device",
-          "YANG module",
-          "SNMP Get"
-        ],
-        "answer": 2,
-        "explain": "YANG module: A reusable data model defining network configuration structure."
-      },
-      {
-        "q": "Which term best matches this description: Streaming or reporting operational data from network devices.",
-        "options": [
-          "YANG",
-          "Management agent",
-          "SNMP Set",
-          "Telemetry"
-        ],
-        "answer": 3,
-        "explain": "Telemetry: Streaming or reporting operational data from network devices."
-      },
-      {
-        "q": "Which term best matches this description: Managing networks by desired outcomes rather than only low-level commands.",
-        "options": [
-          "Intent-based management",
-          "YANG module",
-          "MIB",
-          "SNMP Response"
+          "HTTP protected by TLS.",
+          "The host can send frames through the AP.",
+          "Wireless devices may not hear collisions while transmitting.",
+          "The communication channel between neighboring nodes."
         ],
         "answer": 0,
-        "explain": "Intent-based management: Managing networks by desired outcomes rather than only low-level commands."
+        "explain": "HTTP protected by TLS."
+      },
+      {
+        "q": "Why use session keys?",
+        "options": [
+          "Round-trip time between sending data and receiving its acknowledgment.",
+          "The sender is idle while waiting for each ACK.",
+          "Maximum Segment Size, the largest TCP payload placed in one segment.",
+          "Symmetric keys are efficient for bulk data."
+        ],
+        "answer": 3,
+        "explain": "Symmetric keys are efficient for bulk data."
+      },
+      {
+        "q": "What does a hash alone not prove?",
+        "options": [
+          "To reduce routing table size.",
+          "Multiple devices may try to transmit at the same time.",
+          "Who created the message.",
+          "The part of the network that connects end systems to the first router."
+        ],
+        "answer": 2,
+        "explain": "Who created the message."
+      },
+      {
+        "q": "What does a MAC require?",
+        "options": [
+          "Moving data from one node to its immediate neighbor.",
+          "A shared secret key.",
+          "The entire original IP datagram.",
+          "Round-trip time between sending data and receiving its acknowledgment."
+        ],
+        "answer": 1,
+        "explain": "A shared secret key."
+      },
+      {
+        "q": "What does a digital signature use?",
+        "options": [
+          "A private key to sign and a public key to verify.",
+          "It can provide timely performance and state data.",
+          "Wireless frames are more likely to be lost or corrupted.",
+          "Carrying multiple VLANs between switches."
+        ],
+        "answer": 0,
+        "explain": "A private key to sign and a public key to verify."
+      },
+      {
+        "q": "What is a man-in-the-middle attack?",
+        "options": [
+          "Message Authentication Code, used to verify authenticity and integrity with a shared key.",
+          "Polling asks regularly; traps are sent when events occur.",
+          "A configuration command may fail or produce unexpected state.",
+          "An attacker intercepts communication between parties."
+        ],
+        "answer": 3,
+        "explain": "An attacker intercepts communication between parties."
+      },
+      {
+        "q": "Why is availability a security goal?",
+        "options": [
+          "Intrusion Detection System that monitors for suspicious activity.",
+          "It needs reliable and ordered delivery.",
+          "A service is useless if legitimate users cannot reach it.",
+          "Mobile IP entity that assists a mobile node in a visited network."
+        ],
+        "answer": 2,
+        "explain": "A service is useless if legitimate users cannot reach it."
+      },
+      {
+        "q": "What does TLS protect against?",
+        "options": [
+          "It catches more burst and pattern errors.",
+          "Eavesdropping and tampering when configured correctly.",
+          "TCP behavior after packet loss detected by duplicate ACKs.",
+          "It needs a reasonable retransmission timeout."
+        ],
+        "answer": 1,
+        "explain": "Eavesdropping and tampering when configured correctly."
       }
     ]
   },
   {
-    "title": "Data Link Services and Error Detection — 30-item Practice Test",
+    "title": "6.3 Practice: Network Layer Security, IPsec, Firewalls, and IDS",
+    "description": "30-item practice test for Network Layer Security, IPsec, Firewalls, and IDS.",
     "questions": [
       {
-        "q": "Which term best matches this description: The layer responsible for transferring frames across one link.",
+        "q": "What is Network-layer security?",
         "options": [
-          "Data link layer",
-          "Node",
-          "Frame header",
-          "Internet checksum"
+          "Protection applied to IP packets or network paths.",
+          "When packets are dropped because of errors, congestion, or failed paths.",
+          "Each request can be handled without remembering previous requests.",
+          "Sending a frame to all devices in a LAN segment."
         ],
         "answer": 0,
-        "explain": "Data link layer: The layer responsible for transferring frames across one link."
+        "explain": "Protection applied to IP packets or network paths."
       },
       {
-        "q": "Which term best matches this description: A host, router, switch, or access point connected to a link.",
+        "q": "What is IPsec?",
         "options": [
-          "Link",
-          "Node",
-          "Frame trailer",
-          "CRC"
-        ],
-        "answer": 1,
-        "explain": "Node: A host, router, switch, or access point connected to a link."
-      },
-      {
-        "q": "Which term best matches this description: A communication channel between adjacent nodes.",
-        "options": [
-          "Frame",
-          "Error detection",
-          "Link",
-          "Generator polynomial"
-        ],
-        "answer": 2,
-        "explain": "Link: A communication channel between adjacent nodes."
-      },
-      {
-        "q": "Which term best matches this description: A data link layer unit containing header, payload, and trailer.",
-        "options": [
-          "Framing",
-          "Error correction",
-          "Burst error",
-          "Frame"
+          "Dynamic Adaptive Streaming over HTTP, which adjusts video quality to network conditions.",
+          "Programmable and centralized network control.",
+          "A logical network built on top of another network.",
+          "A suite of protocols that secures IP datagrams."
         ],
         "answer": 3,
-        "explain": "Frame: A data link layer unit containing header, payload, and trailer."
+        "explain": "A suite of protocols that secures IP datagrams."
       },
       {
-        "q": "Which term best matches this description: Encapsulating a network-layer datagram inside a link-layer frame.",
+        "q": "What is Security association?",
         "options": [
-          "Framing",
-          "MAC address",
-          "Parity bit",
-          "Flow control"
+          "A control-message protocol used for errors and diagnostics.",
+          "Reporting errors and supporting diagnostics.",
+          "A one-way security relationship defining IPsec parameters and keys.",
+          "Loss of signal strength over distance or through obstacles."
+        ],
+        "answer": 2,
+        "explain": "A one-way security relationship defining IPsec parameters and keys."
+      },
+      {
+        "q": "What is SA database?",
+        "options": [
+          "Carrying multiple VLANs between switches.",
+          "A database storing active security associations.",
+          "Bit errors in the segment.",
+          "It catches more burst and pattern errors."
+        ],
+        "answer": 1,
+        "explain": "A database storing active security associations."
+      },
+      {
+        "q": "What is SPD?",
+        "options": [
+          "Security Policy Database, which says what traffic should be protected or bypassed.",
+          "A parity method that can detect and sometimes locate bit errors using rows and columns.",
+          "Keeping services reachable for legitimate users.",
+          "It resolves MAC addresses only within a LAN/broadcast domain."
         ],
         "answer": 0,
-        "explain": "Framing: Encapsulating a network-layer datagram inside a link-layer frame."
+        "explain": "Security Policy Database, which says what traffic should be protected or bypassed."
       },
       {
-        "q": "Which term best matches this description: A local link-layer address assigned to a network interface.",
+        "q": "What is IKE?",
         "options": [
-          "Hop-to-hop delivery",
-          "MAC address",
-          "Two-dimensional parity",
-          "Half-duplex"
-        ],
-        "answer": 1,
-        "explain": "MAC address: A local link-layer address assigned to a network interface."
-      },
-      {
-        "q": "Which term best matches this description: Delivery from one node to the next adjacent node.",
-        "options": [
-          "Packetizing",
-          "Checksum",
-          "Hop-to-hop delivery",
-          "Full-duplex"
-        ],
-        "answer": 2,
-        "explain": "Hop-to-hop delivery: Delivery from one node to the next adjacent node."
-      },
-      {
-        "q": "Which term best matches this description: Dividing and wrapping data for transmission as packets or frames.",
-        "options": [
-          "Frame header",
-          "Internet checksum",
-          "Broadcast link",
-          "Packetizing"
+          "A paid service where one network carries another network's traffic to the Internet.",
+          "WiFi's collision avoidance medium access method.",
+          "Routing performed within one autonomous system.",
+          "Internet Key Exchange, used to negotiate IPsec security associations."
         ],
         "answer": 3,
-        "explain": "Packetizing: Dividing and wrapping data for transmission as packets or frames."
+        "explain": "Internet Key Exchange, used to negotiate IPsec security associations."
       },
       {
-        "q": "Which term best matches this description: Control information placed before the payload.",
+        "q": "What is Transport mode?",
         "options": [
-          "Frame header",
-          "Frame trailer",
-          "CRC",
-          "Point-to-point link"
+          "Signal copies arriving by different paths because of reflection.",
+          "The wireless medium for a transmission.",
+          "IPsec mode that protects the payload of the original IP datagram.",
+          "Control information placed after the payload, often for error detection."
+        ],
+        "answer": 2,
+        "explain": "IPsec mode that protects the payload of the original IP datagram."
+      },
+      {
+        "q": "What is Tunnel mode?",
+        "options": [
+          "TCP phase where the congestion window grows more cautiously.",
+          "IPsec mode that protects the entire original datagram inside a new datagram.",
+          "The network a roaming user currently attaches to.",
+          "A user interface setting unrelated to network communication."
+        ],
+        "answer": 1,
+        "explain": "IPsec mode that protects the entire original datagram inside a new datagram."
+      },
+      {
+        "q": "What is AH?",
+        "options": [
+          "Authentication Header, providing authentication and integrity without encryption.",
+          "The wireless medium for a transmission.",
+          "The point when routers agree on stable routing information.",
+          "An estimate of RTT variation used to set safer timeouts."
         ],
         "answer": 0,
-        "explain": "Frame header: Control information placed before the payload."
+        "explain": "Authentication Header, providing authentication and integrity without encryption."
       },
       {
-        "q": "Which term best matches this description: Control information placed after the payload, often for error detection.",
+        "q": "What is ESP?",
         "options": [
-          "Error detection",
-          "Frame trailer",
-          "Generator polynomial",
-          "Multiple access protocol"
-        ],
-        "answer": 1,
-        "explain": "Frame trailer: Control information placed after the payload, often for error detection."
-      },
-      {
-        "q": "Which term best matches this description: Recognizing that transmitted bits were corrupted.",
-        "options": [
-          "Error correction",
-          "Burst error",
-          "Error detection",
-          "Channel partitioning"
-        ],
-        "answer": 2,
-        "explain": "Error detection: Recognizing that transmitted bits were corrupted."
-      },
-      {
-        "q": "Which term best matches this description: Recovering original data without retransmission.",
-        "options": [
-          "Parity bit",
-          "Flow control",
-          "Random access",
-          "Error correction"
+          "An ongoing session while the user moves.",
+          "It reduces outage time after a failure.",
+          "They separate broadcast domains logically.",
+          "Encapsulating Security Payload, providing confidentiality plus optional integrity and authentication."
         ],
         "answer": 3,
-        "explain": "Error correction: Recovering original data without retransmission."
+        "explain": "Encapsulating Security Payload, providing confidentiality plus optional integrity and authentication."
       },
       {
-        "q": "Which term best matches this description: An extra bit used to make the number of ones even or odd.",
+        "q": "What is VPN?",
         "options": [
-          "Parity bit",
-          "Two-dimensional parity",
-          "Half-duplex",
-          "Taking turns"
+          "A packet switch that forwards network-layer datagrams between networks using IP information.",
+          "Regularly asking devices for status information.",
+          "A secure virtual private network built across shared infrastructure.",
+          "Information flooded by routers describing their links and costs."
+        ],
+        "answer": 2,
+        "explain": "A secure virtual private network built across shared infrastructure."
+      },
+      {
+        "q": "What is Authentication header?",
+        "options": [
+          "A switch port that carries traffic for multiple VLANs using tags.",
+          "The IPsec AH header used for integrity and authentication.",
+          "A table a router uses to choose an output link.",
+          "Delivery is attempted but not guaranteed."
+        ],
+        "answer": 1,
+        "explain": "The IPsec AH header used for integrity and authentication."
+      },
+      {
+        "q": "What is Encapsulation?",
+        "options": [
+          "Wrapping one packet inside another packet.",
+          "IDS method that looks for deviations from normal behavior.",
+          "A newer cellular generation with enhanced capacity, latency, and service flexibility.",
+          "It selects the most specific route for a destination."
         ],
         "answer": 0,
-        "explain": "Parity bit: An extra bit used to make the number of ones even or odd."
+        "explain": "Wrapping one packet inside another packet."
       },
       {
-        "q": "Which term best matches this description: Parity arranged in rows and columns for stronger detection.",
+        "q": "What is Packet filter?",
         "options": [
-          "Checksum",
-          "Two-dimensional parity",
-          "Full-duplex",
-          "Collision"
-        ],
-        "answer": 1,
-        "explain": "Two-dimensional parity: Parity arranged in rows and columns for stronger detection."
-      },
-      {
-        "q": "Which term best matches this description: An error-detection method using arithmetic sums.",
-        "options": [
-          "Internet checksum",
-          "Broadcast link",
-          "Checksum",
-          "MAC protocol"
-        ],
-        "answer": 2,
-        "explain": "Checksum: An error-detection method using arithmetic sums."
-      },
-      {
-        "q": "Which term best matches this description: A checksum method used by some Internet protocols.",
-        "options": [
-          "CRC",
-          "Point-to-point link",
-          "Data link layer",
-          "Internet checksum"
+          "Carrier Sense Multiple Access with Collision Avoidance, used in WiFi.",
+          "The logic that computes or installs forwarding behavior.",
+          "Router component that receives packets and may do lookup.",
+          "A firewall rule system that permits or denies packets by header fields."
         ],
         "answer": 3,
-        "explain": "Internet checksum: A checksum method used by some Internet protocols."
+        "explain": "A firewall rule system that permits or denies packets by header fields."
       },
       {
-        "q": "Which term best matches this description: Cyclic Redundancy Check, a strong polynomial-based error detector.",
+        "q": "What is Stateful firewall?",
         "options": [
-          "CRC",
-          "Generator polynomial",
-          "Multiple access protocol",
-          "Node"
+          "SMTP sends mail, while IMAP retrieves and synchronizes mail.",
+          "Packets arrive faster than they can be transmitted.",
+          "A firewall that tracks connection state when filtering traffic.",
+          "BGP-learned routes inside one autonomous system."
+        ],
+        "answer": 2,
+        "explain": "A firewall that tracks connection state when filtering traffic."
+      },
+      {
+        "q": "What is ACL?",
+        "options": [
+          "A pipelined protocol that retransmits a lost packet and later packets in the window.",
+          "Access Control List, a list of permit or deny rules.",
+          "Reporting errors and supporting diagnostics.",
+          "Routing between autonomous systems."
+        ],
+        "answer": 1,
+        "explain": "Access Control List, a list of permit or deny rules."
+      },
+      {
+        "q": "What is DMZ?",
+        "options": [
+          "A separated network zone for publicly reachable services.",
+          "BGP-learned routes inside one autonomous system.",
+          "The carrier network handling mobility, authentication, and Internet access.",
+          "A hardware power mode for reducing electricity use."
         ],
         "answer": 0,
-        "explain": "CRC: Cyclic Redundancy Check, a strong polynomial-based error detector."
+        "explain": "A separated network zone for publicly reachable services."
       },
       {
-        "q": "Which term best matches this description: The divisor pattern used in CRC calculation.",
+        "q": "What is IDS?",
         "options": [
-          "Burst error",
-          "Generator polynomial",
-          "Channel partitioning",
-          "Link"
-        ],
-        "answer": 1,
-        "explain": "Generator polynomial: The divisor pattern used in CRC calculation."
-      },
-      {
-        "q": "Which term best matches this description: A sequence of nearby corrupted bits.",
-        "options": [
-          "Flow control",
-          "Random access",
-          "Burst error",
-          "Frame"
-        ],
-        "answer": 2,
-        "explain": "Burst error: A sequence of nearby corrupted bits."
-      },
-      {
-        "q": "Which term best matches this description: Preventing a fast sender from overwhelming a receiver.",
-        "options": [
-          "Half-duplex",
-          "Taking turns",
-          "Framing",
-          "Flow control"
+          "It identifies a resource and how to access it.",
+          "Forwarding packets to the mobile node's current location.",
+          "A shared medium area where simultaneous transmissions can collide.",
+          "Intrusion Detection System that monitors for suspicious activity."
         ],
         "answer": 3,
-        "explain": "Flow control: Preventing a fast sender from overwhelming a receiver."
+        "explain": "Intrusion Detection System that monitors for suspicious activity."
       },
       {
-        "q": "Which term best matches this description: Communication where devices take turns sending.",
+        "q": "What is Signature detection?",
         "options": [
-          "Half-duplex",
-          "Full-duplex",
-          "Collision",
-          "MAC address"
+          "Delivering received segments to the correct socket or process.",
+          "An estimate of RTT variation used to set safer timeouts.",
+          "IDS method that matches known attack patterns.",
+          "Sending a frame out multiple ports when the destination is unknown or broadcast."
+        ],
+        "answer": 2,
+        "explain": "IDS method that matches known attack patterns."
+      },
+      {
+        "q": "What is Anomaly detection?",
+        "options": [
+          "A data modeling language for configuration and operational state.",
+          "IDS method that looks for deviations from normal behavior.",
+          "A running program that sends or receives messages through a socket.",
+          "A suite of protocols that secures IP datagrams."
+        ],
+        "answer": 1,
+        "explain": "IDS method that looks for deviations from normal behavior."
+      },
+      {
+        "q": "Why is ESP more common than AH for privacy?",
+        "options": [
+          "ESP can encrypt payloads.",
+          "Routing between autonomous systems.",
+          "A data modeling language for configuration and operational state.",
+          "Software-Defined Networking, separating control logic from forwarding behavior."
         ],
         "answer": 0,
-        "explain": "Half-duplex: Communication where devices take turns sending."
+        "explain": "ESP can encrypt payloads."
       },
       {
-        "q": "Which term best matches this description: Communication where devices can send and receive at the same time.",
+        "q": "What does tunnel mode protect?",
         "options": [
-          "Broadcast link",
-          "Full-duplex",
-          "MAC protocol",
-          "Hop-to-hop delivery"
-        ],
-        "answer": 1,
-        "explain": "Full-duplex: Communication where devices can send and receive at the same time."
-      },
-      {
-        "q": "Which term best matches this description: A shared link where transmissions can be heard by multiple nodes.",
-        "options": [
-          "Point-to-point link",
-          "Data link layer",
-          "Broadcast link",
-          "Packetizing"
-        ],
-        "answer": 2,
-        "explain": "Broadcast link: A shared link where transmissions can be heard by multiple nodes."
-      },
-      {
-        "q": "Which term best matches this description: A link connecting exactly two nodes.",
-        "options": [
-          "Multiple access protocol",
-          "Node",
-          "Frame header",
-          "Point-to-point link"
+          "Remote Procedure Call, a structured request used by protocols such as NETCONF.",
+          "The Mobile IP component that forwards traffic to the mobile node.",
+          "Transforming readable data into protected ciphertext.",
+          "The entire original IP datagram."
         ],
         "answer": 3,
-        "explain": "Point-to-point link: A link connecting exactly two nodes."
+        "explain": "The entire original IP datagram."
       },
       {
-        "q": "Which term best matches this description: Rules for sharing a broadcast medium.",
+        "q": "What does transport mode protect?",
         "options": [
-          "Multiple access protocol",
-          "Channel partitioning",
-          "Link",
-          "Frame trailer"
+          "Keeping services reachable for legitimate users.",
+          "Organizing data into packet or frame units for transmission.",
+          "The original datagram payload.",
+          "A protocol used to query and modify management data and receive notifications."
+        ],
+        "answer": 2,
+        "explain": "The original datagram payload."
+      },
+      {
+        "q": "What does IKE negotiate?",
+        "options": [
+          "A protocol for installing, changing, and retrieving network device configuration.",
+          "Keys and parameters for IPsec security associations.",
+          "Mobile IP entity that assists a mobile node in a visited network.",
+          "A one-way function producing a fixed-size digest from data."
+        ],
+        "answer": 1,
+        "explain": "Keys and parameters for IPsec security associations."
+      },
+      {
+        "q": "Why are SAs one-way?",
+        "options": [
+          "Each direction can have separate keys and parameters.",
+          "To detect corrupted frames.",
+          "A fixed-length identifier used by MPLS routers to forward packets.",
+          "Sending and receiving at the same time."
         ],
         "answer": 0,
-        "explain": "Multiple access protocol: Rules for sharing a broadcast medium."
+        "explain": "Each direction can have separate keys and parameters."
       },
       {
-        "q": "Which term best matches this description: Dividing a shared channel by time, frequency, or code.",
+        "q": "What does a packet filter inspect?",
         "options": [
-          "Random access",
-          "Channel partitioning",
-          "Frame",
-          "Error detection"
-        ],
-        "answer": 1,
-        "explain": "Channel partitioning: Dividing a shared channel by time, frequency, or code."
-      },
-      {
-        "q": "Which term best matches this description: Allowing devices to transmit and recover from collisions.",
-        "options": [
-          "Taking turns",
-          "Framing",
-          "Random access",
-          "Error correction"
-        ],
-        "answer": 2,
-        "explain": "Random access: Allowing devices to transmit and recover from collisions."
-      },
-      {
-        "q": "Which term best matches this description: A sharing method where nodes transmit by schedule or permission.",
-        "options": [
-          "Collision",
-          "MAC address",
-          "Parity bit",
-          "Taking turns"
+          "Ethernet error detection field.",
+          "A logical network built on top of another network.",
+          "An ACK that confirms all data up to a certain point.",
+          "Header fields such as addresses, ports, and protocol."
         ],
         "answer": 3,
-        "explain": "Taking turns: A sharing method where nodes transmit by schedule or permission."
+        "explain": "Header fields such as addresses, ports, and protocol."
       },
       {
-        "q": "Which term best matches this description: Overlapping transmissions on a shared medium.",
+        "q": "How is a stateful firewall different?",
         "options": [
-          "Collision",
-          "MAC protocol",
-          "Hop-to-hop delivery",
-          "Two-dimensional parity"
+          "Symmetric keys are efficient for bulk data.",
+          "To relieve congestion in the network.",
+          "It tracks connection state, not only individual packets.",
+          "Streaming or exporting operational data for monitoring."
+        ],
+        "answer": 2,
+        "explain": "It tracks connection state, not only individual packets."
+      },
+      {
+        "q": "What is a DMZ used for?",
+        "options": [
+          "Propagation delay",
+          "Separating public services from internal networks.",
+          "A gateway connecting the cellular network to external packet data networks.",
+          "TCP phase where the congestion window grows more cautiously."
+        ],
+        "answer": 1,
+        "explain": "Separating public services from internal networks."
+      },
+      {
+        "q": "What does signature IDS detect?",
+        "options": [
+          "Known attack patterns.",
+          "A shortest-path algorithm used in link-state routing.",
+          "It also includes service flexibility and core-network evolution.",
+          "It catches more burst and pattern errors."
         ],
         "answer": 0,
-        "explain": "Collision: Overlapping transmissions on a shared medium."
+        "explain": "Known attack patterns."
       },
       {
-        "q": "Which term best matches this description: Rules controlling access to the transmission medium.",
+        "q": "What does anomaly IDS detect?",
         "options": [
-          "Data link layer",
-          "MAC protocol",
-          "Packetizing",
-          "Checksum"
-        ],
-        "answer": 1,
-        "explain": "MAC protocol: Rules controlling access to the transmission medium."
-      }
-    ]
-  },
-  {
-    "title": "LANs, Ethernet, ARP, Switches, and VLANs — 30-item Practice Test",
-    "questions": [
-      {
-        "q": "Which term best matches this description: Local Area Network, connecting devices in a limited area.",
-        "options": [
-          "Ethernet type field",
-          "LAN",
-          "CSMA/CD",
-          "Flooding"
-        ],
-        "answer": 1,
-        "explain": "LAN: Local Area Network, connecting devices in a limited area."
-      },
-      {
-        "q": "Which term best matches this description: The dominant wired LAN technology.",
-        "options": [
-          "MAC address",
-          "Carrier sense",
-          "Ethernet",
-          "Filtering"
-        ],
-        "answer": 2,
-        "explain": "Ethernet: The dominant wired LAN technology."
-      },
-      {
-        "q": "Which term best matches this description: A frame format used by Ethernet networks.",
-        "options": [
-          "Broadcast MAC address",
-          "Collision detection",
-          "Store-and-forward switch",
-          "Ethernet frame"
+          "Shortest paths from one source to all destinations.",
+          "WiFi's collision avoidance medium access method.",
+          "An operation that reads management information from a device.",
+          "Traffic or behavior that deviates from normal patterns."
         ],
         "answer": 3,
-        "explain": "Ethernet frame: A frame format used by Ethernet networks."
-      },
-      {
-        "q": "Which term best matches this description: Ethernet bits used to synchronize receiver timing.",
-        "options": [
-          "Preamble",
-          "ARP",
-          "Exponential backoff",
-          "Cut-through switch"
-        ],
-        "answer": 0,
-        "explain": "Preamble: Ethernet bits used to synchronize receiver timing."
-      },
-      {
-        "q": "Which term best matches this description: A field identifying the payload protocol.",
-        "options": [
-          "ARP table",
-          "Ethernet type field",
-          "Switch",
-          "Spanning Tree Protocol"
-        ],
-        "answer": 1,
-        "explain": "Ethernet type field: A field identifying the payload protocol."
-      },
-      {
-        "q": "Which term best matches this description: A 48-bit link-layer address used in LAN delivery.",
-        "options": [
-          "ARP request",
-          "Switch forwarding table",
-          "MAC address",
-          "Broadcast domain"
-        ],
-        "answer": 2,
-        "explain": "MAC address: A 48-bit link-layer address used in LAN delivery."
-      },
-      {
-        "q": "Which term best matches this description: The all-ones MAC address received by all LAN interfaces.",
-        "options": [
-          "ARP reply",
-          "Self-learning",
-          "VLAN",
-          "Broadcast MAC address"
-        ],
-        "answer": 3,
-        "explain": "Broadcast MAC address: The all-ones MAC address received by all LAN interfaces."
-      },
-      {
-        "q": "Which term best matches this description: Address Resolution Protocol, mapping local IP addresses to MAC addresses.",
-        "options": [
-          "ARP",
-          "CSMA/CD",
-          "Flooding",
-          "Access port"
-        ],
-        "answer": 0,
-        "explain": "ARP: Address Resolution Protocol, mapping local IP addresses to MAC addresses."
-      },
-      {
-        "q": "Which term best matches this description: A cache of IP-to-MAC mappings.",
-        "options": [
-          "Carrier sense",
-          "ARP table",
-          "Filtering",
-          "Trunk port"
-        ],
-        "answer": 1,
-        "explain": "ARP table: A cache of IP-to-MAC mappings."
-      },
-      {
-        "q": "Which term best matches this description: A broadcast message asking who has a target IP address.",
-        "options": [
-          "Collision detection",
-          "Store-and-forward switch",
-          "ARP request",
-          "802.1Q tag"
-        ],
-        "answer": 2,
-        "explain": "ARP request: A broadcast message asking who has a target IP address."
-      },
-      {
-        "q": "Which term best matches this description: A response containing the target MAC address.",
-        "options": [
-          "Exponential backoff",
-          "Cut-through switch",
-          "Inter-VLAN routing",
-          "ARP reply"
-        ],
-        "answer": 3,
-        "explain": "ARP reply: A response containing the target MAC address."
-      },
-      {
-        "q": "Which term best matches this description: Carrier Sense Multiple Access with Collision Detection for classic Ethernet.",
-        "options": [
-          "CSMA/CD",
-          "Switch",
-          "Spanning Tree Protocol",
-          "Port isolation"
-        ],
-        "answer": 0,
-        "explain": "CSMA/CD: Carrier Sense Multiple Access with Collision Detection for classic Ethernet."
-      },
-      {
-        "q": "Which term best matches this description: Listening before transmitting on a shared medium.",
-        "options": [
-          "Switch forwarding table",
-          "Carrier sense",
-          "Broadcast domain",
-          "LAN"
-        ],
-        "answer": 1,
-        "explain": "Carrier sense: Listening before transmitting on a shared medium."
-      },
-      {
-        "q": "Which term best matches this description: Detecting overlapping transmissions in shared Ethernet.",
-        "options": [
-          "Self-learning",
-          "VLAN",
-          "Collision detection",
-          "Ethernet"
-        ],
-        "answer": 2,
-        "explain": "Collision detection: Detecting overlapping transmissions in shared Ethernet."
-      },
-      {
-        "q": "Which term best matches this description: Increasing random wait time after repeated collisions.",
-        "options": [
-          "Flooding",
-          "Access port",
-          "Ethernet frame",
-          "Exponential backoff"
-        ],
-        "answer": 3,
-        "explain": "Exponential backoff: Increasing random wait time after repeated collisions."
-      },
-      {
-        "q": "Which term best matches this description: A link-layer device that forwards frames by MAC address.",
-        "options": [
-          "Switch",
-          "Filtering",
-          "Trunk port",
-          "Preamble"
-        ],
-        "answer": 0,
-        "explain": "Switch: A link-layer device that forwards frames by MAC address."
-      },
-      {
-        "q": "Which term best matches this description: A table mapping MAC addresses to switch ports.",
-        "options": [
-          "Store-and-forward switch",
-          "Switch forwarding table",
-          "802.1Q tag",
-          "Ethernet type field"
-        ],
-        "answer": 1,
-        "explain": "Switch forwarding table: A table mapping MAC addresses to switch ports."
-      },
-      {
-        "q": "Which term best matches this description: A switch learning MAC locations from source addresses.",
-        "options": [
-          "Cut-through switch",
-          "Inter-VLAN routing",
-          "Self-learning",
-          "MAC address"
-        ],
-        "answer": 2,
-        "explain": "Self-learning: A switch learning MAC locations from source addresses."
-      },
-      {
-        "q": "Which term best matches this description: Sending a frame out multiple ports when destination is unknown.",
-        "options": [
-          "Spanning Tree Protocol",
-          "Port isolation",
-          "Broadcast MAC address",
-          "Flooding"
-        ],
-        "answer": 3,
-        "explain": "Flooding: Sending a frame out multiple ports when destination is unknown."
-      },
-      {
-        "q": "Which term best matches this description: Not forwarding a frame where it does not need to go.",
-        "options": [
-          "Filtering",
-          "Broadcast domain",
-          "LAN",
-          "ARP"
-        ],
-        "answer": 0,
-        "explain": "Filtering: Not forwarding a frame where it does not need to go."
-      },
-      {
-        "q": "Which term best matches this description: A switch that receives the whole frame before forwarding.",
-        "options": [
-          "VLAN",
-          "Store-and-forward switch",
-          "Ethernet",
-          "ARP table"
-        ],
-        "answer": 1,
-        "explain": "Store-and-forward switch: A switch that receives the whole frame before forwarding."
-      },
-      {
-        "q": "Which term best matches this description: A switch that begins forwarding before receiving the whole frame.",
-        "options": [
-          "Access port",
-          "Ethernet frame",
-          "Cut-through switch",
-          "ARP request"
-        ],
-        "answer": 2,
-        "explain": "Cut-through switch: A switch that begins forwarding before receiving the whole frame."
-      },
-      {
-        "q": "Which term best matches this description: A protocol that prevents switching loops.",
-        "options": [
-          "Trunk port",
-          "Preamble",
-          "ARP reply",
-          "Spanning Tree Protocol"
-        ],
-        "answer": 3,
-        "explain": "Spanning Tree Protocol: A protocol that prevents switching loops."
-      },
-      {
-        "q": "Which term best matches this description: The set of devices that receive a broadcast frame.",
-        "options": [
-          "Broadcast domain",
-          "802.1Q tag",
-          "Ethernet type field",
-          "CSMA/CD"
-        ],
-        "answer": 0,
-        "explain": "Broadcast domain: The set of devices that receive a broadcast frame."
-      },
-      {
-        "q": "Which term best matches this description: Virtual LAN, a logical LAN separated from others on the same hardware.",
-        "options": [
-          "Inter-VLAN routing",
-          "VLAN",
-          "MAC address",
-          "Carrier sense"
-        ],
-        "answer": 1,
-        "explain": "VLAN: Virtual LAN, a logical LAN separated from others on the same hardware."
-      },
-      {
-        "q": "Which term best matches this description: A switch port assigned to one VLAN.",
-        "options": [
-          "Port isolation",
-          "Broadcast MAC address",
-          "Access port",
-          "Collision detection"
-        ],
-        "answer": 2,
-        "explain": "Access port: A switch port assigned to one VLAN."
-      },
-      {
-        "q": "Which term best matches this description: A switch port carrying traffic for multiple VLANs.",
-        "options": [
-          "LAN",
-          "ARP",
-          "Exponential backoff",
-          "Trunk port"
-        ],
-        "answer": 3,
-        "explain": "Trunk port: A switch port carrying traffic for multiple VLANs."
-      },
-      {
-        "q": "Which term best matches this description: A VLAN tag inserted into Ethernet frames.",
-        "options": [
-          "802.1Q tag",
-          "Ethernet",
-          "ARP table",
-          "Switch"
-        ],
-        "answer": 0,
-        "explain": "802.1Q tag: A VLAN tag inserted into Ethernet frames."
-      },
-      {
-        "q": "Which term best matches this description: Routing traffic between VLANs.",
-        "options": [
-          "Ethernet frame",
-          "Inter-VLAN routing",
-          "ARP request",
-          "Switch forwarding table"
-        ],
-        "answer": 1,
-        "explain": "Inter-VLAN routing: Routing traffic between VLANs."
-      },
-      {
-        "q": "Which term best matches this description: Switching configuration that limits which ports can communicate.",
-        "options": [
-          "Preamble",
-          "ARP reply",
-          "Port isolation",
-          "Self-learning"
-        ],
-        "answer": 2,
-        "explain": "Port isolation: Switching configuration that limits which ports can communicate."
-      }
-    ]
-  },
-  {
-    "title": "Link Virtualization, MPLS, and Data Center Networking — 30-item Practice Test",
-    "questions": [
-      {
-        "q": "Which term best matches this description: Creating logical link behavior over shared physical infrastructure.",
-        "options": [
-          "Label swapping",
-          "Tunneling",
-          "Link virtualization",
-          "Load balancing"
-        ],
-        "answer": 2,
-        "explain": "Link virtualization: Creating logical link behavior over shared physical infrastructure."
-      },
-      {
-        "q": "Which term best matches this description: Multiprotocol Label Switching, forwarding packets using short labels.",
-        "options": [
-          "Label forwarding table",
-          "Overlay network",
-          "ECMP",
-          "MPLS"
-        ],
-        "answer": 3,
-        "explain": "MPLS: Multiprotocol Label Switching, forwarding packets using short labels."
-      },
-      {
-        "q": "Which term best matches this description: A fixed-length identifier used by MPLS forwarding.",
-        "options": [
-          "Label",
-          "Label switched path",
-          "Underlay network",
-          "Virtual machine"
-        ],
-        "answer": 0,
-        "explain": "Label: A fixed-length identifier used by MPLS forwarding."
-      },
-      {
-        "q": "Which term best matches this description: A small header inserted between link-layer and network-layer headers.",
-        "options": [
-          "Traffic engineering",
-          "MPLS header",
-          "Data center network",
-          "Container"
-        ],
-        "answer": 1,
-        "explain": "MPLS header: A small header inserted between link-layer and network-layer headers."
-      },
-      {
-        "q": "Which term best matches this description: An MPLS-capable router that forwards based on labels.",
-        "options": [
-          "Fast reroute",
-          "Top-of-rack switch",
-          "Label switched router",
-          "Network virtualization"
-        ],
-        "answer": 2,
-        "explain": "Label switched router: An MPLS-capable router that forwards based on labels."
-      },
-      {
-        "q": "Which term best matches this description: The MPLS edge router that adds the first label.",
-        "options": [
-          "MPLS VPN",
-          "Leaf-spine topology",
-          "VXLAN",
-          "Ingress router"
-        ],
-        "answer": 3,
-        "explain": "Ingress router: The MPLS edge router that adds the first label."
-      },
-      {
-        "q": "Which term best matches this description: The MPLS edge router that removes the label.",
-        "options": [
-          "Egress router",
-          "Virtual circuit",
-          "Bisection bandwidth",
-          "Service chaining"
-        ],
-        "answer": 0,
-        "explain": "Egress router: The MPLS edge router that removes the label."
-      },
-      {
-        "q": "Which term best matches this description: Replacing an incoming MPLS label with an outgoing label.",
-        "options": [
-          "Tunneling",
-          "Label swapping",
-          "Load balancing",
-          "Middlebox"
-        ],
-        "answer": 1,
-        "explain": "Label swapping: Replacing an incoming MPLS label with an outgoing label."
-      },
-      {
-        "q": "Which term best matches this description: A table mapping incoming labels to output labels and interfaces.",
-        "options": [
-          "Overlay network",
-          "ECMP",
-          "Label forwarding table",
-          "Tenant isolation"
-        ],
-        "answer": 2,
-        "explain": "Label forwarding table: A table mapping incoming labels to output labels and interfaces."
-      },
-      {
-        "q": "Which term best matches this description: A path followed by MPLS-labeled packets.",
-        "options": [
-          "Underlay network",
-          "Virtual machine",
-          "Link virtualization",
-          "Label switched path"
-        ],
-        "answer": 3,
-        "explain": "Label switched path: A path followed by MPLS-labeled packets."
-      },
-      {
-        "q": "Which term best matches this description: Choosing routes to meet performance or utilization goals.",
-        "options": [
-          "Traffic engineering",
-          "Data center network",
-          "Container",
-          "MPLS"
-        ],
-        "answer": 0,
-        "explain": "Traffic engineering: Choosing routes to meet performance or utilization goals."
-      },
-      {
-        "q": "Which term best matches this description: Quickly moving traffic around a failure.",
-        "options": [
-          "Top-of-rack switch",
-          "Fast reroute",
-          "Network virtualization",
-          "Label"
-        ],
-        "answer": 1,
-        "explain": "Fast reroute: Quickly moving traffic around a failure."
-      },
-      {
-        "q": "Which term best matches this description: Using MPLS to separate customer traffic over a provider network.",
-        "options": [
-          "Leaf-spine topology",
-          "VXLAN",
-          "MPLS VPN",
-          "MPLS header"
-        ],
-        "answer": 2,
-        "explain": "MPLS VPN: Using MPLS to separate customer traffic over a provider network."
-      },
-      {
-        "q": "Which term best matches this description: A logical path with state in network devices.",
-        "options": [
-          "Bisection bandwidth",
-          "Service chaining",
-          "Label switched router",
-          "Virtual circuit"
-        ],
-        "answer": 3,
-        "explain": "Virtual circuit: A logical path with state in network devices."
-      },
-      {
-        "q": "Which term best matches this description: Encapsulating traffic inside another protocol or label path.",
-        "options": [
-          "Tunneling",
-          "Load balancing",
-          "Middlebox",
-          "Ingress router"
-        ],
-        "answer": 0,
-        "explain": "Tunneling: Encapsulating traffic inside another protocol or label path."
-      },
-      {
-        "q": "Which term best matches this description: A virtual network built on top of another network.",
-        "options": [
-          "ECMP",
-          "Overlay network",
-          "Tenant isolation",
-          "Egress router"
-        ],
-        "answer": 1,
-        "explain": "Overlay network: A virtual network built on top of another network."
-      },
-      {
-        "q": "Which term best matches this description: The physical or base network carrying overlays.",
-        "options": [
-          "Virtual machine",
-          "Link virtualization",
-          "Underlay network",
-          "Label swapping"
-        ],
-        "answer": 2,
-        "explain": "Underlay network: The physical or base network carrying overlays."
-      },
-      {
-        "q": "Which term best matches this description: A network connecting large numbers of servers and storage systems.",
-        "options": [
-          "Container",
-          "MPLS",
-          "Label forwarding table",
-          "Data center network"
-        ],
-        "answer": 3,
-        "explain": "Data center network: A network connecting large numbers of servers and storage systems."
-      },
-      {
-        "q": "Which term best matches this description: A switch placed near servers in a rack.",
-        "options": [
-          "Top-of-rack switch",
-          "Network virtualization",
-          "Label",
-          "Label switched path"
-        ],
-        "answer": 0,
-        "explain": "Top-of-rack switch: A switch placed near servers in a rack."
-      },
-      {
-        "q": "Which term best matches this description: A data-center design with access leaf switches and spine switches.",
-        "options": [
-          "VXLAN",
-          "Leaf-spine topology",
-          "MPLS header",
-          "Traffic engineering"
-        ],
-        "answer": 1,
-        "explain": "Leaf-spine topology: A data-center design with access leaf switches and spine switches."
-      },
-      {
-        "q": "Which term best matches this description: The capacity across a cut dividing a network into two parts.",
-        "options": [
-          "Service chaining",
-          "Label switched router",
-          "Bisection bandwidth",
-          "Fast reroute"
-        ],
-        "answer": 2,
-        "explain": "Bisection bandwidth: The capacity across a cut dividing a network into two parts."
-      },
-      {
-        "q": "Which term best matches this description: Distributing traffic across multiple paths or servers.",
-        "options": [
-          "Middlebox",
-          "Ingress router",
-          "MPLS VPN",
-          "Load balancing"
-        ],
-        "answer": 3,
-        "explain": "Load balancing: Distributing traffic across multiple paths or servers."
-      },
-      {
-        "q": "Which term best matches this description: Equal-Cost Multi-Path routing across multiple equal paths.",
-        "options": [
-          "ECMP",
-          "Tenant isolation",
-          "Egress router",
-          "Virtual circuit"
-        ],
-        "answer": 0,
-        "explain": "ECMP: Equal-Cost Multi-Path routing across multiple equal paths."
-      },
-      {
-        "q": "Which term best matches this description: A software-defined computer running on shared hardware.",
-        "options": [
-          "Link virtualization",
-          "Virtual machine",
-          "Label swapping",
-          "Tunneling"
-        ],
-        "answer": 1,
-        "explain": "Virtual machine: A software-defined computer running on shared hardware."
-      },
-      {
-        "q": "Which term best matches this description: A lightweight isolated application runtime.",
-        "options": [
-          "MPLS",
-          "Label forwarding table",
-          "Container",
-          "Overlay network"
-        ],
-        "answer": 2,
-        "explain": "Container: A lightweight isolated application runtime."
-      },
-      {
-        "q": "Which term best matches this description: Creating logical networks independent of physical topology.",
-        "options": [
-          "Label",
-          "Label switched path",
-          "Underlay network",
-          "Network virtualization"
-        ],
-        "answer": 3,
-        "explain": "Network virtualization: Creating logical networks independent of physical topology."
-      },
-      {
-        "q": "Which term best matches this description: A common overlay technology for virtualized Layer 2 networks.",
-        "options": [
-          "VXLAN",
-          "MPLS header",
-          "Traffic engineering",
-          "Data center network"
-        ],
-        "answer": 0,
-        "explain": "VXLAN: A common overlay technology for virtualized Layer 2 networks."
-      },
-      {
-        "q": "Which term best matches this description: Sending traffic through an ordered set of network functions.",
-        "options": [
-          "Label switched router",
-          "Service chaining",
-          "Fast reroute",
-          "Top-of-rack switch"
-        ],
-        "answer": 1,
-        "explain": "Service chaining: Sending traffic through an ordered set of network functions."
-      },
-      {
-        "q": "Which term best matches this description: A device or service such as firewall, NAT, proxy, or load balancer.",
-        "options": [
-          "Ingress router",
-          "MPLS VPN",
-          "Middlebox",
-          "Leaf-spine topology"
-        ],
-        "answer": 2,
-        "explain": "Middlebox: A device or service such as firewall, NAT, proxy, or load balancer."
-      },
-      {
-        "q": "Which term best matches this description: Keeping different customers or applications separated in shared infrastructure.",
-        "options": [
-          "Egress router",
-          "Virtual circuit",
-          "Bisection bandwidth",
-          "Tenant isolation"
-        ],
-        "answer": 3,
-        "explain": "Tenant isolation: Keeping different customers or applications separated in shared infrastructure."
-      }
-    ]
-  },
-  {
-    "title": "Wireless Networks and WiFi — 30-item Practice Test",
-    "questions": [
-      {
-        "q": "Which term best matches this description: A device communicating over a wireless link.",
-        "options": [
-          "Bit error rate",
-          "Beacon frame",
-          "CTS",
-          "Wireless host"
-        ],
-        "answer": 3,
-        "explain": "Wireless host: A device communicating over a wireless link."
-      },
-      {
-        "q": "Which term best matches this description: A wireless access point connecting hosts to network infrastructure.",
-        "options": [
-          "Base station",
-          "802.11",
-          "CSMA/CA",
-          "NAV"
-        ],
-        "answer": 0,
-        "explain": "Base station: A wireless access point connecting hosts to network infrastructure."
-      },
-      {
-        "q": "Which term best matches this description: A WiFi base station for wireless LANs.",
-        "options": [
-          "BSS",
-          "Access point",
-          "Collision avoidance",
-          "Roaming"
-        ],
-        "answer": 1,
-        "explain": "Access point: A WiFi base station for wireless LANs."
-      },
-      {
-        "q": "Which term best matches this description: Wireless mode where hosts connect through an access point.",
-        "options": [
-          "SSID",
-          "Random backoff",
-          "Infrastructure mode",
-          "WiFi channel"
-        ],
-        "answer": 2,
-        "explain": "Infrastructure mode: Wireless mode where hosts connect through an access point."
-      },
-      {
-        "q": "Which term best matches this description: Wireless mode where hosts communicate directly without infrastructure.",
-        "options": [
-          "Association",
-          "Link-layer ACK",
-          "MIMO",
-          "Ad hoc mode"
-        ],
-        "answer": 3,
-        "explain": "Ad hoc mode: Wireless mode where hosts communicate directly without infrastructure."
-      },
-      {
-        "q": "Which term best matches this description: A radio connection between wireless nodes.",
-        "options": [
-          "Wireless link",
-          "Passive scanning",
-          "Hidden terminal problem",
-          "802.11ax"
-        ],
-        "answer": 0,
-        "explain": "Wireless link: A radio connection between wireless nodes."
-      },
-      {
-        "q": "Which term best matches this description: Signal weakening as distance or obstacles increase.",
-        "options": [
-          "Active scanning",
-          "Signal attenuation",
-          "RTS",
-          "Wireless host"
-        ],
-        "answer": 1,
-        "explain": "Signal attenuation: Signal weakening as distance or obstacles increase."
-      },
-      {
-        "q": "Which term best matches this description: Disruption caused by other transmissions or noise.",
-        "options": [
-          "Beacon frame",
-          "CTS",
-          "Interference",
-          "Base station"
-        ],
-        "answer": 2,
-        "explain": "Interference: Disruption caused by other transmissions or noise."
-      },
-      {
-        "q": "Which term best matches this description: Radio signals taking multiple reflected paths.",
-        "options": [
-          "CSMA/CA",
-          "NAV",
-          "Access point",
-          "Multipath propagation"
-        ],
-        "answer": 3,
-        "explain": "Multipath propagation: Radio signals taking multiple reflected paths."
-      },
-      {
-        "q": "Which term best matches this description: Signal-to-noise ratio, comparing signal strength to noise.",
-        "options": [
-          "SNR",
-          "Collision avoidance",
-          "Roaming",
-          "Infrastructure mode"
-        ],
-        "answer": 0,
-        "explain": "SNR: Signal-to-noise ratio, comparing signal strength to noise."
-      },
-      {
-        "q": "Which term best matches this description: The fraction of transmitted bits received incorrectly.",
-        "options": [
-          "Random backoff",
-          "Bit error rate",
-          "WiFi channel",
-          "Ad hoc mode"
-        ],
-        "answer": 1,
-        "explain": "Bit error rate: The fraction of transmitted bits received incorrectly."
-      },
-      {
-        "q": "Which term best matches this description: The IEEE family of WiFi standards.",
-        "options": [
-          "Link-layer ACK",
-          "MIMO",
-          "802.11",
-          "Wireless link"
-        ],
-        "answer": 2,
-        "explain": "802.11: The IEEE family of WiFi standards."
-      },
-      {
-        "q": "Which term best matches this description: Basic Service Set, a WiFi cell with stations and often an AP.",
-        "options": [
-          "Hidden terminal problem",
-          "802.11ax",
-          "Signal attenuation",
-          "BSS"
-        ],
-        "answer": 3,
-        "explain": "BSS: Basic Service Set, a WiFi cell with stations and often an AP."
-      },
-      {
-        "q": "Which term best matches this description: The network name advertised by a WiFi access point.",
-        "options": [
-          "SSID",
-          "RTS",
-          "Wireless host",
-          "Interference"
-        ],
-        "answer": 0,
-        "explain": "SSID: The network name advertised by a WiFi access point."
-      },
-      {
-        "q": "Which term best matches this description: The process of joining a WiFi access point.",
-        "options": [
-          "CTS",
-          "Association",
-          "Base station",
-          "Multipath propagation"
-        ],
-        "answer": 1,
-        "explain": "Association: The process of joining a WiFi access point."
-      },
-      {
-        "q": "Which term best matches this description: Discovering WiFi networks by listening for beacon frames.",
-        "options": [
-          "NAV",
-          "Access point",
-          "Passive scanning",
-          "SNR"
-        ],
-        "answer": 2,
-        "explain": "Passive scanning: Discovering WiFi networks by listening for beacon frames."
-      },
-      {
-        "q": "Which term best matches this description: Discovering WiFi networks by sending probe requests.",
-        "options": [
-          "Roaming",
-          "Infrastructure mode",
-          "Bit error rate",
-          "Active scanning"
-        ],
-        "answer": 3,
-        "explain": "Active scanning: Discovering WiFi networks by sending probe requests."
-      },
-      {
-        "q": "Which term best matches this description: An AP frame announcing network identity and capabilities.",
-        "options": [
-          "Beacon frame",
-          "WiFi channel",
-          "Ad hoc mode",
-          "802.11"
-        ],
-        "answer": 0,
-        "explain": "Beacon frame: An AP frame announcing network identity and capabilities."
-      },
-      {
-        "q": "Which term best matches this description: Carrier Sense Multiple Access with Collision Avoidance.",
-        "options": [
-          "MIMO",
-          "CSMA/CA",
-          "Wireless link",
-          "BSS"
-        ],
-        "answer": 1,
-        "explain": "CSMA/CA: Carrier Sense Multiple Access with Collision Avoidance."
-      },
-      {
-        "q": "Which term best matches this description: Trying to reduce collisions before they occur.",
-        "options": [
-          "802.11ax",
-          "Signal attenuation",
-          "Collision avoidance",
-          "SSID"
-        ],
-        "answer": 2,
-        "explain": "Collision avoidance: Trying to reduce collisions before they occur."
-      },
-      {
-        "q": "Which term best matches this description: Waiting a random time before transmitting on a shared medium.",
-        "options": [
-          "Wireless host",
-          "Interference",
-          "Association",
-          "Random backoff"
-        ],
-        "answer": 3,
-        "explain": "Random backoff: Waiting a random time before transmitting on a shared medium."
-      },
-      {
-        "q": "Which term best matches this description: An acknowledgment for a WiFi frame.",
-        "options": [
-          "Link-layer ACK",
-          "Base station",
-          "Multipath propagation",
-          "Passive scanning"
-        ],
-        "answer": 0,
-        "explain": "Link-layer ACK: An acknowledgment for a WiFi frame."
-      },
-      {
-        "q": "Which term best matches this description: When two stations cannot hear each other but collide at an AP.",
-        "options": [
-          "Access point",
-          "Hidden terminal problem",
-          "SNR",
-          "Active scanning"
-        ],
-        "answer": 1,
-        "explain": "Hidden terminal problem: When two stations cannot hear each other but collide at an AP."
-      },
-      {
-        "q": "Which term best matches this description: Request To Send, a control frame used to reserve the medium.",
-        "options": [
-          "Infrastructure mode",
-          "Bit error rate",
-          "RTS",
-          "Beacon frame"
-        ],
-        "answer": 2,
-        "explain": "RTS: Request To Send, a control frame used to reserve the medium."
-      },
-      {
-        "q": "Which term best matches this description: Clear To Send, a control frame granting transmission.",
-        "options": [
-          "Ad hoc mode",
-          "802.11",
-          "CSMA/CA",
-          "CTS"
-        ],
-        "answer": 3,
-        "explain": "CTS: Clear To Send, a control frame granting transmission."
-      },
-      {
-        "q": "Which term best matches this description: Network Allocation Vector, virtual carrier-sense timer in WiFi.",
-        "options": [
-          "NAV",
-          "Wireless link",
-          "BSS",
-          "Collision avoidance"
-        ],
-        "answer": 0,
-        "explain": "NAV: Network Allocation Vector, virtual carrier-sense timer in WiFi."
-      },
-      {
-        "q": "Which term best matches this description: Moving between access points while maintaining connectivity.",
-        "options": [
-          "Signal attenuation",
-          "Roaming",
-          "SSID",
-          "Random backoff"
-        ],
-        "answer": 1,
-        "explain": "Roaming: Moving between access points while maintaining connectivity."
-      },
-      {
-        "q": "Which term best matches this description: A frequency range used for wireless communication.",
-        "options": [
-          "Interference",
-          "Association",
-          "WiFi channel",
-          "Link-layer ACK"
-        ],
-        "answer": 2,
-        "explain": "WiFi channel: A frequency range used for wireless communication."
-      },
-      {
-        "q": "Which term best matches this description: Multiple-input multiple-output antenna technology.",
-        "options": [
-          "Multipath propagation",
-          "Passive scanning",
-          "Hidden terminal problem",
-          "MIMO"
-        ],
-        "answer": 3,
-        "explain": "MIMO: Multiple-input multiple-output antenna technology."
-      },
-      {
-        "q": "Which term best matches this description: WiFi 6, an 802.11 standard designed for efficiency and capacity.",
-        "options": [
-          "802.11ax",
-          "SNR",
-          "Active scanning",
-          "RTS"
-        ],
-        "answer": 0,
-        "explain": "802.11ax: WiFi 6, an 802.11 standard designed for efficiency and capacity."
-      }
-    ]
-  },
-  {
-    "title": "Mobile Networks, 4G/5G, Roaming, and Handoffs — 30-item Practice Test",
-    "questions": [
-      {
-        "q": "Which term best matches this description: A network designed to support users moving between attachment points.",
-        "options": [
-          "Mobile network",
-          "Serving gateway",
-          "Soft handoff",
-          "Care-of address"
-        ],
-        "answer": 0,
-        "explain": "Mobile network: A network designed to support users moving between attachment points."
-      },
-      {
-        "q": "Which term best matches this description: A mobile network divided into geographic cells.",
-        "options": [
-          "PDN gateway",
-          "Cellular network",
-          "Roaming",
-          "Triangular routing"
-        ],
-        "answer": 1,
-        "explain": "Cellular network: A mobile network divided into geographic cells."
-      },
-      {
-        "q": "Which term best matches this description: A coverage area served by a base station.",
-        "options": [
-          "HSS",
-          "Home network",
-          "Cell",
-          "Mobility impact"
-        ],
-        "answer": 2,
-        "explain": "Cell: A coverage area served by a base station."
-      },
-      {
-        "q": "Which term best matches this description: Cellular radio equipment connecting devices to the provider network.",
-        "options": [
-          "Attach procedure",
-          "Visited network",
-          "Mobile network",
-          "Base station"
-        ],
-        "answer": 3,
-        "explain": "Base station: Cellular radio equipment connecting devices to the provider network."
-      },
-      {
-        "q": "Which term best matches this description: A mobile device such as a phone or cellular modem.",
-        "options": [
-          "User equipment",
-          "Bearer",
-          "Mobile IP",
-          "Cellular network"
-        ],
-        "answer": 0,
-        "explain": "User equipment: A mobile device such as a phone or cellular modem."
-      },
-      {
-        "q": "Which term best matches this description: Subscriber Identity Module used for subscriber identity and authentication.",
-        "options": [
-          "Handoff",
-          "SIM",
-          "Home agent",
-          "Cell"
-        ],
-        "answer": 1,
-        "explain": "SIM: Subscriber Identity Module used for subscriber identity and authentication."
-      },
-      {
-        "q": "Which term best matches this description: International Mobile Subscriber Identity stored with subscriber credentials.",
-        "options": [
-          "Hard handoff",
-          "Foreign agent",
-          "IMSI",
-          "Base station"
-        ],
-        "answer": 2,
-        "explain": "IMSI: International Mobile Subscriber Identity stored with subscriber credentials."
-      },
-      {
-        "q": "Which term best matches this description: Fourth-generation cellular architecture based on IP networking.",
-        "options": [
-          "Soft handoff",
-          "Care-of address",
-          "User equipment",
-          "4G LTE"
-        ],
-        "answer": 3,
-        "explain": "4G LTE: Fourth-generation cellular architecture based on IP networking."
-      },
-      {
-        "q": "Which term best matches this description: Fifth-generation mobile architecture with enhanced bandwidth and flexibility.",
-        "options": [
-          "5G",
-          "Roaming",
-          "Triangular routing",
-          "SIM"
-        ],
-        "answer": 0,
-        "explain": "5G: Fifth-generation mobile architecture with enhanced bandwidth and flexibility."
-      },
-      {
-        "q": "Which term best matches this description: The part of a cellular system handling radio communication.",
-        "options": [
-          "Home network",
-          "Radio access network",
-          "Mobility impact",
-          "IMSI"
-        ],
-        "answer": 1,
-        "explain": "Radio access network: The part of a cellular system handling radio communication."
-      },
-      {
-        "q": "Which term best matches this description: The provider network handling mobility, authentication, and Internet access.",
-        "options": [
-          "Visited network",
-          "Mobile network",
-          "Core network",
-          "4G LTE"
-        ],
-        "answer": 2,
-        "explain": "Core network: The provider network handling mobility, authentication, and Internet access."
-      },
-      {
-        "q": "Which term best matches this description: Evolved Packet Core, the LTE core network.",
-        "options": [
-          "Mobile IP",
-          "Cellular network",
-          "5G",
-          "EPC"
-        ],
-        "answer": 3,
-        "explain": "EPC: Evolved Packet Core, the LTE core network."
-      },
-      {
-        "q": "Which term best matches this description: Mobility Management Entity, an LTE control-plane component.",
-        "options": [
-          "MME",
-          "Home agent",
-          "Cell",
-          "Radio access network"
-        ],
-        "answer": 0,
-        "explain": "MME: Mobility Management Entity, an LTE control-plane component."
-      },
-      {
-        "q": "Which term best matches this description: LTE component forwarding user data within the carrier network.",
-        "options": [
-          "Foreign agent",
-          "Serving gateway",
-          "Base station",
-          "Core network"
-        ],
-        "answer": 1,
-        "explain": "Serving gateway: LTE component forwarding user data within the carrier network."
-      },
-      {
-        "q": "Which term best matches this description: LTE component connecting user traffic to external packet networks.",
-        "options": [
-          "Care-of address",
-          "User equipment",
-          "PDN gateway",
-          "EPC"
-        ],
-        "answer": 2,
-        "explain": "PDN gateway: LTE component connecting user traffic to external packet networks."
-      },
-      {
-        "q": "Which term best matches this description: Home Subscriber Server storing subscriber data.",
-        "options": [
-          "Triangular routing",
-          "SIM",
-          "MME",
-          "HSS"
-        ],
-        "answer": 3,
-        "explain": "HSS: Home Subscriber Server storing subscriber data."
-      },
-      {
-        "q": "Which term best matches this description: The process of joining and authenticating to a cellular network.",
-        "options": [
-          "Attach procedure",
-          "Mobility impact",
-          "IMSI",
-          "Serving gateway"
-        ],
-        "answer": 0,
-        "explain": "Attach procedure: The process of joining and authenticating to a cellular network."
-      },
-      {
-        "q": "Which term best matches this description: A logical data path with specific service properties.",
-        "options": [
-          "Mobile network",
-          "Bearer",
-          "4G LTE",
-          "PDN gateway"
-        ],
-        "answer": 1,
-        "explain": "Bearer: A logical data path with specific service properties."
-      },
-      {
-        "q": "Which term best matches this description: Moving an active connection from one base station to another.",
-        "options": [
-          "Cellular network",
-          "5G",
-          "Handoff",
-          "HSS"
-        ],
-        "answer": 2,
-        "explain": "Handoff: Moving an active connection from one base station to another."
-      },
-      {
-        "q": "Which term best matches this description: Breaking the old connection before or while making the new one.",
-        "options": [
-          "Cell",
-          "Radio access network",
-          "Attach procedure",
-          "Hard handoff"
-        ],
-        "answer": 3,
-        "explain": "Hard handoff: Breaking the old connection before or while making the new one."
-      },
-      {
-        "q": "Which term best matches this description: Temporarily maintaining more than one radio connection.",
-        "options": [
-          "Soft handoff",
-          "Base station",
-          "Core network",
-          "Bearer"
-        ],
-        "answer": 0,
-        "explain": "Soft handoff: Temporarily maintaining more than one radio connection."
-      },
-      {
-        "q": "Which term best matches this description: Service access through a visited network outside the home provider.",
-        "options": [
-          "User equipment",
-          "Roaming",
-          "EPC",
-          "Handoff"
-        ],
-        "answer": 1,
-        "explain": "Roaming: Service access through a visited network outside the home provider."
-      },
-      {
-        "q": "Which term best matches this description: The subscriber's primary provider network.",
-        "options": [
-          "SIM",
-          "MME",
-          "Home network",
-          "Hard handoff"
-        ],
-        "answer": 2,
-        "explain": "Home network: The subscriber's primary provider network."
-      },
-      {
-        "q": "Which term best matches this description: A provider network serving a roaming user.",
-        "options": [
-          "IMSI",
-          "Serving gateway",
-          "Soft handoff",
-          "Visited network"
-        ],
-        "answer": 3,
-        "explain": "Visited network: A provider network serving a roaming user."
-      },
-      {
-        "q": "Which term best matches this description: A protocol supporting mobility while keeping a stable home address.",
-        "options": [
-          "Mobile IP",
-          "4G LTE",
-          "PDN gateway",
-          "Roaming"
-        ],
-        "answer": 0,
-        "explain": "Mobile IP: A protocol supporting mobility while keeping a stable home address."
-      },
-      {
-        "q": "Which term best matches this description: Mobile IP entity that forwards packets to a mobile node.",
-        "options": [
-          "5G",
-          "Home agent",
-          "HSS",
-          "Home network"
-        ],
-        "answer": 1,
-        "explain": "Home agent: Mobile IP entity that forwards packets to a mobile node."
-      },
-      {
-        "q": "Which term best matches this description: Mobile IP entity in a visited network assisting mobile nodes.",
-        "options": [
-          "Radio access network",
-          "Attach procedure",
-          "Foreign agent",
-          "Visited network"
-        ],
-        "answer": 2,
-        "explain": "Foreign agent: Mobile IP entity in a visited network assisting mobile nodes."
-      },
-      {
-        "q": "Which term best matches this description: A temporary address representing a mobile node's current location.",
-        "options": [
-          "Core network",
-          "Bearer",
-          "Mobile IP",
-          "Care-of address"
-        ],
-        "answer": 3,
-        "explain": "Care-of address: A temporary address representing a mobile node's current location."
-      },
-      {
-        "q": "Which term best matches this description: Mobile IP path where packets go through the home agent before the mobile node.",
-        "options": [
-          "Triangular routing",
-          "EPC",
-          "Handoff",
-          "Home agent"
-        ],
-        "answer": 0,
-        "explain": "Triangular routing: Mobile IP path where packets go through the home agent before the mobile node."
-      },
-      {
-        "q": "Which term best matches this description: Effects of movement on delay, loss, TCP performance, and application continuity.",
-        "options": [
-          "MME",
-          "Mobility impact",
-          "Hard handoff",
-          "Foreign agent"
-        ],
-        "answer": 1,
-        "explain": "Mobility impact: Effects of movement on delay, loss, TCP performance, and application continuity."
-      }
-    ]
-  },
-  {
-    "title": "Security Foundations, Cryptography, and Authentication — 30-item Practice Test",
-    "questions": [
-      {
-        "q": "Which term best matches this description: Keeping message contents hidden from unauthorized parties.",
-        "options": [
-          "Public key",
-          "Confidentiality",
-          "Certificate authority",
-          "Replay attack"
-        ],
-        "answer": 1,
-        "explain": "Confidentiality: Keeping message contents hidden from unauthorized parties."
-      },
-      {
-        "q": "Which term best matches this description: Verifying that an entity is who it claims to be.",
-        "options": [
-          "Private key",
-          "Nonce",
-          "Authentication",
-          "Man-in-the-middle attack"
-        ],
-        "answer": 2,
-        "explain": "Authentication: Verifying that an entity is who it claims to be."
-      },
-      {
-        "q": "Which term best matches this description: Assurance that a message was not changed undetected.",
-        "options": [
-          "Hash function",
-          "Challenge-response",
-          "Denial of service",
-          "Message integrity"
-        ],
-        "answer": 3,
-        "explain": "Message integrity: Assurance that a message was not changed undetected."
-      },
-      {
-        "q": "Which term best matches this description: Keeping services accessible to legitimate users.",
-        "options": [
-          "Availability",
-          "Cryptographic hash",
-          "Session key",
-          "Plaintext"
-        ],
-        "answer": 0,
-        "explain": "Availability: Keeping services accessible to legitimate users."
-      },
-      {
-        "q": "Which term best matches this description: Restricting use of resources to authorized entities.",
-        "options": [
-          "MAC",
-          "Access control",
-          "Key distribution",
-          "Ciphertext"
-        ],
-        "answer": 1,
-        "explain": "Access control: Restricting use of resources to authorized entities."
-      },
-      {
-        "q": "Which term best matches this description: Secretly listening to communication.",
-        "options": [
-          "Digital signature",
-          "Trust model",
-          "Eavesdropping",
-          "Encryption"
-        ],
-        "answer": 2,
-        "explain": "Eavesdropping: Secretly listening to communication."
-      },
-      {
-        "q": "Which term best matches this description: Pretending to be another entity.",
-        "options": [
-          "Certificate",
-          "Mutual authentication",
-          "Decryption",
-          "Spoofing"
-        ],
-        "answer": 3,
-        "explain": "Spoofing: Pretending to be another entity."
-      },
-      {
-        "q": "Which term best matches this description: Reusing captured valid messages to trick a system.",
-        "options": [
-          "Replay attack",
-          "Certificate authority",
-          "Confidentiality",
-          "Symmetric-key cryptography"
-        ],
-        "answer": 0,
-        "explain": "Replay attack: Reusing captured valid messages to trick a system."
-      },
-      {
-        "q": "Which term best matches this description: Intercepting and possibly modifying communication between parties.",
-        "options": [
-          "Nonce",
-          "Man-in-the-middle attack",
-          "Authentication",
-          "Public-key cryptography"
-        ],
-        "answer": 1,
-        "explain": "Man-in-the-middle attack: Intercepting and possibly modifying communication between parties."
-      },
-      {
-        "q": "Which term best matches this description: Attacking availability by overwhelming or disrupting service.",
-        "options": [
-          "Challenge-response",
-          "Message integrity",
-          "Denial of service",
-          "Public key"
-        ],
-        "answer": 2,
-        "explain": "Denial of service: Attacking availability by overwhelming or disrupting service."
-      },
-      {
-        "q": "Which term best matches this description: Original readable data before encryption.",
-        "options": [
-          "Session key",
-          "Availability",
-          "Private key",
-          "Plaintext"
-        ],
-        "answer": 3,
-        "explain": "Plaintext: Original readable data before encryption."
-      },
-      {
-        "q": "Which term best matches this description: Encrypted data that should be unreadable without the key.",
-        "options": [
-          "Ciphertext",
-          "Key distribution",
-          "Access control",
-          "Hash function"
-        ],
-        "answer": 0,
-        "explain": "Ciphertext: Encrypted data that should be unreadable without the key."
-      },
-      {
-        "q": "Which term best matches this description: Transforming plaintext into ciphertext.",
-        "options": [
-          "Trust model",
-          "Encryption",
-          "Eavesdropping",
-          "Cryptographic hash"
-        ],
-        "answer": 1,
-        "explain": "Encryption: Transforming plaintext into ciphertext."
-      },
-      {
-        "q": "Which term best matches this description: Recovering plaintext from ciphertext.",
-        "options": [
-          "Mutual authentication",
-          "Spoofing",
-          "Decryption",
-          "MAC"
-        ],
-        "answer": 2,
-        "explain": "Decryption: Recovering plaintext from ciphertext."
-      },
-      {
-        "q": "Which term best matches this description: Cryptography where sender and receiver share the same secret key.",
-        "options": [
-          "Confidentiality",
-          "Replay attack",
-          "Digital signature",
-          "Symmetric-key cryptography"
-        ],
-        "answer": 3,
-        "explain": "Symmetric-key cryptography: Cryptography where sender and receiver share the same secret key."
-      },
-      {
-        "q": "Which term best matches this description: Cryptography using a public key and a private key pair.",
-        "options": [
-          "Public-key cryptography",
-          "Authentication",
-          "Man-in-the-middle attack",
-          "Certificate"
-        ],
-        "answer": 0,
-        "explain": "Public-key cryptography: Cryptography using a public key and a private key pair."
-      },
-      {
-        "q": "Which term best matches this description: A key that can be shared openly.",
-        "options": [
-          "Message integrity",
-          "Public key",
-          "Denial of service",
-          "Certificate authority"
-        ],
-        "answer": 1,
-        "explain": "Public key: A key that can be shared openly."
-      },
-      {
-        "q": "Which term best matches this description: A key that must be kept secret by its owner.",
-        "options": [
-          "Availability",
-          "Plaintext",
-          "Private key",
-          "Nonce"
-        ],
-        "answer": 2,
-        "explain": "Private key: A key that must be kept secret by its owner."
-      },
-      {
-        "q": "Which term best matches this description: A function that maps data to a fixed-size digest.",
-        "options": [
-          "Access control",
-          "Ciphertext",
-          "Challenge-response",
-          "Hash function"
-        ],
-        "answer": 3,
-        "explain": "Hash function: A function that maps data to a fixed-size digest."
-      },
-      {
-        "q": "Which term best matches this description: A hash designed to resist collisions and preimage attacks.",
-        "options": [
-          "Cryptographic hash",
-          "Eavesdropping",
-          "Encryption",
-          "Session key"
-        ],
-        "answer": 0,
-        "explain": "Cryptographic hash: A hash designed to resist collisions and preimage attacks."
-      },
-      {
-        "q": "Which term best matches this description: Message Authentication Code for integrity and authentication with a shared key.",
-        "options": [
-          "Spoofing",
-          "MAC",
-          "Decryption",
-          "Key distribution"
-        ],
-        "answer": 1,
-        "explain": "MAC: Message Authentication Code for integrity and authentication with a shared key."
-      },
-      {
-        "q": "Which term best matches this description: A public-key mechanism proving origin and integrity.",
-        "options": [
-          "Replay attack",
-          "Symmetric-key cryptography",
-          "Digital signature",
-          "Trust model"
-        ],
-        "answer": 2,
-        "explain": "Digital signature: A public-key mechanism proving origin and integrity."
-      },
-      {
-        "q": "Which term best matches this description: A signed binding between an identity and a public key.",
-        "options": [
-          "Man-in-the-middle attack",
-          "Public-key cryptography",
-          "Mutual authentication",
-          "Certificate"
-        ],
-        "answer": 3,
-        "explain": "Certificate: A signed binding between an identity and a public key."
-      },
-      {
-        "q": "Which term best matches this description: A trusted party that signs certificates.",
-        "options": [
-          "Certificate authority",
-          "Denial of service",
-          "Public key",
-          "Confidentiality"
-        ],
-        "answer": 0,
-        "explain": "Certificate authority: A trusted party that signs certificates."
-      },
-      {
-        "q": "Which term best matches this description: A fresh random or unique value used to prevent replay.",
-        "options": [
-          "Plaintext",
-          "Nonce",
-          "Private key",
-          "Authentication"
-        ],
-        "answer": 1,
-        "explain": "Nonce: A fresh random or unique value used to prevent replay."
-      },
-      {
-        "q": "Which term best matches this description: Authentication where one side proves knowledge by answering a challenge.",
-        "options": [
-          "Ciphertext",
-          "Hash function",
-          "Challenge-response",
-          "Message integrity"
-        ],
-        "answer": 2,
-        "explain": "Challenge-response: Authentication where one side proves knowledge by answering a challenge."
-      },
-      {
-        "q": "Which term best matches this description: A temporary key used for one communication session.",
-        "options": [
-          "Encryption",
-          "Cryptographic hash",
-          "Availability",
-          "Session key"
-        ],
-        "answer": 3,
-        "explain": "Session key: A temporary key used for one communication session."
-      },
-      {
-        "q": "Which term best matches this description: The process of securely giving parties needed keys.",
-        "options": [
-          "Key distribution",
-          "Decryption",
-          "MAC",
-          "Access control"
-        ],
-        "answer": 0,
-        "explain": "Key distribution: The process of securely giving parties needed keys."
-      },
-      {
-        "q": "Which term best matches this description: The assumptions about who or what is trusted.",
-        "options": [
-          "Symmetric-key cryptography",
-          "Trust model",
-          "Digital signature",
-          "Eavesdropping"
-        ],
-        "answer": 1,
-        "explain": "Trust model: The assumptions about who or what is trusted."
-      },
-      {
-        "q": "Which term best matches this description: Both communication parties authenticate each other.",
-        "options": [
-          "Public-key cryptography",
-          "Certificate",
-          "Mutual authentication",
-          "Spoofing"
-        ],
-        "answer": 2,
-        "explain": "Mutual authentication: Both communication parties authenticate each other."
-      }
-    ]
-  },
-  {
-    "title": "TLS, Firewalls, IDS, and IPsec — 30-item Practice Test",
-    "questions": [
-      {
-        "q": "Which term best matches this description: Transport Layer Security, used to protect application sessions such as HTTPS.",
-        "options": [
-          "Security Policy Database",
-          "VPN",
-          "TLS",
-          "TLS record"
-        ],
-        "answer": 2,
-        "explain": "TLS: Transport Layer Security, used to protect application sessions such as HTTPS."
-      },
-      {
-        "q": "Which term best matches this description: HTTP over TLS for secure web communication.",
-        "options": [
-          "Security Association Database",
-          "NAT traversal",
-          "Cipher suite",
-          "HTTPS"
-        ],
-        "answer": 3,
-        "explain": "HTTPS: HTTP over TLS for secure web communication."
-      },
-      {
-        "q": "Which term best matches this description: The setup phase where parties negotiate keys and authenticate.",
-        "options": [
-          "TLS handshake",
-          "AH",
-          "Replay protection",
-          "Certificate chain"
-        ],
-        "answer": 0,
-        "explain": "TLS handshake: The setup phase where parties negotiate keys and authenticate."
-      },
-      {
-        "q": "Which term best matches this description: A protected TLS data unit carrying application data.",
-        "options": [
-          "ESP",
-          "TLS record",
-          "Security gateway",
-          "Root CA"
-        ],
-        "answer": 1,
-        "explain": "TLS record: A protected TLS data unit carrying application data."
-      },
-      {
-        "q": "Which term best matches this description: A set of algorithms used by a TLS session.",
-        "options": [
-          "Transport mode",
-          "TLS",
-          "Cipher suite",
-          "Forward secrecy"
-        ],
-        "answer": 2,
-        "explain": "Cipher suite: A set of algorithms used by a TLS session."
-      },
-      {
-        "q": "Which term best matches this description: A sequence of certificates linking a site certificate to a trusted root.",
-        "options": [
-          "Tunnel mode",
-          "HTTPS",
-          "Firewall",
-          "Certificate chain"
-        ],
-        "answer": 3,
-        "explain": "Certificate chain: A sequence of certificates linking a site certificate to a trusted root."
-      },
-      {
-        "q": "Which term best matches this description: A highly trusted certificate authority at the top of a trust chain.",
-        "options": [
-          "Root CA",
-          "IKE",
-          "TLS handshake",
-          "Packet filter"
-        ],
-        "answer": 0,
-        "explain": "Root CA: A highly trusted certificate authority at the top of a trust chain."
-      },
-      {
-        "q": "Which term best matches this description: Protection of past sessions even if a long-term key is later compromised.",
-        "options": [
-          "VPN",
-          "Forward secrecy",
-          "TLS record",
-          "Stateful firewall"
-        ],
-        "answer": 1,
-        "explain": "Forward secrecy: Protection of past sessions even if a long-term key is later compromised."
-      },
-      {
-        "q": "Which term best matches this description: A device or software that filters traffic according to policy.",
-        "options": [
-          "NAT traversal",
-          "Cipher suite",
-          "Firewall",
-          "Application gateway"
-        ],
-        "answer": 2,
-        "explain": "Firewall: A device or software that filters traffic according to policy."
-      },
-      {
-        "q": "Which term best matches this description: A firewall that checks packet headers such as addresses and ports.",
-        "options": [
-          "Replay protection",
-          "Certificate chain",
-          "ACL",
-          "Packet filter"
-        ],
-        "answer": 3,
-        "explain": "Packet filter: A firewall that checks packet headers such as addresses and ports."
-      },
-      {
-        "q": "Which term best matches this description: A firewall that tracks connection state.",
-        "options": [
-          "Stateful firewall",
-          "Security gateway",
-          "Root CA",
-          "IDS"
-        ],
-        "answer": 0,
-        "explain": "Stateful firewall: A firewall that tracks connection state."
-      },
-      {
-        "q": "Which term best matches this description: A firewall/proxy that inspects application-layer traffic.",
-        "options": [
-          "TLS",
-          "Application gateway",
-          "Forward secrecy",
-          "IPS"
-        ],
-        "answer": 1,
-        "explain": "Application gateway: A firewall/proxy that inspects application-layer traffic."
-      },
-      {
-        "q": "Which term best matches this description: Access Control List, a set of permit or deny rules.",
-        "options": [
-          "HTTPS",
-          "Firewall",
-          "ACL",
-          "Signature-based detection"
-        ],
-        "answer": 2,
-        "explain": "ACL: Access Control List, a set of permit or deny rules."
-      },
-      {
-        "q": "Which term best matches this description: Intrusion Detection System that monitors for suspicious activity.",
-        "options": [
-          "TLS handshake",
-          "Packet filter",
-          "Anomaly-based detection",
-          "IDS"
-        ],
-        "answer": 3,
-        "explain": "IDS: Intrusion Detection System that monitors for suspicious activity."
-      },
-      {
-        "q": "Which term best matches this description: Intrusion Prevention System that can actively block suspicious traffic.",
-        "options": [
-          "IPS",
-          "TLS record",
-          "Stateful firewall",
-          "IPsec"
-        ],
-        "answer": 0,
-        "explain": "IPS: Intrusion Prevention System that can actively block suspicious traffic."
-      },
-      {
-        "q": "Which term best matches this description: Detecting known attack patterns.",
-        "options": [
-          "Cipher suite",
-          "Signature-based detection",
-          "Application gateway",
-          "Security association"
-        ],
-        "answer": 1,
-        "explain": "Signature-based detection: Detecting known attack patterns."
-      },
-      {
-        "q": "Which term best matches this description: Detecting behavior that differs from normal patterns.",
-        "options": [
-          "Certificate chain",
-          "ACL",
-          "Anomaly-based detection",
-          "Security Policy Database"
-        ],
-        "answer": 2,
-        "explain": "Anomaly-based detection: Detecting behavior that differs from normal patterns."
-      },
-      {
-        "q": "Which term best matches this description: A suite for protecting IP datagrams.",
-        "options": [
-          "Root CA",
-          "IDS",
-          "Security Association Database",
-          "IPsec"
-        ],
-        "answer": 3,
-        "explain": "IPsec: A suite for protecting IP datagrams."
-      },
-      {
-        "q": "Which term best matches this description: A one-way IPsec relationship defining keys and algorithms.",
-        "options": [
-          "Security association",
-          "Forward secrecy",
-          "IPS",
-          "AH"
-        ],
-        "answer": 0,
-        "explain": "Security association: A one-way IPsec relationship defining keys and algorithms."
-      },
-      {
-        "q": "Which term best matches this description: IPsec database indicating what traffic should be protected.",
-        "options": [
-          "Firewall",
-          "Security Policy Database",
-          "Signature-based detection",
-          "ESP"
-        ],
-        "answer": 1,
-        "explain": "Security Policy Database: IPsec database indicating what traffic should be protected."
-      },
-      {
-        "q": "Which term best matches this description: IPsec database storing active security associations.",
-        "options": [
-          "Packet filter",
-          "Anomaly-based detection",
-          "Security Association Database",
-          "Transport mode"
-        ],
-        "answer": 2,
-        "explain": "Security Association Database: IPsec database storing active security associations."
-      },
-      {
-        "q": "Which term best matches this description: Authentication Header, IPsec protocol for authentication and integrity.",
-        "options": [
-          "Stateful firewall",
-          "IPsec",
-          "Tunnel mode",
-          "AH"
-        ],
-        "answer": 3,
-        "explain": "AH: Authentication Header, IPsec protocol for authentication and integrity."
-      },
-      {
-        "q": "Which term best matches this description: Encapsulating Security Payload, IPsec protocol supporting confidentiality.",
-        "options": [
-          "ESP",
-          "Application gateway",
-          "Security association",
-          "IKE"
-        ],
-        "answer": 0,
-        "explain": "ESP: Encapsulating Security Payload, IPsec protocol supporting confidentiality."
-      },
-      {
-        "q": "Which term best matches this description: IPsec mode protecting the payload of the original IP datagram.",
-        "options": [
-          "ACL",
-          "Transport mode",
-          "Security Policy Database",
-          "VPN"
-        ],
-        "answer": 1,
-        "explain": "Transport mode: IPsec mode protecting the payload of the original IP datagram."
-      },
-      {
-        "q": "Which term best matches this description: IPsec mode protecting the entire original IP datagram inside a new one.",
-        "options": [
-          "IDS",
-          "Security Association Database",
-          "Tunnel mode",
-          "NAT traversal"
-        ],
-        "answer": 2,
-        "explain": "Tunnel mode: IPsec mode protecting the entire original IP datagram inside a new one."
-      },
-      {
-        "q": "Which term best matches this description: Internet Key Exchange, used to create IPsec security associations.",
-        "options": [
-          "IPS",
-          "AH",
-          "Replay protection",
-          "IKE"
-        ],
-        "answer": 3,
-        "explain": "IKE: Internet Key Exchange, used to create IPsec security associations."
-      },
-      {
-        "q": "Which term best matches this description: Virtual Private Network, often built using tunnel-mode IPsec or TLS.",
-        "options": [
-          "VPN",
-          "Signature-based detection",
-          "ESP",
-          "Security gateway"
-        ],
-        "answer": 0,
-        "explain": "VPN: Virtual Private Network, often built using tunnel-mode IPsec or TLS."
-      },
-      {
-        "q": "Which term best matches this description: Techniques allowing IPsec traffic to pass through NAT devices.",
-        "options": [
-          "Anomaly-based detection",
-          "NAT traversal",
-          "Transport mode",
-          "TLS"
-        ],
-        "answer": 1,
-        "explain": "NAT traversal: Techniques allowing IPsec traffic to pass through NAT devices."
-      },
-      {
-        "q": "Which term best matches this description: A mechanism that rejects old duplicated protected packets.",
-        "options": [
-          "IPsec",
-          "Tunnel mode",
-          "Replay protection",
-          "HTTPS"
-        ],
-        "answer": 2,
-        "explain": "Replay protection: A mechanism that rejects old duplicated protected packets."
-      },
-      {
-        "q": "Which term best matches this description: A router/firewall/VPN device enforcing security at a network boundary.",
-        "options": [
-          "Security association",
-          "IKE",
-          "TLS handshake",
-          "Security gateway"
-        ],
-        "answer": 3,
-        "explain": "Security gateway: A router/firewall/VPN device enforcing security at a network boundary."
+        "explain": "Traffic or behavior that deviates from normal patterns."
       }
     ]
   }
@@ -8744,7 +9284,7 @@ export default function NetworkingTwoBeginnerGuide() {
           <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
             <Badge>Beginner-Friendly Compilation • Networking 2</Badge>
             <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-950 md:text-7xl">Networking, explained like you are starting from zero 🌐</h1>
-            <p className="mt-6 max-w-3xl text-xl leading-9 text-slate-600">This compiled guide turns the Networking 2 PDFs into a simple, visual learning path. Start with the dashboard, jump to any topic, then use the diagrams, analogies, flashcards, glossary, and 450 practice questions to review fast.</p>
+            <p className="mt-6 max-w-3xl text-xl leading-9 text-slate-600">This compiled guide turns the Networking 2 PDFs into a simple, visual learning path. Start with the dashboard, jump to any topic, then use diagrams, analogies, flashcards, and 30-item practice tests for each module.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#dashboard" className="rounded-2xl bg-slate-950 px-6 py-4 font-bold text-white shadow-lg shadow-slate-200 hover:bg-slate-800">Open Topic Dashboard</a>
               <a href="#practice" className="rounded-2xl border border-slate-300 bg-white px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">Practice Tests</a>
