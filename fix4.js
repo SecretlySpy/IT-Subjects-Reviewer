@@ -1,0 +1,1 @@
+﻿const fs = require('fs'); let c = fs.readFileSync('Networking 2/index.html', 'utf8'); c = c.replace('if (!entry.isIntersecting) return;', 'if (!entry.isIntersecting) return;'); fs.writeFileSync('Networking 2/index.html', c);
