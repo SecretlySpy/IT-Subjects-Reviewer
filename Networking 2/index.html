@@ -1544,11 +1544,19 @@
         <div class="hero-copy">
           <span class="eyebrow">Beginner-friendly compilation</span>
           <h1 id="heroTitle">Networking 2 <span class="title-accent">study dashboard</span></h1>
+<<<<<<< HEAD
           <p class="lead">Review the full Networking 2 scope through focused topic cards, a live packet path, 300 flashcards, 450 scored quiz questions, and a searchable glossary.</p>
           <div class="hero-stats" aria-label="Study app summary">
             <div class="hero-stat"><strong>15</strong><span>topic modules</span></div>
             <div class="hero-stat"><strong>443</strong><span>glossary terms</span></div>
             <div class="hero-stat"><strong>450</strong><span>practice questions</span></div>
+=======
+          <p class="lead">Review the Internet stack, application protocols, transport, routing, LANs, wireless networks, and security through focused topic cards, a live packet path, flashcards, scored quizzes, and a searchable glossary.</p>
+          <div class="hero-stats" aria-label="Study app summary">
+            <div class="hero-stat"><strong>7</strong><span>core chapters</span></div>
+            <div class="hero-stat"><strong>24</strong><span>glossary terms</span></div>
+            <div class="hero-stat"><strong>15</strong><span>practice questions</span></div>
+>>>>>>> parent of 8dd6f2e (Revamp NetworkingTwoBeginnerGuide content)
           </div>
           <div class="hero-actions">
             <a class="btn primary" href="#dashboard">Open topics</a>
@@ -1697,6 +1705,7 @@
   <script>
     const topics = [
       {
+<<<<<<< HEAD
             "id": "intro",
             "unit": "1.1",
             "title": "Computer Networks and the Internet",
@@ -2730,10 +2739,214 @@
                         "IDS watches for suspicious patterns."
                   ]
             ]
+=======
+        id: "intro",
+        unit: "1.1",
+        title: "Computer Networks and the Internet",
+        color: "blue",
+        subtitle: "Devices, links, switches, protocols, delay, throughput, and layers.",
+        beginner: "The Internet is a network of networks that moves small chunks of data called packets.",
+        terms: ["Host", "Packet", "Protocol", "Bandwidth", "Delay", "Throughput", "Encapsulation"],
+        keyPoints: [
+          "End systems are devices that run apps, such as phones, laptops, servers, and cameras.",
+          "Packet switches, including routers and link-layer switches, move packets toward their destination.",
+          "Layering separates responsibilities so each part of the network can solve a smaller problem."
+        ],
+        compare: {
+          headers: ["Concept", "Meaning", "Example"],
+          rows: [
+            ["Bandwidth", "Maximum transmission rate of a link.", "A 100 Mbps access link."],
+            ["Throughput", "Actual useful delivery rate.", "A download averaging 42 Mbps."],
+            ["Protocol", "Rules for messages and actions.", "HTTP, TCP, IP, Ethernet."]
+          ]
+        },
+        flow: [
+          ["Create", "Application data is created."],
+          ["Wrap", "Headers are added by layers."],
+          ["Switch", "Packets move through links."],
+          ["Route", "Routers choose next hops."],
+          ["Deliver", "The receiver unwraps data."]
+        ]
+      },
+      {
+        id: "application",
+        unit: "1.2",
+        title: "Application Layer",
+        color: "rose",
+        subtitle: "Web, email, DNS, video streaming, CDNs, sockets, and P2P systems.",
+        beginner: "This is where user-facing programs create messages and use the network.",
+        terms: ["HTTP", "DNS", "SMTP", "IMAP", "CDN", "Socket", "P2P"],
+        keyPoints: [
+          "Network applications usually run at the edge of the network, not inside core routers.",
+          "Client-server apps rely on stable servers; peer-to-peer apps let hosts act as both clients and servers.",
+          "DNS translates names such as example.com into IP addresses."
+        ],
+        compare: {
+          headers: ["Architecture", "How it works", "Common use"],
+          rows: [
+            ["Client-server", "Clients request service from an always-on server.", "Web, email, cloud apps."],
+            ["Peer-to-peer", "End systems communicate directly and share roles.", "File sharing and distributed systems."],
+            ["CDN", "Copies content near users.", "Video and large web content."]
+          ]
+        },
+        flow: [
+          ["Name", "DNS finds an IP address."],
+          ["Socket", "The app opens a network door."],
+          ["Request", "Client sends a message."],
+          ["Serve", "Server processes it."],
+          ["Respond", "Data returns to the app."]
+        ]
+      },
+      {
+        id: "transport",
+        unit: "2.1",
+        title: "Transport Layer",
+        color: "green",
+        subtitle: "TCP, UDP, ports, multiplexing, reliability, flow control, and congestion control.",
+        beginner: "This layer delivers data between apps running on different computers.",
+        terms: ["TCP", "UDP", "Port", "Segment", "ACK", "Flow control", "Congestion control"],
+        keyPoints: [
+          "Ports identify the correct application process on a host.",
+          "TCP adds reliability, ordering, flow control, and congestion control.",
+          "UDP is lightweight and useful when low delay matters more than perfect delivery."
+        ],
+        compare: {
+          headers: ["Feature", "TCP", "UDP"],
+          rows: [
+            ["Connection", "Connection-oriented with a handshake.", "Connectionless and sends immediately."],
+            ["Reliability", "ACKs and retransmission.", "No built-in reliability."],
+            ["Typical uses", "Web, email, file transfer.", "DNS, streaming, gaming, voice."]
+          ]
+        },
+        flow: [
+          ["Send", "Sender transmits a segment."],
+          ["Receive", "Receiver accepts data."],
+          ["ACK", "Receiver confirms delivery."],
+          ["Timeout", "Missing ACK suggests loss."],
+          ["Retry", "Sender retransmits."]
+        ]
+      },
+      {
+        id: "network",
+        unit: "2.2 / 3.x",
+        title: "Network Layer and Routing",
+        color: "amber",
+        subtitle: "IP, routers, forwarding, routing, OSPF, BGP, SDN, SNMP, NETCONF, and YANG.",
+        beginner: "This layer decides where packets should go across many networks.",
+        terms: ["IP", "Router", "Forwarding", "Routing", "NAT", "OSPF", "BGP", "SDN"],
+        keyPoints: [
+          "Forwarding is the local router action; routing is the path computation.",
+          "The data plane forwards packets while the control plane decides forwarding behavior.",
+          "BGP connects autonomous systems; OSPF is used inside one organization or ISP network."
+        ],
+        compare: {
+          headers: ["Pair", "First idea", "Second idea"],
+          rows: [
+            ["Forwarding vs routing", "Move a packet through one router.", "Compute end-to-end paths."],
+            ["Data vs control plane", "Handles packet movement.", "Determines routes and policy."],
+            ["OSPF vs BGP", "Inside one AS.", "Between ASes."]
+          ]
+        },
+        flow: [
+          ["Read IP", "Router checks destination."],
+          ["Lookup", "Forwarding table is searched."],
+          ["Choose", "Output interface is selected."],
+          ["Queue", "Packet waits if needed."],
+          ["Forward", "Packet leaves next hop."]
+        ]
+      },
+      {
+        id: "link",
+        unit: "4.x",
+        title: "Data Link, LANs, and Virtualization",
+        color: "blue",
+        subtitle: "Frames, MAC addresses, ARP, Ethernet, switches, VLANs, error detection, and MPLS.",
+        beginner: "This layer moves data across one local hop, such as laptop to access point.",
+        terms: ["Frame", "MAC", "ARP", "Ethernet", "Switch", "VLAN", "CRC", "MPLS"],
+        keyPoints: [
+          "Frames carry network-layer packets across one local link.",
+          "MAC addresses are local link-layer addresses; IP addresses are used across networks.",
+          "Switches learn MAC addresses and forward frames inside a LAN."
+        ],
+        compare: {
+          headers: ["Address", "Layer", "Purpose"],
+          rows: [
+            ["Port number", "Transport", "Finds the correct application process."],
+            ["IP address", "Network", "Routes across networks."],
+            ["MAC address", "Data link", "Delivers within a local LAN hop."]
+          ]
+        },
+        flow: [
+          ["Wrap", "Packet becomes a frame."],
+          ["Address", "MAC target is selected."],
+          ["Access", "Device uses wire or radio."],
+          ["Check", "Errors can be detected."],
+          ["Pass", "Packet moves to next hop."]
+        ]
+      },
+      {
+        id: "wireless",
+        unit: "5.x",
+        title: "Wireless and Mobile Networks",
+        color: "rose",
+        subtitle: "WiFi, radio links, base stations, 4G/5G, mobility, roaming, and handoffs.",
+        beginner: "Wireless removes the cable; mobility changes where the device attaches.",
+        terms: ["WiFi", "Access point", "Base station", "Roaming", "Handoff", "4G", "5G"],
+        keyPoints: [
+          "Wireless links are affected by signal strength, interference, and shared radio channels.",
+          "An access point or base station relays traffic between wireless hosts and the wired network.",
+          "Mobile networks track subscriber identity and support movement between attachment points."
+        ],
+        compare: {
+          headers: ["Concept", "Meaning", "Example"],
+          rows: [
+            ["Wireless", "No physical cable.", "Laptop on WiFi while sitting still."],
+            ["Mobile", "Device changes attachment point.", "Phone moving between cell towers."],
+            ["Roaming", "Using a visited network.", "Phone data while traveling."]
+          ]
+        },
+        flow: [
+          ["Device", "Phone or laptop sends radio."],
+          ["Access", "AP or tower receives."],
+          ["Core", "Provider handles identity."],
+          ["Internet", "Traffic enters the Internet."],
+          ["Service", "App gets data back."]
+        ]
+      },
+      {
+        id: "security",
+        unit: "6.x",
+        title: "Network Security",
+        color: "green",
+        subtitle: "Confidentiality, authentication, integrity, TLS, firewalls, IDS, IPsec, AH, and ESP.",
+        beginner: "Security keeps communication private, verified, unchanged, and available.",
+        terms: ["Confidentiality", "Authentication", "Integrity", "TLS", "Firewall", "IDS", "IPsec", "ESP"],
+        keyPoints: [
+          "Confidentiality hides content; integrity detects unauthorized changes.",
+          "Authentication proves identity using secrets, keys, certificates, or signatures.",
+          "TLS commonly secures application sessions such as HTTPS, while IPsec protects IP datagrams."
+        ],
+        compare: {
+          headers: ["Tool", "Protects", "Common place"],
+          rows: [
+            ["TLS", "Application or transport sessions.", "HTTPS."],
+            ["IPsec transport", "Payload of an IP datagram.", "Host-to-host protection."],
+            ["IPsec tunnel", "Entire original datagram.", "VPNs and gateways."]
+          ]
+        },
+        flow: [
+          ["Identify", "Parties prove who they are."],
+          ["Agree", "Keys or parameters are set."],
+          ["Protect", "Data is encrypted or signed."],
+          ["Verify", "Receiver checks integrity."],
+          ["Allow", "Rules permit or block traffic."]
+        ]
+>>>>>>> parent of 8dd6f2e (Revamp NetworkingTwoBeginnerGuide content)
       }
-];
+    ];
 
     const glossary = [
+<<<<<<< HEAD
       [
             "Internet",
             "A global network of networks that interconnects hosts using protocols."
@@ -11036,8 +11249,83 @@
                         "explain": "Security gateway: A router/firewall/VPN device enforcing security at a network boundary."
                   }
             ]
+=======
+      ["Host / End System", "A device that runs apps, such as a phone, laptop, server, or smart camera."],
+      ["Packet", "A small chunk of data sent through the network."],
+      ["Frame", "A packet-like unit used at the data link layer for one-hop delivery."],
+      ["Router", "A device that forwards packets between networks using IP addresses."],
+      ["Switch", "A device that forwards frames inside a local network using MAC addresses."],
+      ["Protocol", "A rule set for how devices talk, including message format, order, and actions."],
+      ["Bandwidth", "The maximum transmission rate of a communication link."],
+      ["Delay", "The time data takes to travel from sender to receiver."],
+      ["Throughput", "The actual rate at which useful data is delivered."],
+      ["Encapsulation", "Wrapping data with extra headers as it moves down the network layers."],
+      ["TCP", "Reliable, connection-oriented transport used by many apps."],
+      ["UDP", "Lightweight, connectionless transport used when speed matters more than reliability."],
+      ["IP Address", "A network-layer address used to route packets across networks."],
+      ["MAC Address", "A local hardware address used on LANs."],
+      ["DNS", "The system that translates names like example.com into IP addresses."],
+      ["NAT", "Network Address Translation lets private devices share a public IP address."],
+      ["BGP", "The routing protocol that connects autonomous systems and large networks."],
+      ["OSPF", "A routing protocol commonly used inside one autonomous system."],
+      ["VLAN", "A logical split of one physical LAN into multiple separate networks."],
+      ["MPLS", "A forwarding method that uses labels instead of only IP longest-prefix matching."],
+      ["TLS", "A security protocol commonly used to protect HTTPS sessions."],
+      ["IPsec", "A network-layer security suite that protects IP datagrams."],
+      ["AH", "An IPsec protocol for authentication and integrity."],
+      ["ESP", "An IPsec protocol for confidentiality, authentication, and integrity."]
+    ];
+
+    const flashcards = [
+      { topic: "Internet Basics", front: "What is the Internet?", back: "A network of networks that connects end systems using links, packet switches, and protocols." },
+      { topic: "Internet Basics", front: "What is encapsulation?", back: "Each layer wraps data with extra information so it can be delivered, routed, checked, or decoded." },
+      { topic: "Application Layer", front: "What does DNS do?", back: "DNS translates human-readable names into IP addresses." },
+      { topic: "Application Layer", front: "What is a socket?", back: "A software door where a process sends and receives network messages." },
+      { topic: "Transport Layer", front: "TCP vs UDP: biggest difference?", back: "TCP provides reliable, ordered delivery. UDP is lightweight and connectionless." },
+      { topic: "Transport Layer", front: "Why do we need port numbers?", back: "Ports identify the correct application process on a host." },
+      { topic: "Network Layer", front: "Forwarding vs routing?", back: "Forwarding moves a packet through one router. Routing computes the path packets should take." },
+      { topic: "Network Layer", front: "What is BGP used for?", back: "BGP routes traffic between autonomous systems such as ISPs and large networks." },
+      { topic: "Data Link Layer", front: "IP address vs MAC address?", back: "IP addresses route across networks. MAC addresses deliver locally inside a LAN." },
+      { topic: "Data Link Layer", front: "What does ARP do?", back: "ARP maps a local IP address to a MAC address." },
+      { topic: "Wireless", front: "Does wireless always mean mobile?", back: "No. Wireless means no cable. Mobile means the device changes its network attachment point." },
+      { topic: "Wireless", front: "What is a base station?", back: "A device that relays packets between wireless hosts and the wired network infrastructure." },
+      { topic: "Security", front: "What are the four major security goals?", back: "Confidentiality, authentication, integrity, and availability." },
+      { topic: "Security", front: "TLS vs IPsec?", back: "TLS protects sessions such as HTTPS. IPsec protects IP datagrams at the network layer." }
+    ];
+
+    const practiceTests = [
+      {
+        title: "Core Networking Foundations",
+        questions: [
+          { q: "Which phrase best describes the Internet?", options: ["One giant router", "A network of networks", "A single private LAN", "Only wireless devices"], answer: 1, explain: "The Internet connects many networks operated by homes, companies, ISPs, data centers, and content providers." },
+          { q: "What is the main purpose of a protocol?", options: ["To define communication rules", "To replace routers", "To prevent all packet loss", "To remove all delay"], answer: 0, explain: "Protocols define message formats, message order, and actions taken when messages are sent or received." },
+          { q: "Which layer contains HTTP and DNS?", options: ["Transport", "Application", "Network", "Physical"], answer: 1, explain: "HTTP and DNS are application-layer protocols." },
+          { q: "What is throughput?", options: ["Actual useful delivery rate", "Only physical cable length", "A security key", "A DNS record"], answer: 0, explain: "Throughput is the actual rate at which useful data is delivered." },
+          { q: "Why are layers useful?", options: ["They separate responsibilities", "They remove all attacks", "They make all networks wireless", "They replace protocols"], answer: 0, explain: "Layering organizes complex communication into smaller responsibilities." }
+        ]
+      },
+      {
+        title: "Transport, Routing, and LANs",
+        questions: [
+          { q: "Which transport protocol is reliable and connection-oriented?", options: ["UDP", "TCP", "IP", "ARP"], answer: 1, explain: "TCP includes reliability, ordering, flow control, and congestion control." },
+          { q: "What do port numbers identify?", options: ["The correct app or process", "The physical cable color", "The ISP country", "Only router brand"], answer: 0, explain: "Ports help deliver incoming data to the correct socket or process." },
+          { q: "Forwarding is best described as...", options: ["Computing all Internet routes", "Moving a packet through one router", "Encrypting a message", "Mapping IP to MAC"], answer: 1, explain: "Forwarding is the local action of moving a packet from input to output port." },
+          { q: "What does ARP do?", options: ["Maps local IP to MAC", "Encrypts TCP", "Routes between ISPs", "Creates domain names"], answer: 0, explain: "ARP finds the MAC address for a local IP address." },
+          { q: "Which device forwards frames inside a LAN?", options: ["Switch", "DNS resolver", "Certificate authority", "Web server only"], answer: 0, explain: "Switches learn MAC addresses and forward Ethernet frames in a LAN." }
+        ]
+      },
+      {
+        title: "Wireless and Security",
+        questions: [
+          { q: "Wireless means...", options: ["No physical cable", "Always moving", "Always cellular", "Always encrypted"], answer: 0, explain: "Wireless means communication uses radio instead of a physical cable." },
+          { q: "Mobile means...", options: ["The device changes attachment point", "The device has no battery", "The app uses TCP", "The LAN has a switch"], answer: 0, explain: "Mobility is about changing where the device attaches while staying connected." },
+          { q: "Confidentiality protects against...", options: ["Eavesdropping", "All delay", "Cable cuts", "Every outage"], answer: 0, explain: "Confidentiality keeps message contents hidden from unauthorized parties." },
+          { q: "Message integrity means...", options: ["The message was not changed without detection", "The message is always faster", "The sender has no IP", "The router never queues"], answer: 0, explain: "Integrity lets the receiver detect unauthorized changes." },
+          { q: "Which IPsec protocol can provide confidentiality?", options: ["ESP", "ARP", "OSPF", "DNS"], answer: 0, explain: "ESP can provide confidentiality, authentication, and integrity." }
+        ]
+>>>>>>> parent of 8dd6f2e (Revamp NetworkingTwoBeginnerGuide content)
       }
-];
+    ];
 
     const studySteps = [
       ["Layer stack", "Memorize what application, transport, network, data link, and physical layers each own."],
