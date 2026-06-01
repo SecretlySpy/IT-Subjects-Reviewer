@@ -661,6 +661,7 @@
 
     .visual-panel {
       position: relative;
+      scroll-margin-top: 5rem;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel);
@@ -1018,6 +1019,7 @@
 
     .compare-table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
       overflow: hidden;
       border: 1px solid var(--line);
@@ -1030,6 +1032,7 @@
       padding: 0.75rem;
       text-align: left;
       vertical-align: top;
+      overflow-wrap: anywhere;
     }
 
     .compare-table th {
@@ -1301,13 +1304,19 @@
       padding: 0 0.8rem;
     }
 
-    .search-box input {
+    .search-box input,
+    .search-box select {
       width: 100%;
       min-width: 0;
       border: 0;
       outline: 0;
       background: transparent;
       color: var(--ink);
+    }
+
+    .search-box select {
+      min-height: 2.6rem;
+      appearance: auto;
     }
 
     .glossary-grid {
@@ -1474,6 +1483,10 @@
 
       .network-map {
         min-height: auto;
+      }
+
+      .compare-table {
+        font-size: 0.9rem;
       }
     }
 
@@ -1697,12 +1710,22 @@
   <script src="data.js"></script>
   <script>
     /* Data extracted to data.js */
+    const topicIds = new Set(topics.map((topic) => topic.id));
+
+    function readStoredJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+      } catch {
+        return fallback;
+      }
+    }
+
     const state = {
       activeTopic: topics[0].id,
       detailTab: "overview",
-      studied: new Set(JSON.parse(localStorage.getItem("networking2Studied") || "[]")),
-      bestScore: Number(localStorage.getItem("networking2BestScore") || 0),
-      seenCards: Number(localStorage.getItem("networking2SeenCards") || 0),
+      studied: new Set(readStoredJson("networking2Studied", []).filter((id) => topicIds.has(id))),
+      bestScore: Number(localStorage.getItem("networking2BestScore")) || 0,
+      seenCards: Number(localStorage.getItem("networking2SeenCards")) || 0,
       cardIndex: 0,
       cardFlipped: false,
       cardFilter: "All",
@@ -1985,7 +2008,7 @@
 
     function initPathControls() {
       $("#pathSteps").innerHTML = pathSteps.map((_, index) => `
-        <button class="step-btn ${index === 0 ? "active" : ""}" type="button" data-path-step="${index}">${index + 1}</button>
+        <button class="step-btn ${index === 0 ? "active" : ""}" type="button" data-path-step="${index}" aria-label="Show packet path step ${index + 1}">${index + 1}</button>
       `).join("");
       $$(".step-btn").forEach((button) => {
         button.addEventListener("click", () => {
@@ -2293,6 +2316,21 @@
       });
     }
 
+    function scrollToInitialHash() {
+      const id = decodeURIComponent(window.location.hash.slice(1));
+      if (!id) return;
+      const target = document.getElementById(id);
+      if (!target) return;
+      const revealAndScroll = () => {
+        target.classList.add("in-view");
+        $$(".reveal", target).forEach((element) => element.classList.add("in-view"));
+        target.scrollIntoView({ behavior: "auto", block: "start" });
+        updateScrollProgress();
+      };
+      window.requestAnimationFrame(revealAndScroll);
+      window.setTimeout(revealAndScroll, 300);
+    }
+
     function boot() {
       initThemeAndProgress();
       initRevealEffects();
@@ -2309,6 +2347,7 @@
       $("#glossarySearch").addEventListener("input", renderGlossary);
       initGlobalSearch();
       initNavigation();
+      scrollToInitialHash();
     }
 
     boot();
