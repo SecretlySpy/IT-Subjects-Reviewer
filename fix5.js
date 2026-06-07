@@ -1,1 +1,0 @@
-﻿const fs = require('fs'); let c = fs.readFileSync('Networking 2/index.html', 'utf8'); const match = c.match(/<style>([\s\S]*?)<\/style>/); if (match && match[1].includes('.hidden')) console.log('.hidden exists in CSS'); else console.log('.hidden missing');

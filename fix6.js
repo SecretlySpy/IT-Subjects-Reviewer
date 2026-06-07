@@ -1,1 +1,0 @@
-﻿const fs = require('fs'); let c = fs.readFileSync('Networking 2/index.html', 'utf8'); const match = c.match(/<style>([\s\S]*?)<\/style>/); if (match) { const lines = match[1].split('\n').filter(l => l.includes('glossary')); console.log(lines); }
