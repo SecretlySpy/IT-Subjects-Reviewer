@@ -1823,9 +1823,22 @@
 
   <script src="data.js"></script>
   <script>
+    /*
+     * Application controller for the Networking 2 Reviewer.
+     * Content arrays (topics, glossary, flashcards, practiceTests, pathSteps,
+     * studySteps) are declared by data.js, which loads first and shares the
+     * classic-script global scope — so they are referenced directly here.
+     * Rendering strategy: each section owns a render* function that replaces its
+     * innerHTML and re-binds handlers; mutable UI lives in the single `state`.
+     */
+
     /* Data extracted to data.js */
+    // Set of valid topic ids — used to discard stale/unknown ids loaded from
+    // localStorage so a renamed or removed topic can't corrupt `state.studied`.
     const topicIds = new Set(topics.map((topic) => topic.id));
 
+    // Parse JSON from localStorage but never let malformed/legacy data throw and
+    // abort boot — callers always get a usable value via `fallback`.
     function readStoredJson(key, fallback) {
       try {
         return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
@@ -1834,6 +1847,9 @@
       }
     }
 
+    // Single source of UI truth. Progress fields (studied/bestScore/seenCards)
+    // and theme are hydrated from localStorage so a returning user resumes where
+    // they left off; the rest are transient view state reset on each load.
     const state = {
       activeTopic: topics[0].id,
       detailTab: "overview",
@@ -1854,9 +1870,13 @@
       glossaryLetter: ""
     };
 
+    // Query-selector shorthands. $$ returns a real Array (not a live NodeList) so
+    // callers can use forEach/map freely after the DOM is replaced.
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
+    // XSS guard. Every render* function interpolates user-facing content data
+    // into innerHTML, so all dynamic values MUST pass through here first.
     function escapeHtml(value) {
       return String(value).replace(/[&<>"']/g, (char) => ({
         "&": "&amp;",
@@ -1867,12 +1887,17 @@
       })[char]);
     }
 
+    // Persist only the three progress-bearing fields. Called after every action
+    // that changes them so progress survives a reload without an explicit save.
     function saveProgress() {
       localStorage.setItem("networking2Studied", JSON.stringify([...state.studied]));
       localStorage.setItem("networking2BestScore", String(state.bestScore));
       localStorage.setItem("networking2SeenCards", String(state.seenCards));
     }
 
+    // Transient status notification. The auto-hide timer is stored on the
+    // function object so rapid successive toasts reset the same timer instead of
+    // stacking, preventing an early hide of the latest message.
     function showToast(title, detail) {
       const toast = $("#toast");
       toast.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(detail)}</span>`;
@@ -1881,6 +1906,9 @@
       showToast.timer = setTimeout(() => toast.classList.remove("show"), 2600);
     }
 
+    // Reflect the active theme onto <body> (CSS variables key off the data
+    // attribute), persist it, and swap the toggle icon to the opposite mode.
+    // Safe to call repeatedly — it is a pure projection of state.theme.
     function applyTheme() {
       document.body.dataset.theme = state.theme;
       localStorage.setItem("networking2Theme", state.theme);
@@ -1889,12 +1917,17 @@
         : '<svg viewBox="0 0 24 24"><path d="M12 3v2"></path><path d="M12 19v2"></path><path d="M5.64 5.64 7.05 7.05"></path><path d="m16.95 16.95 1.41 1.41"></path><path d="M3 12h2"></path><path d="M19 12h2"></path><circle cx="12" cy="12" r="4"></circle></svg>';
     }
 
+    // Drive the fixed top progress bar. The `max > 0` guard avoids a divide-by-
+    // zero (and NaN width) on pages shorter than the viewport.
     function updateScrollProgress() {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const progress = max > 0 ? (window.scrollY / max) * 100 : 0;
       $("#scrollProgress").style.width = `${Math.min(100, Math.max(0, progress))}%`;
     }
 
+    // Register scroll-reveal on freshly rendered elements. Because sections are
+    // re-rendered via innerHTML, this runs many times; the `revealReady` flag
+    // makes it idempotent so an element is never observed or animated twice.
     function attachRevealEffects(root = document) {
       const targets = $$(".section, .card, .topic-card, .topic-detail, .tool-panel, .question-block, .glossary-grid .card", root);
       targets.forEach((element, index) => {
@@ -1918,6 +1951,9 @@
       });
     }
 
+    // Create the shared one-shot reveal observer, then run the first pass.
+    // Each element is unobserved once revealed so the callback stays cheap as
+    // the user scrolls a long page.
     function initRevealEffects() {
       state.revealObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
@@ -1929,6 +1965,9 @@
       attachRevealEffects();
     }
 
+    // Inline-SVG icon library. Icons are inlined (not icon-font/CDN) to keep the
+    // app fully self-contained and offline-capable. Unknown names fall back to
+    // the globe glyph so a new topic never renders a broken icon.
     function iconSvg(name) {
       const paths = {
         globe: '<circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a13 13 0 0 1 0 18"></path><path d="M12 3a13 13 0 0 0 0 18"></path>',
@@ -1942,6 +1981,8 @@
       return `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.globe}</svg>`;
     }
 
+    // Map each topic id to a thematically appropriate icon. Kept separate from
+    // the data so content authors don't have to know the icon vocabulary.
     function topicIcon(topic) {
       const map = {
         intro: "globe",
@@ -1963,6 +2004,9 @@
       return iconSvg(map[topic.id]);
     }
 
+    // Render the topic-card grid and re-bind selection handlers. Handlers are
+    // re-attached on every render because innerHTML replacement discards the old
+    // nodes (and their listeners). Selecting a card re-renders cards + detail.
     function renderTopicCards() {
       $("#topicCards").innerHTML = topics.map((topic) => {
         const active = topic.id === state.activeTopic ? " active" : "";
@@ -1992,6 +2036,9 @@
       attachRevealEffects($("#topicCards"));
     }
 
+    // Render the sticky detail panel for the active topic with its three tabbed
+    // panes (overview / compare / flow). The "Mark studied" button toggles
+    // coverage, persists, and fans out re-renders to cards, detail, and progress.
     function renderTopicDetail() {
       const topic = topics.find((item) => item.id === state.activeTopic);
       const rows = topic.compare.rows.map((row) => `
@@ -2076,6 +2123,8 @@
       attachRevealEffects($("#topicDetail"));
     }
 
+    // Reflect progress state into the hero/coverage counters and meter. Pulled
+    // out so any action that changes progress can refresh the UI in one call.
     function renderProgress() {
       const studiedCount = state.studied.size;
       $("#studiedCount").textContent = studiedCount;
@@ -2084,6 +2133,8 @@
       $("#progressFill").style.width = `${Math.round((studiedCount / topics.length) * 100)}%`;
     }
 
+    // Render the "Four pass review" accordion. The first item starts open so the
+    // panel never appears empty on load; each header simply toggles its section.
     function renderStudyAccordion() {
       $("#studyAccordion").innerHTML = studySteps.map((step, index) => `
         <div class="accordion-item ${index === 0 ? "open" : ""}">
@@ -2102,6 +2153,10 @@
       });
     }
 
+    // Project the current packet-path step onto the SVG diagram: update the
+    // caption and light up exactly the nodes/wires this step touches. Pure
+    // function of state.pathStep, so it is safe to call from both the timer and
+    // manual step clicks.
     function renderPathStep() {
       const [title, text, activeNodes, activeWires] = pathSteps[state.pathStep];
       $("#pathStepTag").textContent = `Step ${state.pathStep + 1} of ${pathSteps.length}`;
@@ -2121,6 +2176,9 @@
       }
     }
 
+    // Build the numbered step buttons and start the auto-advance loop. The
+    // interval respects state.pathPaused (checked inside advancePath) so the
+    // pause toggle takes effect without clearing/recreating the timer.
     function initPathControls() {
       $("#pathSteps").innerHTML = pathSteps.map((_, index) => `
         <button class="step-btn ${index === 0 ? "active" : ""}" type="button" data-path-step="${index}" aria-label="Show packet path step ${index + 1}">${index + 1}</button>
@@ -2146,17 +2204,24 @@
       });
     }
 
+    // Cards for the active topic filter ("All" => the full deck). Recomputed on
+    // demand rather than cached so a filter change is always reflected.
     function filteredCards() {
       return state.cardFilter === "All"
         ? flashcards
         : flashcards.filter((card) => card.topic === state.cardFilter);
     }
 
+    // Populate the flashcard topic dropdown from the distinct topics actually
+    // present in the deck, so the filter can never offer an empty category.
     function renderCardTopicOptions() {
       const topics = ["All", ...new Set(flashcards.map((card) => card.topic))];
       $("#cardTopic").innerHTML = topics.map((topic) => `<option value="${escapeHtml(topic)}">${escapeHtml(topic)}</option>`).join("");
     }
 
+    // Render the current card's front or back face. The index is normalized with
+    // a double-modulo so wrap-around works for negative steps too (Prev on the
+    // first card lands on the last). Bails out cleanly if the filter is empty.
     function renderFlashcard() {
       const cards = filteredCards();
       if (!cards.length) return;
@@ -2171,6 +2236,9 @@
       renderProgress();
     }
 
+    // Navigate the deck by `step`, always landing on the unflipped front, and
+    // count it as a viewed card. seenCards feeds the progress stats, hence the
+    // persist on every move.
     function changeCard(step) {
       state.cardIndex += step;
       state.cardFlipped = false;
@@ -2179,6 +2247,9 @@
       renderFlashcard();
     }
 
+    // Wire every flashcard control once at boot. Click, Enter and Space all flip
+    // (keyboard parity for the role="button" card); arrow keys navigate. Shuffle
+    // jumps to a random index so repeated review isn't always in the same order.
     function initFlashcards() {
       renderCardTopicOptions();
       $("#cardTopic").addEventListener("change", (event) => {
@@ -2221,6 +2292,9 @@
       renderFlashcard();
     }
 
+    // Populate the test selector. Switching tests clears prior answers and the
+    // submitted flag so each test starts fresh rather than inheriting a stale
+    // score/selection from the previous one.
     function renderTestOptions() {
       $("#testSelect").innerHTML = practiceTests.map((test, index) => `<option value="${index}">${escapeHtml(test.title)}</option>`).join("");
       $("#testSelect").addEventListener("change", (event) => {
@@ -2231,6 +2305,10 @@
       });
     }
 
+    // Render the active test. Pre-submit, choices only show the current
+    // selection; post-submit (state.submitted) it grades in place — marking the
+    // correct option and any wrong pick, and revealing per-question explanations.
+    // Choice handlers no-op once submitted to lock answers.
     function renderQuiz() {
       const test = practiceTests[state.selectedTest];
       $("#quizScore").textContent = state.submitted ? $("#quizScore").textContent : "Score: not submitted";
@@ -2265,6 +2343,8 @@
       attachRevealEffects($("#quizQuestions"));
     }
 
+    // Grade the test, then keep only the better of the new and stored score so
+    // bestScore is monotonic across attempts. Re-renders to reveal answers.
     function submitQuiz() {
       const test = practiceTests[state.selectedTest];
       let correct = 0;
@@ -2281,6 +2361,8 @@
       showToast("Practice test scored", `You scored ${score}% on ${test.title}.`);
     }
 
+    // Wire submit/reset once. Reset clears the in-progress answers but never
+    // touches bestScore — a reset is "try again", not "erase my record".
     function initQuiz() {
       renderTestOptions();
       $("#submitQuiz").addEventListener("click", submitQuiz);
@@ -2293,6 +2375,9 @@
       renderQuiz();
     }
 
+    // Toggle between the Flashcards and Practice-test panels. Uses the .hidden
+    // utility class (asserted present by html-diagnostics.js) for mutually
+    // exclusive visibility.
     function initPracticeTabs() {
       $$("[data-practice-tab]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -2305,6 +2390,10 @@
       });
     }
 
+    // Render glossary cards under the combined letter + text filter. Letter and
+    // query are applied in sequence (AND), and matching spans both term and
+    // definition so a search hits explanations, not just headwords. Shows an
+    // explicit empty state instead of a blank grid.
     function renderGlossary() {
       const query = $("#glossarySearch").value.trim().toLowerCase();
       const letterFilter = state.glossaryLetter || "";
@@ -2326,6 +2415,8 @@
       attachRevealEffects($("#glossaryGrid"));
     }
 
+    // Build the A–Z filter from only the first letters that actually occur, so
+    // there are no dead chips. "All" clears the letter filter.
     function renderLetterChips() {
       const letters = [...new Set(glossary.map(([term]) => term[0].toUpperCase()))].sort();
       $("#letterChips").innerHTML = [
@@ -2341,6 +2432,10 @@
       });
     }
 
+    // Quick-find dropdown that searches topics and glossary together. Results are
+    // capped (4 topics + 5 terms, 7 shown) to keep the menu glanceable. Picking a
+    // topic activates it and scrolls to the dashboard; picking a term seeds the
+    // glossary search and scrolls there — i.e. the dropdown is a jump menu.
     function renderGlobalSearch() {
       const input = $("#globalSearch");
       const results = $("#quickResults");
@@ -2391,6 +2486,8 @@
       });
     }
 
+    // Wire the quick-find input plus a document-level click handler that closes
+    // the dropdown when the user clicks anywhere outside the .quick-find widget.
     function initGlobalSearch() {
       $("#globalSearch").addEventListener("input", renderGlobalSearch);
       $("#globalSearch").addEventListener("focus", renderGlobalSearch);
@@ -2401,6 +2498,10 @@
       });
     }
 
+    // Mobile menu toggle plus scroll-spy. The observer's asymmetric rootMargin
+    // (-40%/-55%) creates a narrow band near viewport center, so a section is
+    // marked "active" only while it dominates the screen — avoiding flicker
+    // between adjacent sections.
     function initNavigation() {
       const menuToggle = $("#menuToggle");
       const mobileMenu = $("#mobileMenu");
@@ -2433,6 +2534,9 @@
       sections.forEach((section) => observer.observe(section));
     }
 
+    // Apply the persisted theme and bind the toggle + scroll/resize progress.
+    // Scroll/resize listeners are passive since they only read scroll position,
+    // letting the browser scroll without waiting on the handler.
     function initThemeAndProgress() {
       applyTheme();
       $("#themeToggle").addEventListener("click", () => {
@@ -2445,6 +2549,8 @@
       window.addEventListener("resize", updateScrollProgress);
     }
 
+    // Reveal the back-to-top button only after the user has scrolled past ~60%
+    // of a viewport, so it doesn't clutter the initial hero view.
     function initBackToTop() {
       const btn = $("#backToTop");
       const threshold = window.innerHeight * 0.6;
@@ -2456,6 +2562,8 @@
       });
     }
 
+    // Fill the hero counters from live data lengths (not hard-coded numbers) so
+    // the headline stats stay correct whenever data.js changes.
     function populateHeroStats() {
       $("#heroTopicCount").textContent = topics.length;
       $("#heroGlossaryCount").textContent = glossary.length;
@@ -2463,6 +2571,10 @@
       $("#heroQuestionCount").textContent = totalQuestions;
     }
 
+    // Material-style ripple on press. Implemented as a single delegated
+    // pointerdown handler (rather than per-button) so it automatically covers
+    // controls added by later re-renders. Purely cosmetic; self-cleans on
+    // animationend.
     function initPressEffects() {
       document.addEventListener("pointerdown", (event) => {
         const target = event.target.closest(".btn, .choice-btn, .tab-btn, .detail-tab, .step-btn, .icon-btn");
@@ -2477,6 +2589,9 @@
       });
     }
 
+    // Honor a deep-link #hash on load. Reveal-on-scroll would otherwise leave the
+    // target hidden, so we force it visible before scrolling. Runs on the next
+    // frame and again at 300ms to win the race against late reveal/layout.
     function scrollToInitialHash() {
       const id = decodeURIComponent(window.location.hash.slice(1));
       if (!id) return;
@@ -2492,6 +2607,9 @@
       window.setTimeout(revealAndScroll, 300);
     }
 
+    // Single entry point. Order matters: theme/observer setup precede the first
+    // renders (so revealed content animates correctly), and the initial-hash
+    // scroll runs last, after every section exists to scroll to.
     function boot() {
       initThemeAndProgress();
       initRevealEffects();

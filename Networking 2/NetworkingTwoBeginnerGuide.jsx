@@ -1,3 +1,12 @@
+/*
+ * NetworkingTwoBeginnerGuide — React/Tailwind variant of the Networking 2 Reviewer.
+ *
+ * This is an ALTERNATIVE presentation of the same content as index.html. It is a
+ * reference implementation: react, lucide-react and Tailwind are NOT declared in
+ * package.json and there is no bundler config in this repo, so it is not part of
+ * the shipped build. Keep it in sync with the data.js contract (see AI
+ * Documentation Notes.md) if that contract changes.
+ */
 import React, { useMemo, useState } from "react";
 import {
   Activity,
@@ -19,6 +28,8 @@ import {
   X,
 } from "lucide-react";
 
+// Import for side effect only: data.js assigns globalThis.reviewerData. The empty
+// fallbacks below keep the component from crashing if that global is unavailable.
 import "./data.js";
 
 const data = globalThis.reviewerData || {};
@@ -27,6 +38,9 @@ const glossary = data.glossary || [];
 const practiceTests = data.practiceTests || [];
 const flashcards = data.flashcards || [];
 
+// topic.id -> icon component, and topic.color -> Tailwind background class.
+// These mirror the vanilla app's maps so both variants stay visually consistent;
+// both fall back to a neutral default for unknown keys.
 const iconMap = {
   intro: Globe2,
   application: Server,
@@ -54,6 +68,9 @@ const toneMap = {
   cyan: "bg-cyan-600",
 };
 
+// --- Presentational primitives (stateless, style-only wrappers) ---
+
+// Small uppercase pill used for labels/eyebrows throughout the page.
 function Badge({ children }) {
   return (
     <span className="inline-flex w-fit items-center rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-slate-600">
@@ -62,6 +79,7 @@ function Badge({ children }) {
   );
 }
 
+// Generic rounded panel; `className` lets callers extend layout per use.
 function Card({ children, className = "" }) {
   return (
     <article className={`rounded-lg border border-slate-200 bg-white p-5 shadow-sm ${className}`}>
@@ -70,6 +88,8 @@ function Card({ children, className = "" }) {
   );
 }
 
+// Topic heading block (icon + unit badge + title + subtitle). `index` provides
+// the human-facing 1-based topic number.
 function SectionHeader({ topic, index }) {
   const Icon = iconMap[topic.id] || Network;
   return (
@@ -86,6 +106,8 @@ function SectionHeader({ topic, index }) {
   );
 }
 
+// Render a topic's comparison table from { headers, rows }. Row/cell keys are
+// composed with their index because cell text is not guaranteed unique.
 function CompareTable({ compare }) {
   return (
     <div className="overflow-x-auto">
@@ -115,6 +137,7 @@ function CompareTable({ compare }) {
   );
 }
 
+// Numbered process-flow grid from an array of [title, text] pairs.
 function Flow({ steps }) {
   return (
     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
@@ -131,6 +154,8 @@ function Flow({ steps }) {
   );
 }
 
+// Full per-topic section: header, core ideas + key terms, then compare + flow.
+// `id={topic.id}` is the in-page anchor that the dashboard cards and nav link to.
 function TopicSection({ topic, index }) {
   const Icon = iconMap[topic.id] || Network;
   return (
@@ -180,6 +205,11 @@ function TopicSection({ topic, index }) {
   );
 }
 
+// --- Stateful, interactive sections ---
+
+// Self-contained flashcard reviewer. Owns its topic filter, current index and
+// flip state. topicNames is memoized because the deck is static for the
+// component's lifetime, so the distinct-topic list never needs recomputing.
 function FlashcardDeck() {
   const topicNames = useMemo(() => ["All", ...new Set(flashcards.map((card) => card.topic))], []);
   const [selectedTopic, setSelectedTopic] = useState("All");
@@ -194,6 +224,8 @@ function FlashcardDeck() {
     setFlipped(false);
   }
 
+  // Step through the deck with wrap-around (the +cards.length keeps the modulo
+  // positive when stepping back from the first card), always showing the front.
   function move(step) {
     if (!cards.length) return;
     setIndex((index + step + cards.length) % cards.length);
@@ -260,6 +292,9 @@ function FlashcardDeck() {
   );
 }
 
+// A single scored test. Tracks per-question answers and a submitted flag; score
+// is derived (not stored) so it always reflects current answers. Parent remounts
+// this via key={test.title}, which resets state when the user switches tests.
 function PracticeTest({ test }) {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -291,6 +326,8 @@ function PracticeTest({ test }) {
                 {questionIndex + 1}. {question.q}
               </h4>
               <div className="mt-4 grid gap-2 md:grid-cols-2">
+                {/* Grading styles only appear after submit: highlight the right
+                    answer (showCorrect) and the user's wrong pick (showWrong). */}
                 {question.options.map((option, optionIndex) => {
                   const showCorrect = submitted && optionIndex === question.answer;
                   const showWrong = submitted && selected === optionIndex && optionIndex !== question.answer;
@@ -338,6 +375,8 @@ function PracticeTest({ test }) {
   );
 }
 
+// Practice center: the flashcard deck plus a test picker. Selecting a test
+// re-renders PracticeTest with a new key so each test starts clean.
 function PracticeZone() {
   const [testIndex, setTestIndex] = useState(0);
   const selectedTest = practiceTests[testIndex];
@@ -376,6 +415,9 @@ function PracticeZone() {
   );
 }
 
+// Searchable glossary. The filtered list is memoized on `query` so it only
+// recomputes on input change; matching spans term + definition, and an empty
+// query returns the full list.
 function GlossaryPanel() {
   const [query, setQuery] = useState("");
   const filteredGlossary = useMemo(() => {
@@ -421,6 +463,8 @@ function GlossaryPanel() {
   );
 }
 
+// Root component: sticky nav (with mobile menu `open` state), hero with live
+// data counts, the topic dashboard, every TopicSection, then practice + glossary.
 export default function NetworkingTwoBeginnerGuide() {
   const [open, setOpen] = useState(false);
 
