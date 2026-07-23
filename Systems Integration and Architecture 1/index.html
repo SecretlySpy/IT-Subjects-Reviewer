@@ -71,10 +71,15 @@
 
     html {
       scroll-behavior: smooth;
+      max-width: 100%;
+      overflow-x: hidden;
     }
 
     body {
+      width: 100%;
+      max-width: 100%;
       margin: 0;
+      overflow-x: hidden;
       background:
         linear-gradient(135deg, rgba(8, 127, 120, 0.1), transparent 34rem),
         radial-gradient(circle at 92% 12%, rgba(185, 106, 18, 0.13), transparent 25rem),
@@ -162,6 +167,7 @@
 
     .topbar-inner {
       display: flex;
+      min-width: 0;
       min-height: 4.25rem;
       align-items: center;
       justify-content: space-between;
@@ -170,7 +176,9 @@
 
     .brand {
       display: flex;
+      flex: 1 1 auto;
       min-width: 0;
+      overflow: hidden;
       align-items: center;
       gap: 0.7rem;
       color: var(--navy);
@@ -209,6 +217,11 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 0.6rem;
+    }
+
+    .top-tools {
+      flex: 0 0 auto;
+      flex-wrap: nowrap;
     }
 
     .desktop-nav {
@@ -362,6 +375,7 @@
       margin: 1rem 0;
       font-size: clamp(2.6rem, 7vw, 5.9rem);
       letter-spacing: -0.055em;
+      overflow-wrap: anywhere;
     }
 
     h2 {
@@ -440,7 +454,17 @@
 
     .hero-visual {
       position: relative;
+      width: 100%;
+      max-width: 100%;
       min-height: 31rem;
+      overflow: hidden;
+    }
+
+    .hero > *,
+    .section-heading > div,
+    .stage-layout > *,
+    .practice-grid > * {
+      min-width: 0;
     }
 
     .blueprint-card {
@@ -1015,12 +1039,37 @@
     }
 
     @media (max-width: 700px) {
+      .topbar-inner {
+        gap: 0.4rem;
+      }
+
       .brand-text {
-        max-width: 14rem;
+        max-width: 8.5rem;
+        font-size: 0.86rem;
+      }
+
+      .top-tools {
+        gap: 0.35rem;
+      }
+
+      .icon-btn {
+        width: 2.35rem;
+        height: 2.35rem;
       }
 
       .hero {
         padding-top: 2.5rem;
+      }
+
+      h1 {
+        max-width: 100%;
+        font-size: clamp(2.2rem, 11vw, 3.1rem);
+        letter-spacing: -0.045em;
+      }
+
+      .lead {
+        max-width: 100%;
+        font-size: 1rem;
       }
 
       .hero-visual {
@@ -1062,15 +1111,12 @@
 
     @media (max-width: 440px) {
       .brand-text {
-        max-width: 10rem;
-      }
-
-      .top-tools {
-        gap: 0.35rem;
+        max-width: 6.75rem;
+        font-size: 0.8rem;
       }
 
       h1 {
-        font-size: 2.45rem;
+        font-size: 2.2rem;
       }
 
       .hero-visual {
