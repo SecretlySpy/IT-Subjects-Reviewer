@@ -34,13 +34,14 @@ This repository collects interactive reviewers for IT subjects, providing dual i
 | 📚 Subject / Module | 🎯 What It Covers | 🛠️ Formats | 🔗 Links |
 | :--- | :--- | :--- | :--- |
 | **Networking 2**<br><sub>*Interactive study dashboard*</sub> | Internet architecture, application & transport layers, routing, LANs, wireless/mobile networking, and network security. | \`<Vanilla HTML>\`<br>\`<React JSX>\` | [📁 View Folder](Networking%202/)<br>[🚀 Open Web App](Networking%202/index.html) |
+| **Systems Integration and Architecture 1**<br><sub>*Module 1 interactive reviewer*</sub> | Enterprise Information Architecture, IT Governance, and Information and Data Modelling with blueprint, model-layer, and scenario activities. | \`<Vanilla HTML>\`<br>\`<React JSX>\` | [📁 View Folder](Systems%20Integration%20and%20Architecture%201/)<br>[🚀 Open Web App](Systems%20Integration%20and%20Architecture%201/index.html) |
 
 <br>
 
 ## ✨ Features
 
 - **🧠 Interactive Learning**  
-  Engage with topic cards, visual packet paths, interactive flashcards, scored quizzes, and a searchable glossary.
+  Engage with topic cards, visual system paths, scenario challenges, interactive flashcards, scored quizzes, and searchable glossaries.
 
 - **⚡ Zero-Build Option**  
   The vanilla implementations require zero dependencies. Just open \`index.html\` and start studying instantly.
@@ -57,13 +58,13 @@ This repository collects interactive reviewers for IT subjects, providing dual i
 
 ### 🌐 For Offline & Browser Usage (Vanilla)
 1. Clone or download this repository.
-2. Open a reviewer folder, such as [\`Networking 2\`](Networking%202/).
-3. Launch [\`index.html\`](Networking%202/index.html) in your favorite browser.
+2. Open a reviewer folder, such as [\`Networking 2\`](Networking%202/) or [\`Systems Integration and Architecture 1\`](Systems%20Integration%20and%20Architecture%201/).
+3. Launch that folder's \`index.html\` in your favorite browser.
 
 ### ⚛️ For React Developers
-1. Copy \`NetworkingTwoBeginnerGuide.jsx\` and \`data.js\` into your project.
-2. Ensure you have \`lucide-react\` and \`framer-motion\` installed.
-3. Import and render the component in your application!
+1. Copy the selected reviewer component and its adjacent \`data.js\` into your project.
+2. Ensure React and Tailwind CSS are available; the Networking 2 component additionally uses \`lucide-react\`.
+3. Import and render the component in your application.
 
 <br>
 
@@ -74,13 +75,17 @@ The codebase is deeply optimized for maintainability and performance. Large data
 \`\`\`text
 IT-Subjects-Reviewer/
 ├─ README.md
-└─ Networking 2/
-   ├─ data.js                         # 📦 Unified data source (Topics, Glossary, Quizzes)
-   ├─ index.html                      # 🌐 Vanilla HTML/CSS/JS Implementation
-   └─ NetworkingTwoBeginnerGuide.jsx  # ⚛️ React + Tailwind Implementation
+├─ Networking 2/
+│  ├─ data.js
+│  ├─ index.html
+│  └─ NetworkingTwoBeginnerGuide.jsx
+└─ Systems Integration and Architecture 1/
+   ├─ data.js
+   ├─ index.html
+   └─ SystemsIntegrationArchitectureOneBeginnerGuide.jsx
 \`\`\`
 
-💡 **Pro Tip:** If you want to **add a new question or term**, simply edit \`data.js\`. The changes will instantly reflect in both the HTML and React versions!
+💡 **Pro Tip:** To add a question, term, scenario, or topic, edit that reviewer's \`data.js\`. Both its HTML and React versions consume the same content contract.
 
 <br>
 

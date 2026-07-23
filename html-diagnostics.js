@@ -1,103 +1,467 @@
 /**
  * html-diagnostics.js
  *
- * Consolidated diagnostic utility for the Networking 2 Reviewer.
- * Replaces the former fix4.js, fix5.js, and fix6.js one-liner scripts.
+ * Static and data-contract diagnostics for every directly runnable reviewer.
  *
- * Run with:  node html-diagnostics.js
- *
- * Checks performed:
- *   1. IntersectionObserver guard  — verifies the `if (!entry.isIntersecting) return;`
- *      pattern exists so reveal animations fire correctly.
- *   2. Hidden utility class        — confirms a `.hidden` CSS rule is present (used
- *      to toggle practice-tab panels).
- *   3. Glossary CSS rules          — lists every CSS rule that mentions "glossary" so
- *      layout regressions are easy to spot.
+ * Run with:
+ *   node html-diagnostics.js
  */
 
+// Load Node's file-system API for read-only source inspection.
 const fs = require("fs");
+
+// Load Node's path API for platform-safe repository paths.
 const path = require("path");
 
-const HTML_PATH = path.join(__dirname, "Networking 2", "index.html");
+// Load Node's VM API to parse scripts and evaluate isolated data files.
+const vm = require("vm");
 
-function readHtml() {
-  if (!fs.existsSync(HTML_PATH)) {
-    console.error(`\u2718  File not found: ${HTML_PATH}`);
-    process.exit(1);
-  }
-  return fs.readFileSync(HTML_PATH, "utf8");
+// Resolve all reviewer locations relative to this script.
+const REPOSITORY_ROOT = __dirname;
+
+// Define reviewer-specific DOM and content expectations in one table.
+const REVIEWERS = [
+  {
+    name: "Networking 2",
+    directory: "Networking 2",
+    requiredIds: [
+      "visual",
+      "dashboard",
+      "topicCards",
+      "topicDetail",
+      "practice",
+      "flashcardPanel",
+      "quizPanel",
+      "glossary",
+      "glossaryGrid",
+    ],
+    expectedCounts: {
+      topics: 15,
+      glossary: 293,
+      flashcards: 300,
+      practiceTests: 15,
+      questions: 450,
+    },
+  },
+  {
+    name: "Systems Integration and Architecture 1",
+    directory: "Systems Integration and Architecture 1",
+    requiredIds: [
+      "dashboard",
+      "topicGrid",
+      "blueprint",
+      "architecturePath",
+      "model-lens",
+      "modelMatch",
+      "scenarios",
+      "scenarioCard",
+      "practice",
+      "flashcardPanel",
+      "quizPanel",
+      "glossary",
+      "glossaryGrid",
+    ],
+    expectedCounts: {
+      modules: 3,
+      topics: 14,
+      glossary: 60,
+      flashcards: 54,
+      practiceTests: 3,
+      questions: 60,
+      blueprintStages: 4,
+      modelLayers: 3,
+      scenarios: 18,
+      studySteps: 4,
+    },
+  },
+];
+
+/**
+ * Print one passing diagnostic.
+ * @param {string} message - Human-readable success description.
+ * @returns {true} Always true for result aggregation.
+ */
+function pass(message) {
+  console.log(`  ✔ ${message}`);
+  return true;
 }
 
+/**
+ * Print one failing diagnostic.
+ * @param {string} message - Human-readable failure description.
+ * @returns {false} Always false for result aggregation.
+ */
+function fail(message) {
+  console.error(`  ✘ ${message}`);
+  return false;
+}
+
+/**
+ * Read a required UTF-8 source file.
+ * @param {string} filePath - Absolute file path.
+ * @returns {string|null} File contents or null when missing.
+ */
+function readSource(filePath) {
+  if (!fs.existsSync(filePath)) {
+    fail(`Required file is missing: ${filePath}`);
+    return null;
+  }
+  return fs.readFileSync(filePath, "utf8");
+}
+
+/**
+ * Extract the first inline style block.
+ * @param {string} html - Reviewer HTML.
+ * @returns {string} CSS source or an empty string.
+ */
 function extractStyleBlock(html) {
-  const match = html.match(/<style>([\s\S]*?)<\/style>/);
+  const match = html.match(/<style>([\s\S]*?)<\/style>/i);
   return match ? match[1] : "";
 }
 
-/* ------------------------------------------------------------------ */
-/*  Check 1 — IntersectionObserver guard (formerly fix4.js)           */
-/* ------------------------------------------------------------------ */
-function checkObserverGuard(html) {
-  const pattern = "if (!entry.isIntersecting) return;";
-  const found = html.includes(pattern);
-  console.log(
-    found
-      ? "\u2714  IntersectionObserver guard is present."
-      : "\u2718  IntersectionObserver guard is MISSING — reveal animations may not work."
-  );
-  return found;
-}
-
-/* ------------------------------------------------------------------ */
-/*  Check 2 — .hidden utility class (formerly fix5.js)                */
-/* ------------------------------------------------------------------ */
-function checkHiddenClass(css) {
-  const found = css.includes(".hidden");
-  console.log(
-    found
-      ? "\u2714  .hidden utility class exists in CSS."
-      : "\u2718  .hidden utility class is MISSING — practice-tab toggling will break."
-  );
-  return found;
-}
-
-/* ------------------------------------------------------------------ */
-/*  Check 3 — Glossary CSS rules (formerly fix6.js)                   */
-/* ------------------------------------------------------------------ */
-function listGlossaryRules(css) {
-  const lines = css.split("\n").filter((line) => line.includes("glossary"));
-  if (lines.length) {
-    console.log(`\u2714  Found ${lines.length} glossary-related CSS rule(s):`);
-    lines.forEach((line) => console.log(`     ${line.trim()}`));
-  } else {
-    console.log("\u2718  No glossary CSS rules found — layout may be missing.");
+/**
+ * Extract all inline scripts while excluding external script tags.
+ * @param {string} html - Reviewer HTML.
+ * @returns {string[]} Inline JavaScript blocks.
+ */
+function extractInlineScripts(html) {
+  const scripts = [];
+  const pattern = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
+  let match = pattern.exec(html);
+  while (match) {
+    scripts.push(match[1]);
+    match = pattern.exec(html);
   }
-  return lines.length > 0;
+  return scripts;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Run all checks                                                    */
-/* ------------------------------------------------------------------ */
-function main() {
-  console.log("──────────────────────────────────────────");
-  console.log("  Networking 2 Reviewer — HTML Diagnostics");
-  console.log("──────────────────────────────────────────\n");
+/**
+ * Extract literal HTML id attributes without confusing data-* attributes.
+ * @param {string} html - Reviewer HTML.
+ * @returns {string[]} Declared identifiers.
+ */
+function extractIds(html) {
+  return [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
+}
 
-  const html = readHtml();
+/**
+ * Confirm the core HTML, CSS, and script-loading contract.
+ * @param {object} reviewer - Reviewer configuration.
+ * @param {string} html - Reviewer HTML source.
+ * @returns {boolean[]} Individual diagnostic outcomes.
+ */
+function checkHtmlContract(reviewer, html) {
+  const results = [];
   const css = extractStyleBlock(html);
-
-  const results = [
-    checkObserverGuard(html),
-    checkHiddenClass(css),
-    listGlossaryRules(css),
-  ];
-
-  const passed = results.every(Boolean);
-  console.log(
-    passed
-      ? "\n\u2705  All checks passed."
-      : "\n\u26A0\uFE0F  Some checks failed — review the output above."
+  const externalDataIndex = html.indexOf('<script src="data.js"></script>');
+  const inlineScriptIndex = html.search(/<script(?![^>]*\bsrc=)[^>]*>/i);
+  results.push(
+    html.toLowerCase().includes("<!doctype html>")
+      ? pass("HTML document has a standards-mode doctype.")
+      : fail("HTML document is missing its doctype.")
   );
-  process.exit(passed ? 0 : 1);
+  results.push(
+    css.includes(".hidden")
+      ? pass("CSS includes the .hidden utility required by practice tabs.")
+      : fail("CSS is missing the .hidden utility.")
+  );
+  results.push(
+    html.includes("if (!entry.isIntersecting) return;")
+      ? pass("IntersectionObserver callbacks guard non-intersecting entries.")
+      : fail("IntersectionObserver guard is missing.")
+  );
+  results.push(
+    externalDataIndex >= 0 && inlineScriptIndex > externalDataIndex
+      ? pass("data.js loads before the inline reviewer runtime.")
+      : fail("data.js must load before the inline reviewer runtime.")
+  );
+  const ids = extractIds(html);
+  const duplicateIds = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
+  results.push(
+    duplicateIds.length === 0
+      ? pass(`All ${ids.length} literal HTML ids are unique.`)
+      : fail(`Duplicate HTML ids found: ${duplicateIds.join(", ")}`)
+  );
+  const missingIds = reviewer.requiredIds.filter((id) => !ids.includes(id));
+  results.push(
+    missingIds.length === 0
+      ? pass("All required section and interaction ids are present.")
+      : fail(`Required ids are missing: ${missingIds.join(", ")}`)
+  );
+  return results;
 }
 
+/**
+ * Parse every JavaScript block without executing browser code.
+ * @param {string} dataSource - Shared data JavaScript.
+ * @param {string[]} inlineScripts - Inline reviewer scripts.
+ * @returns {boolean} Whether all scripts parse.
+ */
+function checkJavaScriptSyntax(dataSource, inlineScripts) {
+  try {
+    new vm.Script(dataSource, { filename: "data.js" });
+    inlineScripts.forEach((script, index) => {
+      new vm.Script(script, { filename: `index.inline.${index + 1}.js` });
+    });
+    return pass(`JavaScript syntax is valid across data.js and ${inlineScripts.length} inline script(s).`);
+  } catch (error) {
+    return fail(`JavaScript syntax error: ${error.message}`);
+  }
+}
+
+/**
+ * Evaluate a data file inside an isolated context.
+ * @param {string} source - Shared data source.
+ * @returns {object|null} reviewerData or null after evaluation failure.
+ */
+function evaluateReviewerData(source) {
+  const context = {};
+  context.globalThis = context;
+  try {
+    vm.runInNewContext(source, context, {
+      filename: "data.js",
+      timeout: 2000,
+    });
+    return context.reviewerData || null;
+  } catch (error) {
+    fail(`data.js evaluation failed: ${error.message}`);
+    return null;
+  }
+}
+
+/**
+ * Count all questions across every practice test.
+ * @param {object[]} tests - Practice-test records.
+ * @returns {number} Total question count.
+ */
+function countQuestions(tests) {
+  return Array.isArray(tests)
+    ? tests.reduce(
+        (total, test) => total + (Array.isArray(test.questions) ? test.questions.length : 0),
+        0
+      )
+    : 0;
+}
+
+/**
+ * Validate required arrays and exact content totals.
+ * @param {object} reviewer - Reviewer configuration.
+ * @param {object} data - Evaluated reviewer data.
+ * @returns {boolean[]} Individual diagnostic outcomes.
+ */
+function checkContentCounts(reviewer, data) {
+  const results = [];
+  Object.entries(reviewer.expectedCounts).forEach(([key, expected]) => {
+    const actual = key === "questions"
+      ? countQuestions(data.practiceTests)
+      : Array.isArray(data[key])
+        ? data[key].length
+        : 0;
+    results.push(
+      actual === expected
+        ? pass(`${key} count is ${actual}.`)
+        : fail(`${key} count is ${actual}; expected ${expected}.`)
+    );
+  });
+  return results;
+}
+
+/**
+ * Validate unique identifiers for any record collection.
+ * @param {object[]} records - Records containing id fields.
+ * @param {string} label - Human-readable collection name.
+ * @returns {boolean} Whether every identifier is present and unique.
+ */
+function checkUniqueIds(records, label) {
+  if (!Array.isArray(records)) return fail(`${label} must be an array.`);
+  const ids = records.map((record) => record?.id);
+  const invalid = ids.filter((id) => typeof id !== "string" || !id.trim());
+  const duplicates = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
+  if (invalid.length || duplicates.length) {
+    return fail(
+      `${label} identifiers are invalid${duplicates.length ? ` or duplicated: ${duplicates.join(", ")}` : "."}`
+    );
+  }
+  return pass(`${label} identifiers are present and unique.`);
+}
+
+/**
+ * Validate the shared topic, glossary, flashcard, and question shapes.
+ * @param {object} data - Evaluated reviewer data.
+ * @returns {boolean[]} Individual diagnostic outcomes.
+ */
+function checkSharedDataShapes(data) {
+  const results = [];
+  const topicsValid =
+    Array.isArray(data.topics) &&
+    data.topics.every(
+      (topic) =>
+        typeof topic.id === "string" &&
+        typeof topic.title === "string" &&
+        typeof topic.beginner === "string" &&
+        Array.isArray(topic.terms) &&
+        Array.isArray(topic.keyPoints) &&
+        Array.isArray(topic.compare?.headers) &&
+        Array.isArray(topic.compare?.rows) &&
+        Array.isArray(topic.flow)
+    );
+  results.push(
+    topicsValid
+      ? pass("Every topic satisfies the shared presentation contract.")
+      : fail("One or more topics violate the shared presentation contract.")
+  );
+  const glossaryValid =
+    Array.isArray(data.glossary) &&
+    data.glossary.every(
+      (entry) =>
+        Array.isArray(entry) &&
+        entry.length === 2 &&
+        entry.every((value) => typeof value === "string" && value.trim())
+    );
+  results.push(
+    glossaryValid
+      ? pass("Every glossary entry is a non-empty [term, definition] tuple.")
+      : fail("One or more glossary entries have an invalid shape.")
+  );
+  const flashcardsValid =
+    Array.isArray(data.flashcards) &&
+    data.flashcards.every(
+      (card) =>
+        typeof card.topic === "string" &&
+        typeof card.front === "string" &&
+        typeof card.back === "string"
+    );
+  results.push(
+    flashcardsValid
+      ? pass("Every flashcard has topic, front, and back text.")
+      : fail("One or more flashcards have an invalid shape.")
+  );
+  return results;
+}
+
+/**
+ * Validate every quiz and scenario answer index.
+ * @param {object} data - Evaluated reviewer data.
+ * @returns {boolean[]} Individual diagnostic outcomes.
+ */
+function checkAnswerIndexes(data) {
+  const results = [];
+  const questions = Array.isArray(data.practiceTests)
+    ? data.practiceTests.flatMap((test) => test.questions || [])
+    : [];
+  const invalidQuestionIndexes = questions
+    .map((question, index) => ({ question, index }))
+    .filter(
+      ({ question }) =>
+        !Array.isArray(question.options) ||
+        question.options.length < 2 ||
+        !Number.isInteger(question.answer) ||
+        question.answer < 0 ||
+        question.answer >= question.options.length ||
+        typeof question.explain !== "string"
+    )
+    .map(({ index }) => index + 1);
+  results.push(
+    invalidQuestionIndexes.length === 0
+      ? pass(`All ${questions.length} quiz answer indexes and explanations are valid.`)
+      : fail(`Invalid quiz questions found at flattened indexes: ${invalidQuestionIndexes.join(", ")}`)
+  );
+  if (Array.isArray(data.scenarios)) {
+    const invalidScenarioIndexes = data.scenarios
+      .map((scenario, index) => ({ scenario, index }))
+      .filter(
+        ({ scenario }) =>
+          !Array.isArray(scenario.options) ||
+          scenario.options.length < 2 ||
+          !Number.isInteger(scenario.answer) ||
+          scenario.answer < 0 ||
+          scenario.answer >= scenario.options.length ||
+          typeof scenario.explanation !== "string"
+      )
+      .map(({ index }) => index + 1);
+    results.push(
+      invalidScenarioIndexes.length === 0
+        ? pass(`All ${data.scenarios.length} scenario answer indexes and explanations are valid.`)
+        : fail(`Invalid scenarios found at indexes: ${invalidScenarioIndexes.join(", ")}`)
+    );
+  }
+  return results;
+}
+
+/**
+ * Validate SIA-specific module relationships and advanced interaction data.
+ * @param {object} data - Evaluated reviewer data.
+ * @returns {boolean[]} Individual diagnostic outcomes.
+ */
+function checkSiaRelationships(data) {
+  if (!Array.isArray(data.modules)) return [];
+  const results = [];
+  const moduleIds = new Set(data.modules.map((module) => module.id));
+  const topicModulesValid = data.topics.every((topic) => moduleIds.has(topic.moduleId));
+  const scenarioModulesValid = data.scenarios.every((scenario) => moduleIds.has(scenario.moduleId));
+  results.push(
+    topicModulesValid && scenarioModulesValid
+      ? pass("Every topic and scenario references a valid module.")
+      : fail("A topic or scenario references an unknown module.")
+  );
+  const layersValid =
+    data.modelLayers.every(
+      (layer) =>
+        typeof layer.id === "string" &&
+        Array.isArray(layer.constructs) &&
+        layer.constructs.length > 0
+    );
+  results.push(
+    layersValid
+      ? pass("Every model layer defines an identifier and construct list.")
+      : fail("One or more model layers are incomplete.")
+  );
+  return results;
+}
+
+/**
+ * Run all checks for one reviewer.
+ * @param {object} reviewer - Reviewer configuration.
+ * @returns {boolean} Whether the reviewer passed.
+ */
+function runReviewerDiagnostics(reviewer) {
+  console.log("\n────────────────────────────────────────────────────────");
+  console.log(`  ${reviewer.name}`);
+  console.log("────────────────────────────────────────────────────────");
+  const htmlPath = path.join(REPOSITORY_ROOT, reviewer.directory, "index.html");
+  const dataPath = path.join(REPOSITORY_ROOT, reviewer.directory, "data.js");
+  const html = readSource(htmlPath);
+  const dataSource = readSource(dataPath);
+  if (html === null || dataSource === null) return false;
+  const results = [];
+  results.push(...checkHtmlContract(reviewer, html));
+  results.push(checkJavaScriptSyntax(dataSource, extractInlineScripts(html)));
+  const data = evaluateReviewerData(dataSource);
+  if (!data) return false;
+  results.push(...checkContentCounts(reviewer, data));
+  results.push(checkUniqueIds(data.topics, "Topic"));
+  if (Array.isArray(data.scenarios)) {
+    results.push(checkUniqueIds(data.scenarios, "Scenario"));
+  }
+  results.push(...checkSharedDataShapes(data));
+  results.push(...checkAnswerIndexes(data));
+  results.push(...checkSiaRelationships(data));
+  return results.every(Boolean);
+}
+
+/**
+ * Execute every configured reviewer diagnostic and set the process exit code.
+ * @returns {void}
+ */
+function main() {
+  console.log("IT Subjects Reviewer — Repository Diagnostics");
+  const outcomes = REVIEWERS.map(runReviewerDiagnostics);
+  const passed = outcomes.every(Boolean);
+  console.log("\n════════════════════════════════════════════════════════");
+  console.log(passed ? "✅ All reviewer diagnostics passed." : "⚠️ Reviewer diagnostics failed.");
+  console.log("════════════════════════════════════════════════════════");
+  process.exitCode = passed ? 0 : 1;
+}
+
+// Start diagnostics when this script is executed with Node.
 main();
