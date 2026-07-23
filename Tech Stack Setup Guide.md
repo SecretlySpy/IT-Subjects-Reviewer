@@ -38,6 +38,8 @@ No server, database, account, API key, or production build is required for the o
 
 React, React DOM, Tailwind CSS, and `lucide-react` are intentionally **not** root dependencies. The JSX files are reference components for an existing React/Tailwind host. The directly runnable HTML reviewers have no runtime package dependency.
 
+Each SIA data declaration lives inside a private immediately invoked function. Only `globalThis.reviewerData` is public. This boundary prevents names such as `topics` and `glossary` from colliding with the inline classic-script runtime.
+
 ## 3. Architecture Visualizations
 
 ### Visualization A — Runtime Data Flow
@@ -81,6 +83,7 @@ Clone repository
 |---|:---:|:---:|
 | HTML/CSS contract | ✅ | ✅ |
 | JavaScript syntax | ✅ | ✅ |
+| Classic-script global collisions | ✅ | ✅ |
 | Unique IDs | ✅ | ✅ |
 | Exact content totals | ✅ | ✅ |
 | Quiz answer indexes | ✅ | ✅ |
@@ -222,11 +225,13 @@ Choose the instructions for your operating system. Internet access is optional; 
 node html-diagnostics.js
   -> validates both reviewer structures
   -> parses JavaScript
+  -> checks data and inline scripts for global lexical collisions
   -> evaluates data contracts in isolation
   -> checks IDs, counts, shapes, relationships, and answer indexes
 
 node reviewer-interaction-tests.js
-  -> boots the SIA reviewer in JSDOM
+  -> inlines data.js at its real script-tag position
+  -> boots the SIA reviewer with parser-driven classic-script execution
   -> tests filters, topic dialog, progress storage, and key isolation
   -> tests scenarios, flashcards, module tests, glossary, theme, and global search
 ```
@@ -288,6 +293,8 @@ The host bundler must allow the side-effect import of `./data.js`, which assigns
 - Open browser developer tools and check the Console for the first error.
 - Do not rename `data.js` unless the `<script src="data.js">` reference is also updated.
 - If using a downloaded archive, fully extract it before opening the HTML file.
+- Pull the latest SIA `data.js`; it must keep its internal declarations in a private function scope and publish only `globalThis.reviewerData`.
+- Run `npm test`. The diagnostics now reject duplicate classic-script lexical declarations before they can produce a blank reviewer.
 
 ### Styling appears incomplete
 

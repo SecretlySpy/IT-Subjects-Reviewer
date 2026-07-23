@@ -49,19 +49,6 @@ function assert(condition, message) {
 }
 
 /**
- * Extract inline runtime scripts while excluding the external data script.
- * @param {string} html - Complete HTML source.
- * @returns {string[]} Inline JavaScript blocks.
- */
-function extractInlineScripts(html) {
-  return [
-    ...html.matchAll(
-      /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi
-    ),
-  ].map((match) => match[1]);
-}
-
-/**
  * Create the test DOM and supply small browser API shims JSDOM does not include.
  * @param {string} html - HTML source without executable script tags.
  * @returns {JSDOM} Configured test document.
@@ -69,7 +56,7 @@ function extractInlineScripts(html) {
 function createTestDom(html) {
   return new JSDOM(html, {
     url: "https://sia-reviewer.local/",
-    runScripts: "outside-only",
+    runScripts: "dangerously",
     pretendToBeVisual: true,
     beforeParse(window) {
       window.matchMedia = () => ({
@@ -116,25 +103,18 @@ function main() {
   const htmlSource = fs.readFileSync(htmlPath, "utf8");
   const dataSource = fs.readFileSync(dataPath, "utf8");
 
-  // Extract the inline app runtime before removing script elements from markup.
-  const inlineScripts = extractInlineScripts(htmlSource);
-
-  // Remove scripts so the suite controls the exact evaluation order.
+  // Inline the real data source so JSDOM uses the browser's classic-script scope.
   const executableHtml = htmlSource.replace(
-    /<script[^>]*>[\s\S]*?<\/script>/gi,
-    ""
+    '<script src="data.js"></script>',
+    `<script>${dataSource}</script>`
   );
 
-  // Create the isolated browser-like document.
+  // Create the document; parsing now executes data and runtime scripts in real order.
   const dom = createTestDom(executableHtml);
 
   // Reference the simulated browser and document.
   const { window } = dom;
   const { document } = window;
-
-  // Execute shared data before the app runtime, matching the HTML load order.
-  window.eval(dataSource);
-  inlineScripts.forEach((scriptSource) => window.eval(scriptSource));
 
   // Confirm initial rendering totals.
   assert(

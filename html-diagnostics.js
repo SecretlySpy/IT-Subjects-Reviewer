@@ -210,6 +210,24 @@ function checkJavaScriptSyntax(dataSource, inlineScripts) {
 }
 
 /**
+ * Detect top-level lexical declarations that would collide across classic scripts.
+ * @param {string} dataSource - Shared data JavaScript.
+ * @param {string[]} inlineScripts - Inline reviewer scripts.
+ * @returns {boolean} Whether the scripts can share one classic-script scope.
+ */
+function checkClassicGlobalCollisions(dataSource, inlineScripts) {
+  try {
+    new vm.Script(
+      `${dataSource}\n${inlineScripts.join("\n")}`,
+      { filename: "combined-classic-scripts.js" }
+    );
+    return pass("Classic scripts have no colliding global lexical declarations.");
+  } catch (error) {
+    return fail(`Classic-script global collision: ${error.message}`);
+  }
+}
+
+/**
  * Evaluate a data file inside an isolated context.
  * @param {string} source - Shared data source.
  * @returns {object|null} reviewerData or null after evaluation failure.
@@ -435,7 +453,9 @@ function runReviewerDiagnostics(reviewer) {
   if (html === null || dataSource === null) return false;
   const results = [];
   results.push(...checkHtmlContract(reviewer, html));
-  results.push(checkJavaScriptSyntax(dataSource, extractInlineScripts(html)));
+  const inlineScripts = extractInlineScripts(html);
+  results.push(checkJavaScriptSyntax(dataSource, inlineScripts));
+  results.push(checkClassicGlobalCollisions(dataSource, inlineScripts));
   const data = evaluateReviewerData(dataSource);
   if (!data) return false;
   results.push(...checkContentCounts(reviewer, data));

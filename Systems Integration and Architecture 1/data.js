@@ -6,6 +6,9 @@
  * optional React component.
  */
 
+// Keep every internal declaration out of the shared classic-script lexical scope.
+(() => {
+
 // Describe the course and the exact module boundary represented by this reviewer.
 const course = {
   id: "sia1",
@@ -1065,3 +1068,6 @@ const reviewerData = {
 
 // Make the shared data discoverable in classic scripts, React imports, and diagnostics.
 globalThis.reviewerData = reviewerData;
+
+// Close the private data scope after publishing the single supported global contract.
+})();

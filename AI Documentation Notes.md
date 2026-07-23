@@ -492,8 +492,8 @@
 - **Purpose**: Publish the complete SIA 1 Module 1 learning-content contract.
 - **Inputs**: None.
 - **Outputs**: `globalThis.reviewerData`.
-- **Dependencies**: `buildQuestionSet`, JavaScript global scope.
-- **Behavior**: Declares course metadata, three modules, 14 topics, 60 glossary entries, 54 generated flashcards, three generated 20-question tests, four blueprint stages, three model layers, 18 scenarios, and four study steps.
+- **Dependencies**: `buildQuestionSet`, an immediately invoked private function scope, and `globalThis`.
+- **Behavior**: Creates course metadata, three modules, 14 topics, 60 glossary entries, 54 generated flashcards, three generated 20-question tests, four blueprint stages, three model layers, 18 scenarios, and four study steps inside a private scope so their `const` names cannot collide with the inline classic script.
 - **Side Effects**: Assigns `globalThis.reviewerData`.
 
 ## Feature / Capability: SIA content model
@@ -1063,6 +1063,16 @@
 - **Behavior**: Compiles each script and reports the first syntax error.
 - **Side Effects**: Prints result.
 
+## Function: checkClassicGlobalCollisions
+- **Purpose**: Detect top-level lexical names that would prevent separate classic scripts from sharing the browser global scope.
+- **Inputs**:
+  - `dataSource` (`string`): Shared data JavaScript.
+  - `inlineScripts` (`string[]`): Inline reviewer runtime blocks.
+- **Outputs**: `boolean`.
+- **Dependencies**: Node `vm`, `pass`, `fail`.
+- **Behavior**: Compiles the concatenated data and inline sources as one classic-script scope so duplicate `const` or `let` declarations fail before deployment.
+- **Side Effects**: Prints the collision result.
+
 ## Function: evaluateReviewerData
 - **Purpose**: Evaluate a data script in an isolated context.
 - **Inputs**:
@@ -1134,7 +1144,7 @@
   - `reviewer` (`object`): Configuration.
 - **Outputs**: `boolean`.
 - **Dependencies**: All diagnostic helpers, Node `path`.
-- **Behavior**: Reads sources, checks structure/syntax, evaluates data, validates counts/shapes/relationships, and aggregates results.
+- **Behavior**: Reads sources, checks structure and individual syntax, checks shared classic-script scope, evaluates data, validates counts/shapes/relationships, and aggregates results.
 - **Side Effects**: Reads files and writes console output.
 
 ## Function: main
@@ -1157,30 +1167,21 @@
 - **Behavior**: Throws on false and prints PASS on true.
 - **Side Effects**: Writes stdout or throws.
 
-## Function: extractInlineScripts
-- **Purpose**: Extract the offline SIA runtime for controlled evaluation.
-- **Inputs**:
-  - `html` (`string`): HTML source.
-- **Outputs**: `string[]`.
-- **Dependencies**: Regular expressions.
-- **Behavior**: Returns inline scripts while excluding external data loading.
-- **Side Effects**: None.
-
 ## Function: createTestDom
 - **Purpose**: Construct a browser-like SIA test document.
 - **Inputs**:
-  - `html` (`string`): Script-free markup.
+  - `html` (`string`): Complete markup with the data source already inlined into its original script position.
 - **Outputs**: `JSDOM`.
 - **Dependencies**: `jsdom`.
-- **Behavior**: Uses a stable URL, enables outside evaluation, and shims media queries, IntersectionObserver, scrolling, and dialogs.
-- **Side Effects**: Creates an isolated DOM environment.
+- **Behavior**: Uses a stable URL, enables parser-driven script execution, and supplies media-query, IntersectionObserver, scrolling, and dialog shims before scripts run.
+- **Side Effects**: Creates an isolated DOM and executes its classic scripts in browser order.
 
 ## Function: main
 - **Purpose**: Exercise critical SIA user paths against the real runtime.
 - **Inputs**: None.
 - **Outputs**: `void`.
 - **Dependencies**: Node `fs`/`path`, JSDOM, SIA HTML/data.
-- **Behavior**: Boots the app and verifies totals, module filters, dialogs, storage isolation, scenarios, cards, tests, glossary, theme persistence, and global search.
+- **Behavior**: Replaces the external `data.js` tag with its real source, lets JSDOM parse both classic scripts in page order, then verifies totals, module filters, dialogs, storage isolation, scenarios, cards, tests, glossary, theme persistence, and global search.
 - **Side Effects**: Reads source files, executes code in JSDOM, writes test output, and mutates isolated storage/DOM.
 
 # Module / File: package.json
@@ -1212,7 +1213,7 @@
 
 ## Feature / Capability: Current QA status
 - **Result**: `QA_PASSED`.
-- **Automated Evidence**: `npm test` passes repository diagnostics and the complete JSDOM interaction suite.
+- **Automated Evidence**: `npm test` passes repository diagnostics, classic-script global-collision checks, and the parser-driven JSDOM interaction suite.
 - **Static Evidence**: `node --check` passes both data files and both QA scripts; `git diff --check` reports no whitespace errors.
 - **Visual Evidence**: Desktop 1440×1200 and responsive 500×900 Edge screenshots render correctly; mobile CSS constrains horizontal overflow and supplies 700/440-pixel refinements.
 - **Regression Evidence**: Networking 2 retains 15 topics, 293 terms, 300 cards, 15 tests, and 450 valid questions.
