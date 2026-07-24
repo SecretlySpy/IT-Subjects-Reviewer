@@ -918,7 +918,7 @@
 - **Inputs**: None.
 - **Outputs**: React element.
 - **Dependencies**: React state, `modelLayers`, `Panel`.
-- **Behavior**: Switches layers, evaluates three representative matches, and cycles prompts.
+- **Behavior**: Switches layers, evaluates six representative matches, and cycles prompts.
 - **Side Effects**: Updates React state.
 
 ## Function: ScenarioLab

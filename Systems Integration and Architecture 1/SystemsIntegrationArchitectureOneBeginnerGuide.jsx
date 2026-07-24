@@ -348,8 +348,11 @@ function BlueprintExplorer() {
 function ModelLens() {
   const matches = [
     { construct: "Information Concept", layerId: "conceptual" },
+    { construct: "Data Subject", layerId: "conceptual" },
     { construct: "Information View", layerId: "logical" },
+    { construct: "Data Representation", layerId: "logical" },
     { construct: "Information Store", layerId: "physical" },
+    { construct: "Physical Data Object", layerId: "physical" },
   ];
   const [layerIndex, setLayerIndex] = useState(0);
   const [matchIndex, setMatchIndex] = useState(0);
