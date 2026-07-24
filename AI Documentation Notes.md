@@ -1217,3 +1217,150 @@
 - **Static Evidence**: `node --check` passes both data files and both QA scripts; `git diff --check` reports no whitespace errors.
 - **Visual Evidence**: Desktop 1440×1200 and responsive 500×900 Edge screenshots render correctly; mobile CSS constrains horizontal overflow and supplies 700/440-pixel refinements.
 - **Regression Evidence**: Networking 2 retains 15 topics, 293 terms, 300 cards, 15 tests, and 450 valid questions.
+# Module / File: src/design-system/tokens.ts
+
+## Feature: Design System Tokens
+- **Purpose**: Provide a single source of truth for the academic dark palette, typography, spacing, radii, shadows, motion, and layout tokens.
+- **Inputs**: None.
+- **Outputs**: 	okens object containing CSS-in-JS style configurations.
+- **Dependencies**: None.
+- **Behavior**: Exposes constant tokens for the UI.
+- **Side Effects**: None
+
+# Module / File: src/types/study.ts
+
+## Feature: Core Data Schemas
+- **Purpose**: Define the types and interfaces for the study data module including MasteryLevel, SubjectId, ProfessorMode, Topic, Flashcard, Question, GlossaryTerm, SubjectMeta, and ProgressSnapshot.
+- **Inputs**: None.
+- **Outputs**: TypeScript type definitions.
+- **Dependencies**: None.
+- **Behavior**: Provides strict typing for the application data structures.
+- **Side Effects**: None
+
+# Module / File: src/components/ui/Button.tsx
+
+## Function: Button
+- **Purpose**: Render a customizable button component with various variants, sizes, and states.
+- **Inputs**:
+  - ariant ('primary' | 'secondary' | 'ghost' | 'danger'): Visual style of the button.
+  - size ('sm' | 'md' | 'lg'): Size of the button.
+  - isLoading (oolean): Whether the button is in a loading state.
+  - icon (ReactNode): Optional icon to display before the text.
+- **Outputs**: React Element (<button>)
+- **Dependencies**: clsx, 	ailwind-merge
+- **Behavior**: Applies tailwind classes based on props and renders a spinner if isLoading is true.
+- **Side Effects**: None
+
+# Module / File: src/components/ui/Card.tsx
+
+## Function: Card
+- **Purpose**: Render a container component with optional elevation and interactive states.
+- **Inputs**:
+  - elevated (oolean): Applies shadow and elevated background.
+  - interactive (oolean): Applies hover effects and cursor pointer.
+- **Outputs**: React Element (<div>)
+- **Dependencies**: cn utility from Button.
+- **Behavior**: Adjusts styling classes based on elevated and interactive props.
+- **Side Effects**: None
+
+# Module / File: src/app/layout/AppShell.tsx
+
+## Function: AppShell
+- **Purpose**: Provide the main responsive layout wrapper including Sidebar and TopBar.
+- **Inputs**:
+  - children (ReactNode): The main content to render.
+- **Outputs**: React Element representing the app layout.
+- **Dependencies**: Sidebar, TopBar, eact-router-dom
+- **Behavior**: Manages the sidebar open/close state, handles Cmd/Ctrl + B keyboard shortcut, and delegates routing context to TopBar and Sidebar.
+- **Side Effects**: Adds and removes keyboard event listeners on mount/unmount.
+
+# Module / File: src/study-engine/spaced-repetition.ts
+
+## Function: calculateNextReview
+- **Purpose**: Calculate spaced repetition parameters based on a simplified SM-2 algorithm.
+- **Inputs**:
+  - currentState (CardState): Current state containing easeFactor, interval, etc.
+  - grade (ReviewGrade): User grade from 0-5.
+- **Outputs**: CardState updated parameters.
+- **Dependencies**: None.
+- **Behavior**: Adjusts the interval based on the ease factor and grade. Drops repetition count on a failing grade (<3). Calculates the next review date.
+- **Side Effects**: None (pure function).
+
+## Function: createInitialCardState
+- **Purpose**: Initialize a new card for spaced repetition.
+- **Inputs**: None.
+- **Outputs**: CardState with default parameters.
+- **Dependencies**: None.
+- **Behavior**: Returns default starting values (ease 2.5, interval 0, etc).
+- **Side Effects**: None.
+
+# Module / File: src/study-engine/progress-store.ts
+
+## Function: useProgressStore
+- **Purpose**: Provide global state management and IndexedDB persistence for study progress.
+- **Inputs**: None.
+- **Outputs**: Zustand store containing ecordFlashcardReview, ecordQuizAnswer, updateTopicMastery, and incrementStreak.
+- **Dependencies**: zustand, idb-keyval, calculateNextReview.
+- **Behavior**: Wraps progress state (mastery, streaks, quiz history) with a persistence middleware using idb-keyval, falling back to localStorage.
+- **Side Effects**: Reads/Writes browser IndexedDB and localStorage.
+
+# Module / File: src/study-engine/adaptive-quiz.ts
+
+## Function: selectNextQuestion
+- **Purpose**: Dynamically select the next quiz question based on user ability and question difficulty.
+- **Inputs**:
+  - pool (Question[]): Array of available questions.
+  - history (QuizPerformanceHistory[]): User's recent answering history.
+- **Outputs**: Question | null the optimal next question.
+- **Dependencies**: None.
+- **Behavior**: Excludes recently asked questions, computes an ability score from recent history, targets questions matching the ability, and adds weights for previously failed questions or explicit adaptive weight.
+- **Side Effects**: None.
+
+# Module / File: src/study-engine/professor-mode.tsx
+
+## Function: ProfessorModeRenderer
+- **Purpose**: Render the 4-part lesson structure (ELI5, Deep Dive, Analogy, Visual Aid).
+- **Inputs**:
+  - data (ProfessorMode): Lesson contents.
+- **Outputs**: React Element.
+- **Dependencies**: Card, lucide-react icons.
+- **Behavior**: Displays distinct styled sections for each learning pass based on the layout rules. Renders a placeholder or structural visual aid based on type.
+- **Side Effects**: None.
+
+# Module / File: src/subjects/index.ts
+## Function: subjectsData
+- **Purpose**: Export aggregated subject data objects.
+- **Inputs**: None (module export)
+- **Outputs**: Record of subject data objects.
+- **Dependencies**: networking2, sia1, mobile.
+- **Behavior**: Aggregates all hardcoded data models for simple routing retrieval.
+- **Side Effects**: None.
+
+# Module / File: src/app/routes/SubjectPage.tsx
+## Function: SubjectPage
+- **Purpose**: Dynamic page for rendering subject specific topics, flashcards, and quizzes.
+- **Inputs**: None (reads subjectId from route params).
+- **Outputs**: React Component.
+- **Dependencies**: React Router, ProgressStore, AdaptiveQuiz, ProfessorModeRenderer.
+- **Behavior**: Resolves subject data, tracks user progress in tabs (Learn, Flashcard, Quiz), and evaluates quiz answers to pass back into the global ProgressStore.
+- **Side Effects**: Interacts with local state, URL params, and ProgressStore (IndexedDB).
+
+# Module / File: src/app/layout/GlobalSearch.tsx
+## Function: GlobalSearch
+- **Purpose**: Render an overlay search modal allowing users to query all glossary terms.
+- **Inputs**:
+  - isOpen (boolean): Visibility state.
+  - onClose (function): Callback to hide modal.
+- **Outputs**: React Component (Modal).
+- **Dependencies**: subjectsData.
+- **Behavior**: Iterates over all subjects to aggregate glossary terms, filters them by user query, and displays the results. Handles Escape key to close.
+- **Side Effects**: Attaches and removes window keyboard event listeners.
+
+# Module / File: src/components/diagrams/*
+## Function: VisualExplorers
+- **Purpose**: Interactive components (PacketSimulator, ArchitectureExplorer, MobileTimeline) mapped to the ProfessorMode renderer.
+- **Inputs**: None.
+- **Outputs**: React Component.
+- **Dependencies**: lucide-react.
+- **Behavior**: Manages internal state to cycle through steps (Simulator) or layers (Explorer) to display educational context interactively.
+- **Side Effects**: None.
