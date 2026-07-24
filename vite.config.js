@@ -33,5 +33,5 @@ export default defineConfig({
             '@': path.resolve(__dirname, './src'),
         },
     },
-    base: './', // For GitHub Pages
+    base: '/IT-Subjects-Reviewer/', // For GitHub Pages
 });

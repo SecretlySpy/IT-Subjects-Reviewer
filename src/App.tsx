@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { HashRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { AppShell } from './app/layout/AppShell';
 import { Dashboard } from './app/routes/Dashboard';
 import { DesignSystem } from './app/routes/DesignSystem';
@@ -13,7 +13,7 @@ const AppLayout = () => (
 
 export const App: React.FC = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Dashboard />} />
@@ -22,6 +22,6 @@ export const App: React.FC = () => {
           <Route path="*" element={<div className="p-8 text-center text-text-secondary">404 - Not Found</div>} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
