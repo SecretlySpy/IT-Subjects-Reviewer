@@ -35,6 +35,7 @@ This repository collects interactive reviewers for IT subjects, providing dual i
 | :--- | :--- | :--- | :--- |
 | **Networking 2**<br><sub>*Interactive study dashboard*</sub> | Internet architecture, application & transport layers, routing, LANs, wireless/mobile networking, and network security. | \`<Vanilla HTML>\`<br>\`<React JSX>\` | [📁 View Folder](Networking%202/)<br>[🚀 Open Web App](Networking%202/index.html) |
 | **Systems Integration and Architecture 1**<br><sub>*Module 1 interactive reviewer*</sub> | Enterprise Information Architecture, IT Governance, and Information and Data Modelling with blueprint, model-layer, and scenario activities. | \`<Vanilla HTML>\`<br>\`<React JSX>\` | [📁 View Folder](Systems%20Integration%20and%20Architecture%201/)<br>[🚀 Open Web App](Systems%20Integration%20and%20Architecture%201/index.html) |
+| **Mobile Computing**<br><sub>*Interactive reviewer*</sub> | Concepts, Platforms, Evolution of mobile technologies, and Modern JavaScript with ES6. | \`<Vanilla HTML>\`<br>\`<React JSX>\` | [📁 View Folder](Mobile%20Computing/)<br>[🚀 Open Web App](Mobile%20Computing/index.html) |
 
 <br>
 
@@ -75,6 +76,10 @@ The codebase is deeply optimized for maintainability and performance. Large data
 \`\`\`text
 IT-Subjects-Reviewer/
 ├─ README.md
+├─ Mobile Computing/
+│  ├─ data.js
+│  ├─ index.html
+│  └─ MobileComputingBeginnerGuide.jsx
 ├─ Networking 2/
 │  ├─ data.js
 │  ├─ index.html
