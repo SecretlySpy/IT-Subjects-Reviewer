@@ -20,13 +20,14 @@ const {
   course = {},
   modules = [],
   topics = [],
-  glossary = [],
+  glossaryEntries = [],
   flashcards = [],
   practiceTests = [],
   blueprintStages = [],
   modelLayers = [],
   scenarios = [],
   studySteps = [],
+  references = [],
 } = data;
 
 // Map topic tones to Tailwind border and text colors.
@@ -439,7 +440,7 @@ function ModelLens() {
 }
 
 /**
- * Render all eighteen scenario challenges with category filtering and explanations.
+ * Render every scenario challenge with category filtering and explanations.
  * @returns {React.ReactElement} Scenario lab section.
  */
 function ScenarioLab() {
@@ -701,17 +702,11 @@ function Glossary() {
   const [moduleId, setModuleId] = useState("All");
   const entries = useMemo(
     () =>
-      glossary
-        .map(([term, definition], index) => ({
-          term,
-          definition,
-          module: modules[Math.min(Math.floor(index / 20), modules.length - 1)],
-        }))
-        .filter((entry) => {
-          const moduleMatches = moduleId === "All" || entry.module.id === moduleId;
-          const textMatches = `${entry.term} ${entry.definition}`.toLowerCase().includes(query.toLowerCase());
-          return moduleMatches && textMatches;
-        }),
+      glossaryEntries.filter((entry) => {
+        const moduleMatches = moduleId === "All" || entry.moduleId === moduleId;
+        const textMatches = `${entry.term} ${entry.definition}`.toLowerCase().includes(query.toLowerCase());
+        return moduleMatches && textMatches;
+      }),
     [query, moduleId]
   );
 
@@ -738,9 +733,30 @@ function Glossary() {
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {entries.map((entry) => (
             <article key={entry.term} className="rounded-xl border border-stone-300 p-4 dark:border-stone-700">
-              <Chip>{entry.module.label}</Chip>
+              <Chip>{entry.moduleLabel}</Chip>
               <h3 className="mt-3 font-bold text-teal-950 dark:text-teal-100">{entry.term}</h3>
               <p className="mb-0 text-sm text-stone-600 dark:text-stone-300">{entry.definition}</p>
+            </article>
+          ))}
+        </div>
+      </Panel>
+
+      <Panel className="mt-4">
+        <h3 className="font-bold text-teal-950 dark:text-teal-100">Standards and further reading</h3>
+        <p className="text-sm text-stone-600 dark:text-stone-300">
+          The primary specifications behind Modules 2, 3, and 5. Check a claim at its source before quoting it in an assessment.
+        </p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {references.map((reference) => (
+            <article key={reference.id} className="rounded-xl border border-stone-300 p-4 dark:border-stone-700">
+              <Chip>{(modules.find((module) => module.id === reference.moduleId) || {}).label || "Reference"}</Chip>
+              <h4 className="mt-3 font-bold text-teal-950 dark:text-teal-100">
+                <a href={reference.url} target="_blank" rel="noopener noreferrer" className="break-words underline">
+                  {reference.title}
+                </a>
+              </h4>
+              <p className="mb-1 text-sm font-bold text-stone-700 dark:text-stone-200">{reference.publisher}</p>
+              <p className="mb-0 text-sm text-stone-600 dark:text-stone-300">{reference.note}</p>
             </article>
           ))}
         </div>

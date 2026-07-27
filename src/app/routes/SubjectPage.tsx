@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { subjectsData } from '@/subjects';
 import { ProfessorModeRenderer } from '@/study-engine/professor-mode';
-import { BookOpen, HelpCircle, Layers, CheckCircle2, ChevronRight, Play } from 'lucide-react';
+import { FlashcardSession } from '@/study-engine/flashcard-session';
+import { BookOpen, HelpCircle, Layers, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useProgressStore } from '@/study-engine/progress-store';
 import { selectNextQuestion } from '@/study-engine/adaptive-quiz';
 import { Question } from '@/types/study';
@@ -18,9 +19,35 @@ export function SubjectPage() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [quizFeedback, setQuizFeedback] = useState<boolean | null>(null);
   
-  const { recordQuizAnswer, quizHistory } = useProgressStore();
+  const recordQuizAnswer = useProgressStore((state) => state.recordQuizAnswer);
+  const quizHistory = useProgressStore((state) => state.quizHistory);
 
   const data = subjectsData[subjectId as keyof typeof subjectsData];
+  const questions = data?.questions;
+
+  const nextQuizQuestion = useCallback(() => {
+    setSelectedOption(null);
+    setQuizFeedback(null);
+    setCurrentQuestion(questions ? selectNextQuestion(questions, quizHistory) : null);
+  }, [questions, quizHistory]);
+
+  // Load the first question the moment the quiz tab becomes visible.
+  // Every hook must run before the not-found branch, or the hook order would
+  // change when the route moves between a valid and an invalid subject id.
+  useEffect(() => {
+    if (activeTab === 'quiz' && !currentQuestion) {
+      nextQuizQuestion();
+    }
+  }, [activeTab, currentQuestion, nextQuizQuestion]);
+
+  // Reset per-subject view state when the route switches to a different subject.
+  useEffect(() => {
+    setActiveTab('learn');
+    setActiveTopicIndex(0);
+    setCurrentQuestion(null);
+    setSelectedOption(null);
+    setQuizFeedback(null);
+  }, [subjectId]);
 
   if (!data) {
     return (
@@ -34,29 +61,15 @@ export function SubjectPage() {
     );
   }
 
-  const { subjectMeta, topics, flashcards, questions } = data;
+  const { subjectMeta, topics, flashcards } = data;
   const currentTopic = topics[activeTopicIndex];
-
-  // Initialize Quiz when switching to quiz tab
-  useEffect(() => {
-    if (activeTab === 'quiz' && !currentQuestion) {
-      nextQuizQuestion();
-    }
-  }, [activeTab]);
-
-  const nextQuizQuestion = () => {
-    setSelectedOption(null);
-    setQuizFeedback(null);
-    const nextQ = selectNextQuestion(questions, quizHistory);
-    setCurrentQuestion(nextQ);
-  };
 
   const handleQuizSubmit = () => {
     if (selectedOption === null || !currentQuestion) return;
-    
+
     const isCorrect = currentQuestion.correct.includes(selectedOption);
     setQuizFeedback(isCorrect);
-    
+
     recordQuizAnswer(
       currentQuestion.id,
       currentQuestion.topicId,
@@ -164,25 +177,16 @@ export function SubjectPage() {
         )}
 
         {/* FLASHCARDS TAB */}
-        {activeTab === 'flashcards' && (
-          <div className="flex flex-col items-center justify-center py-12">
-             <div className="text-center mb-8">
-               <Layers size={48} className="mx-auto text-blue-500 mb-4 opacity-80" />
-               <h2 className="text-2xl font-bold text-[var(--text-primary)]">Ready for Review?</h2>
-               <p className="text-[var(--text-secondary)] mt-2">You have {flashcards.length} cards in this deck.</p>
-             </div>
-             
-             {/* Stubbing actual flashcard loop UI for brevity, normally we'd import the SpacedRepetition Engine and run it here */}
-             <div className="p-8 bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-xl shadow-lg max-w-lg w-full text-center">
-                <p className="text-[var(--text-primary)] font-medium mb-6">Click Start to begin your spaced-repetition session.</p>
-                <button className="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors w-full flex items-center justify-center gap-2">
-                  <Play size={20} /> Start Flashcards
-                </button>
-             </div>
+        {activeTab === 'flashcards' && <FlashcardSession cards={flashcards} />}
+
+        {/* QUIZ TAB */}
+        {activeTab === 'quiz' && !currentQuestion && (
+          <div className="py-16 text-center text-[var(--text-secondary)]">
+            <HelpCircle size={40} className="mx-auto mb-4 opacity-40" />
+            <p>No practice questions are available for this subject yet.</p>
           </div>
         )}
 
-        {/* QUIZ TAB */}
         {activeTab === 'quiz' && currentQuestion && (
           <div className="max-w-3xl mx-auto py-8">
             <div className="mb-8 flex justify-between items-center">

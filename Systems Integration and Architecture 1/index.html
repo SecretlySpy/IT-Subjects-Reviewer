@@ -862,6 +862,18 @@
       padding: 1rem;
     }
 
+    .reference-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .reference-grid a {
+      color: inherit;
+      overflow-wrap: anywhere;
+    }
+
     .study-step p {
       margin-bottom: 0;
       color: var(--muted);
@@ -1188,21 +1200,22 @@
   <main>
     <section id="home" class="container hero">
       <div>
-        <span class="eyebrow">Module 1 • Blueprint your understanding</span>
+        <span class="eyebrow">Modules 1–5 • Blueprint your understanding</span>
         <h1>See the <span style="color: var(--teal)">whole system</span>, one clear idea at a time.</h1>
         <p class="lead">
-          Build a friendly mental model of enterprise information architecture,
-          IT governance, and information and data modelling—then test it with realistic decisions.
+          Build a friendly mental model of enterprise information architecture, IT governance,
+          data modelling, service and microservice architecture, XML and JSON, web services,
+          application integration, middleware, and cloud computing—then test it with realistic decisions.
         </p>
         <div class="button-row">
           <a class="btn primary" href="#dashboard">Start reviewing</a>
           <a class="btn secondary" href="#scenarios">Try a scenario</a>
         </div>
         <div class="stats" aria-label="Reviewer content totals">
-          <div class="stat"><strong id="heroTopicCount">14</strong><span>topic guides</span></div>
-          <div class="stat"><strong id="heroCardCount">54</strong><span>flashcards</span></div>
-          <div class="stat"><strong id="heroQuestionCount">60</strong><span>test questions</span></div>
-          <div class="stat"><strong id="heroScenarioCount">18</strong><span>scenarios</span></div>
+          <div class="stat"><strong id="heroTopicCount">28</strong><span>topic guides</span></div>
+          <div class="stat"><strong id="heroCardCount">200</strong><span>flashcards</span></div>
+          <div class="stat"><strong id="heroQuestionCount">200</strong><span>test questions</span></div>
+          <div class="stat"><strong id="heroScenarioCount">39</strong><span>scenarios</span></div>
         </div>
       </div>
 
@@ -1235,7 +1248,7 @@
         <div>
           <div class="button-row" style="justify-content: space-between">
             <strong>Your topic progress</strong>
-            <span id="progressLabel">0 of 14 studied</span>
+            <span id="progressLabel">0 of 28 studied</span>
           </div>
           <div class="progress-track" aria-label="Topic completion"><span id="progressFill"></span></div>
         </div>
@@ -1356,14 +1369,22 @@
         <span class="section-icon">06</span>
         <div>
           <h2>Searchable glossary</h2>
-          <p>Search all sixty course terms or narrow the list to one module.</p>
+          <p>Search every course term or narrow the list to one module.</p>
         </div>
       </div>
       <div class="panel reveal">
         <label for="glossarySearch"><strong>Find a term or meaning</strong></label>
-        <input id="glossarySearch" class="search-input" type="search" placeholder="Try “governance”, “metadata”, or “logical”…">
+        <input id="glossarySearch" class="search-input" type="search" placeholder="Try “governance”, “stateless”, or “elasticity”…">
         <div id="glossaryFilters" class="chip-row" style="margin-top: 0.8rem" aria-label="Filter glossary by module"></div>
         <div id="glossaryGrid" class="glossary-grid"></div>
+      </div>
+
+      <div class="panel reveal" style="margin-top: 1rem">
+        <h3>Standards and further reading</h3>
+        <p style="color: var(--muted)">
+          The primary specifications behind Modules 2, 3, and 5. Check a claim at its source before quoting it in an assessment.
+        </p>
+        <div id="referenceList" class="reference-grid"></div>
       </div>
     </section>
   </main>
@@ -1371,7 +1392,8 @@
   <footer>
     <div class="container">
       <strong>Systems Integration and Architecture 1 Reviewer</strong><br>
-      Module 1 learning content based on the supplied course materials.
+      Modules 1–5 learning content based on the supplied course materials,
+      cross-checked against the published standards listed in the glossary section.
     </div>
   </footer>
 
@@ -1399,12 +1421,14 @@
       modules,
       topics,
       glossary,
+      glossaryEntries,
       flashcards,
       practiceTests,
       blueprintStages,
       modelLayers,
       scenarios,
       studySteps,
+      references,
     } = globalThis.reviewerData;
 
     // Cache valid identifiers so restored progress cannot reference removed content.
@@ -1431,6 +1455,20 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    /**
+     * Accept only absolute https links so a bad data entry cannot inject a script URL.
+     * @param {unknown} value - Candidate reference URL.
+     * @returns {string|null} The safe URL, or null when the value is not an https link.
+     */
+    function safeExternalUrl(value) {
+      try {
+        const url = new URL(String(value));
+        return url.protocol === "https:" ? url.href : null;
+      } catch {
+        return null;
+      }
     }
 
     /**
@@ -1657,7 +1695,7 @@
     }
 
     /**
-     * Render the three module filter controls plus an all-topics option.
+     * Render one module filter control per course module plus an all-topics option.
      * @returns {void}
      */
     function renderModuleFilters() {
@@ -1822,6 +1860,34 @@
           `
         )
         .join("");
+    }
+
+    /**
+     * Render the published standards that back the course material.
+     * Entries without a usable https link degrade to plain text instead of disappearing.
+     * @returns {void}
+     */
+    function renderReferences() {
+      const container = $("#referenceList");
+      if (!container) return;
+      container.innerHTML = (references || [])
+        .map((reference) => {
+          const module = modules.find((item) => item.id === reference.moduleId);
+          const url = safeExternalUrl(reference.url);
+          const heading = url
+            ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(reference.title)}</a>`
+            : escapeHtml(reference.title);
+          return `
+            <article class="study-step">
+              <span class="module-tag">${escapeHtml(module ? module.label : "Reference")}</span>
+              <h3 style="margin-top: 0.6rem">${heading}</h3>
+              <p><strong>${escapeHtml(reference.publisher)}</strong></p>
+              <p>${escapeHtml(reference.note)}</p>
+            </article>
+          `;
+        })
+        .join("");
+      attachRevealEffects(container);
     }
 
     /**
@@ -2267,24 +2333,18 @@
      */
     function renderGlossary() {
       const query = $("#glossarySearch").value.trim().toLowerCase();
-      const entries = glossary
-        .map(([term, definition], index) => ({
-          term,
-          definition,
-          module: modules[Math.min(Math.floor(index / 20), modules.length - 1)],
-        }))
-        .filter((entry) => {
-          const moduleMatches =
-            state.glossaryFilter === "All" || entry.module.id === state.glossaryFilter;
-          const textMatches = `${entry.term} ${entry.definition}`.toLowerCase().includes(query);
-          return moduleMatches && textMatches;
-        });
+      const entries = glossaryEntries.filter((entry) => {
+        const moduleMatches =
+          state.glossaryFilter === "All" || entry.moduleId === state.glossaryFilter;
+        const textMatches = `${entry.term} ${entry.definition}`.toLowerCase().includes(query);
+        return moduleMatches && textMatches;
+      });
       $("#glossaryGrid").innerHTML = entries.length
         ? entries
             .map(
               (entry) => `
                 <article class="glossary-card reveal">
-                  <span class="module-tag">${escapeHtml(entry.module.label)}</span>
+                  <span class="module-tag">${escapeHtml(entry.moduleLabel)}</span>
                   <h3 style="margin-top: 0.7rem">${escapeHtml(entry.term)}</h3>
                   <p>${escapeHtml(entry.definition)}</p>
                 </article>
@@ -2511,6 +2571,7 @@
       renderQuiz();
       renderGlossaryFilters();
       renderGlossary();
+      renderReferences();
       initControls();
       initNavigationObserver();
       attachRevealEffects();

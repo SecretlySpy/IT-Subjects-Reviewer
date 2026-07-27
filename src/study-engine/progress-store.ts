@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, StateStorage, createJSONStorage } from 'zustand/middleware';
 import * as idb from 'idb-keyval';
-import { ProgressSnapshot } from '@/types/study';
+import { MasteryLevel, ProgressSnapshot } from '@/types/study';
 import { calculateNextReview, ReviewGrade, createInitialCardState } from './spaced-repetition';
 
 // Custom storage for Zustand using idb-keyval with a LocalStorage fallback
@@ -46,12 +46,60 @@ const getTodayString = () => new Date().toISOString().split('T')[0];
 const INITIAL_STATE: Omit<ProgressSnapshot, 'version'> = {
   lastUpdated: Date.now(),
   streak: 0,
-  lastStudyDate: getTodayString(),
+  // Empty rather than today's date, so the very first study session starts a 1-day streak.
+  lastStudyDate: '',
   topicMastery: {},
   cardStates: {},
+  cardTopics: {},
   quizHistory: [],
   studiedTopicIds: [],
 };
+
+/** Numeric weight per mastery level, used to average a subject into one percentage. */
+export const MASTERY_WEIGHT: Record<MasteryLevel, number> = {
+  new: 0,
+  learning: 0.34,
+  reviewing: 0.67,
+  mastered: 1,
+};
+
+/**
+ * Derive a topic's mastery from its recorded flashcard states and quiz answers.
+ * Both signals are combined so a topic cannot look mastered from cards alone.
+ * @param topicId - Topic being recalculated.
+ * @param state - Current progress snapshot.
+ * @returns The mastery level the evidence supports.
+ */
+function deriveTopicMastery(topicId: string, state: ProgressSnapshot): MasteryLevel {
+  const cardIds = Object.entries(state.cardTopics)
+    .filter(([, id]) => id === topicId)
+    .map(([cardId]) => cardId);
+
+  const cardScores = cardIds
+    .map((cardId) => state.cardStates[cardId])
+    .filter(Boolean)
+    .map((card) => MASTERY_WEIGHT[card.masteryLevel]);
+
+  const topicAnswers = state.quizHistory.filter((entry) => entry.topicId === topicId);
+  const quizScore = topicAnswers.length
+    ? topicAnswers.filter((entry) => entry.correct).length / topicAnswers.length
+    : null;
+
+  const signals: number[] = [];
+  if (cardScores.length) {
+    signals.push(cardScores.reduce((sum, value) => sum + value, 0) / cardScores.length);
+  }
+  if (quizScore !== null) signals.push(quizScore);
+
+  if (!signals.length) return 'new';
+
+  const score = signals.reduce((sum, value) => sum + value, 0) / signals.length;
+  const evidence = cardScores.length + topicAnswers.length;
+
+  if (score >= 0.85 && evidence >= 3) return 'mastered';
+  if (score >= 0.5) return 'reviewing';
+  return 'learning';
+}
 
 export const useProgressStore = create<ProgressState>()(
   persist(
@@ -63,20 +111,23 @@ export const useProgressStore = create<ProgressState>()(
         set((state) => {
           const currentState = state.cardStates[cardId] || createInitialCardState();
           const nextState = calculateNextReview(currentState, grade);
-          
-          const newCardStates = {
-            ...state.cardStates,
-            [cardId]: nextState,
-          };
 
           return {
             ...state,
-            cardStates: newCardStates,
+            cardStates: {
+              ...state.cardStates,
+              [cardId]: nextState,
+            },
+            // Remember which topic owns this card so mastery can be aggregated later.
+            cardTopics: {
+              ...state.cardTopics,
+              [cardId]: topicId,
+            },
             lastUpdated: Date.now(),
           };
         });
-        
-        // Asynchronously update topic mastery after card update
+
+        // Recalculate mastery once the card state has been committed.
         get().updateTopicMastery(topicId);
         get().incrementStreak();
       },
@@ -85,6 +136,7 @@ export const useProgressStore = create<ProgressState>()(
         set((state) => {
           const historyEntry = {
             questionId,
+            topicId,
             correct,
             timestamp: Date.now(),
             difficulty,
@@ -102,31 +154,15 @@ export const useProgressStore = create<ProgressState>()(
 
       updateTopicMastery: (topicId) => {
         set((state) => {
-          // This is a naive mastery calculation. 
-          // In Epic 3/4 we can refine this to weigh flashcards vs quizzes.
-          // For now, if they interact, they are 'learning'. If they have a good streak, 'reviewing' or 'mastered'.
-          
-          // Let's aggregate card states for this topic
-          // In a real scenario we'd need a map of topicId -> cardIds, but we can iterate for now
-          // (Assuming we pass topicId to recordFlashcardReview which we do).
-          
-          // Note: Since we don't have the full list of cards per topic in the store, 
-          // a simple heuristic for now: just mark it 'learning' if it's new.
-          let currentMastery = state.topicMastery[topicId] || 'new';
-          
-          if (currentMastery === 'new') {
-            currentMastery = 'learning';
-          }
-          
-          const studiedIds = state.studiedTopicIds.includes(topicId) 
-            ? state.studiedTopicIds 
+          const studiedIds = state.studiedTopicIds.includes(topicId)
+            ? state.studiedTopicIds
             : [...state.studiedTopicIds, topicId];
 
           return {
             ...state,
             topicMastery: {
               ...state.topicMastery,
-              [topicId]: currentMastery,
+              [topicId]: deriveTopicMastery(topicId, state),
             },
             studiedTopicIds: studiedIds,
           };
@@ -165,3 +201,22 @@ export const useProgressStore = create<ProgressState>()(
     }
   )
 );
+
+/**
+ * Average a subject's topics into a single mastery percentage.
+ * Topics with no recorded activity count as zero so the figure is never flattering.
+ * @param topicIds - Every topic identifier belonging to the subject.
+ * @param topicMastery - The persisted topic mastery map.
+ * @returns Whole-number percentage between 0 and 100.
+ */
+export function computeSubjectMastery(
+  topicIds: string[],
+  topicMastery: Record<string, MasteryLevel>
+): number {
+  if (!topicIds.length) return 0;
+  const total = topicIds.reduce(
+    (sum, topicId) => sum + MASTERY_WEIGHT[topicMastery[topicId] ?? 'new'],
+    0
+  );
+  return Math.round((total / topicIds.length) * 100);
+}

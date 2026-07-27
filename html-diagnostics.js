@@ -8,16 +8,19 @@
  */
 
 // Load Node's file-system API for read-only source inspection.
-const fs = require("fs");
+import fs from "node:fs";
 
 // Load Node's path API for platform-safe repository paths.
-const path = require("path");
+import path from "node:path";
 
 // Load Node's VM API to parse scripts and evaluate isolated data files.
-const vm = require("vm");
+import vm from "node:vm";
+
+// Convert this ES module's URL into a filesystem path.
+import { fileURLToPath } from "node:url";
 
 // Resolve all reviewer locations relative to this script.
-const REPOSITORY_ROOT = __dirname;
+const REPOSITORY_ROOT = path.dirname(fileURLToPath(import.meta.url));
 
 // Define reviewer-specific DOM and content expectations in one table.
 const REVIEWERS = [
@@ -60,18 +63,21 @@ const REVIEWERS = [
       "quizPanel",
       "glossary",
       "glossaryGrid",
+      "referenceList",
     ],
     expectedCounts: {
-      modules: 3,
-      topics: 14,
-      glossary: 60,
-      flashcards: 54,
-      practiceTests: 3,
-      questions: 60,
+      modules: 10,
+      topics: 28,
+      glossary: 200,
+      glossaryEntries: 200,
+      flashcards: 200,
+      practiceTests: 10,
+      questions: 200,
       blueprintStages: 4,
       modelLayers: 3,
-      scenarios: 18,
+      scenarios: 39,
       studySteps: 4,
+      references: 7,
     },
   },
 ];
@@ -384,6 +390,19 @@ function checkAnswerIndexes(data) {
       ? pass(`All ${questions.length} quiz answer indexes and explanations are valid.`)
       : fail(`Invalid quiz questions found at flattened indexes: ${invalidQuestionIndexes.join(", ")}`)
   );
+  const ambiguousQuestionIndexes = questions
+    .map((question, index) => ({ question, index }))
+    .filter(
+      ({ question }) =>
+        Array.isArray(question.options) &&
+        new Set(question.options).size !== question.options.length
+    )
+    .map(({ index }) => index + 1);
+  results.push(
+    ambiguousQuestionIndexes.length === 0
+      ? pass("No quiz question repeats an option, so exactly one choice can be correct.")
+      : fail(`Questions with duplicate options at flattened indexes: ${ambiguousQuestionIndexes.join(", ")}`)
+  );
   if (Array.isArray(data.scenarios)) {
     const invalidScenarioIndexes = data.scenarios
       .map((scenario, index) => ({ scenario, index }))
@@ -433,6 +452,88 @@ function checkSiaRelationships(data) {
     layersValid
       ? pass("Every model layer defines an identifier and construct list.")
       : fail("One or more model layers are incomplete.")
+  );
+  results.push(...checkGlossaryGrouping(data));
+  results.push(...checkReferences(data));
+  return results;
+}
+
+/**
+ * Confirm the enriched glossary view stays aligned with the tuple glossary and the modules.
+ * Every module must own exactly termsPerModule entries so generated tests never run short.
+ * @param {object} data - Evaluated reviewer data.
+ * @returns {boolean[]} Individual diagnostic outcomes.
+ */
+function checkGlossaryGrouping(data) {
+  if (!Array.isArray(data.glossaryEntries)) return [];
+  const results = [];
+  const aligned =
+    data.glossaryEntries.length === data.glossary.length &&
+    data.glossaryEntries.every(
+      (entry, index) =>
+        entry.term === data.glossary[index][0] &&
+        entry.definition === data.glossary[index][1]
+    );
+  results.push(
+    aligned
+      ? pass("The enriched glossary view matches the tuple glossary entry for entry.")
+      : fail("The enriched glossary view has drifted from the tuple glossary.")
+  );
+  const perModule = data.modules.map((module) => ({
+    module,
+    count: data.glossaryEntries.filter((entry) => entry.moduleId === module.id).length,
+  }));
+  const wrong = perModule.filter((record) => record.count !== data.termsPerModule);
+  results.push(
+    wrong.length === 0
+      ? pass(`Every module owns exactly ${data.termsPerModule} glossary terms.`)
+      : fail(
+          `Modules with the wrong term count: ${wrong
+            .map((record) => `${record.module.label} (${record.count})`)
+            .join(", ")}`
+        )
+  );
+  const terms = data.glossary.map(([term]) => term);
+  const duplicateTerms = [...new Set(terms.filter((term, index) => terms.indexOf(term) !== index))];
+  results.push(
+    duplicateTerms.length === 0
+      ? pass("Glossary terms are unique.")
+      : fail(`Duplicate glossary terms: ${duplicateTerms.join(", ")}`)
+  );
+  const definitions = data.glossary.map(([, definition]) => definition);
+  const duplicateDefinitions = [
+    ...new Set(definitions.filter((value, index) => definitions.indexOf(value) !== index)),
+  ];
+  results.push(
+    duplicateDefinitions.length === 0
+      ? pass("Glossary definitions are unique, so generated distractors stay distinguishable.")
+      : fail(`Duplicate glossary definitions found: ${duplicateDefinitions.length}`)
+  );
+  return results;
+}
+
+/**
+ * Confirm every standards reference is uniquely identified and safely linkable.
+ * @param {object} data - Evaluated reviewer data.
+ * @returns {boolean[]} Individual diagnostic outcomes.
+ */
+function checkReferences(data) {
+  if (!Array.isArray(data.references)) return [];
+  const results = [];
+  results.push(checkUniqueIds(data.references, "Reference"));
+  const moduleIds = new Set(data.modules.map((module) => module.id));
+  const invalid = data.references.filter(
+    (reference) =>
+      !moduleIds.has(reference.moduleId) ||
+      typeof reference.title !== "string" ||
+      typeof reference.publisher !== "string" ||
+      typeof reference.note !== "string" ||
+      !/^https:\/\//.test(String(reference.url))
+  );
+  results.push(
+    invalid.length === 0
+      ? pass(`All ${data.references.length} references cite a module and an https source.`)
+      : fail(`Invalid references: ${invalid.map((reference) => reference.id).join(", ")}`)
   );
   return results;
 }

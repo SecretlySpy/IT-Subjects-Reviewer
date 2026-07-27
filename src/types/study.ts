@@ -71,7 +71,7 @@ export interface ProgressSnapshot {
   version: 1;
   lastUpdated: number;
   streak: number;
-  lastStudyDate: string;      // YYYY-MM-DD
+  lastStudyDate: string;      // YYYY-MM-DD, empty until the first study session
   topicMastery: Record<string, MasteryLevel>;
   cardStates: Record<string, {
     easeFactor: number;
@@ -80,11 +80,15 @@ export interface ProgressSnapshot {
     nextReview: number;
     masteryLevel: MasteryLevel;
   }>;
+  /** cardId -> topicId, recorded on review so mastery can be aggregated per topic. */
+  cardTopics: Record<string, string>;
   quizHistory: Array<{
     questionId: string;
     correct: boolean;
     timestamp: number;
     difficulty: number;
+    /** Optional so snapshots written before this field was added still load. */
+    topicId?: string;
   }>;
   studiedTopicIds: string[];
 }

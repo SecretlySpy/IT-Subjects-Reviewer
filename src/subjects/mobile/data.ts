@@ -105,7 +105,8 @@ export const glossary: GlossaryTerm[] = [
   { id: 'term-accelerometer', term: 'Accelerometer', definition: 'A sensor that measures the proper acceleration of the device.', topicIds: ['mobile-sensors'] },
   { id: 'term-gps', term: 'GPS', definition: 'Global Positioning System. Provides location and time information anywhere on Earth.', topicIds: ['mobile-sensors'] },
   { id: 'term-touch-target', term: 'Touch Target', definition: 'The area on the screen that responds to user input.', topicIds: ['mobile-uiux'] },
-  { id: 'term-thumb-zone', term: 'Thumb Zone', definition: 'The area of a phone screen easily reachable with the thumb while holding the phone one-handed.', topicIds: ['mobile-uiux'] }
+  { id: 'term-thumb-zone', term: 'Thumb Zone', definition: 'The area of a phone screen easily reachable with the thumb while holding the phone one-handed.', topicIds: ['mobile-uiux'] },
+  { id: 'term-responsive', term: 'Responsive Layout', definition: 'A layout that adapts to the available screen size, orientation, and density instead of assuming one fixed device.', topicIds: ['mobile-uiux'] }
 ];
 
 export const flashcards: Flashcard[] = [

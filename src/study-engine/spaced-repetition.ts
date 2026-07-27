@@ -77,3 +77,26 @@ export function createInitialCardState(): CardState {
     masteryLevel: 'new',
   };
 }
+
+/**
+ * Build the review queue for a deck.
+ *
+ * Cards that have never been reviewed come first (they have no scheduled date),
+ * then cards whose scheduled review time has passed, earliest first.
+ *
+ * @param cardIds - Every card identifier in the deck, in authoring order.
+ * @param cardStates - Persisted scheduling state keyed by card identifier.
+ * @param now - Current epoch milliseconds; injected so the result is testable.
+ * @returns Card identifiers that are due, in the order they should be shown.
+ */
+export function selectDueCardIds(
+  cardIds: string[],
+  cardStates: Record<string, CardState>,
+  now: number = Date.now()
+): string[] {
+  const unseen = cardIds.filter((id) => !cardStates[id]);
+  const due = cardIds
+    .filter((id) => cardStates[id] && cardStates[id].nextReview <= now)
+    .sort((a, b) => cardStates[a].nextReview - cardStates[b].nextReview);
+  return [...unseen, ...due];
+}

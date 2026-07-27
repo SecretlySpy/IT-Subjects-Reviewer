@@ -10,16 +10,19 @@
  */
 
 // Load file-system helpers for read-only source access.
-const fs = require("fs");
+import fs from "node:fs";
 
 // Load path helpers for Windows, macOS, and Linux compatibility.
-const path = require("path");
+import path from "node:path";
+
+// Convert this ES module's URL into a filesystem path.
+import { fileURLToPath } from "node:url";
 
 // Load JSDOM to execute the offline reviewer in a browser-like document.
-const { JSDOM } = require("jsdom");
+import { JSDOM } from "jsdom";
 
 // Resolve the repository and new reviewer paths.
-const repositoryRoot = __dirname;
+const repositoryRoot = path.dirname(fileURLToPath(import.meta.url));
 
 // Resolve the HTML source used by the offline reviewer.
 const htmlPath = path.join(
@@ -116,20 +119,44 @@ function main() {
   const { window } = dom;
   const { document } = window;
 
+  // Read the published content contract so assertions follow the data, not stale numbers.
+  const { reviewerData } = window;
+  const expectedTopics = reviewerData.topics.length;
+  const expectedGlossary = reviewerData.glossary.length;
+  const expectedModules = reviewerData.modules.length;
+  const expectedQuestions = reviewerData.practiceTests[0].questions.length;
+
   // Confirm initial rendering totals.
   assert(
-    document.querySelectorAll("#topicGrid .topic-card").length === 14,
-    "all 14 topic cards render on boot"
+    document.querySelectorAll("#topicGrid .topic-card").length === expectedTopics,
+    `all ${expectedTopics} topic cards render on boot`
   );
   assert(
-    document.querySelectorAll("#glossaryGrid .glossary-card").length === 60,
-    "all 60 glossary cards render on boot"
+    document.querySelectorAll("#glossaryGrid .glossary-card").length ===
+      expectedGlossary,
+    `all ${expectedGlossary} glossary cards render on boot`
   );
   assert(
     document.querySelectorAll(
       "#moduleFilters [data-module-filter]"
-    ).length === 4,
-    "all-module plus three module filters render"
+    ).length === expectedModules + 1,
+    `all-module plus ${expectedModules} module filters render`
+  );
+  assert(
+    document.querySelectorAll("#referenceList .study-step").length ===
+      reviewerData.references.length,
+    `all ${reviewerData.references.length} standards references render`
+  );
+  assert(
+    document
+      .querySelectorAll("#referenceList a[href]")
+      .length === reviewerData.references.length &&
+      [...document.querySelectorAll("#referenceList a[href]")].every(
+        (link) =>
+          link.getAttribute("href").startsWith("https://") &&
+          link.getAttribute("rel") === "noopener noreferrer"
+      ),
+    "reference links are https and open safely in a new tab"
   );
   assert(
     document.querySelectorAll("#stageList [data-stage-index]").length === 4,
@@ -147,10 +174,14 @@ function main() {
   );
 
   // Exercise topic filtering and detail presentation.
+  const modellingTopics = reviewerData.topics.filter(
+    (topic) => topic.moduleId === "m1-3"
+  ).length;
   document.querySelector('[data-module-filter="m1-3"]').click();
   assert(
-    document.querySelectorAll("#topicGrid .topic-card").length === 2,
-    "module filtering shows the two modelling topics"
+    document.querySelectorAll("#topicGrid .topic-card").length ===
+      modellingTopics,
+    `module filtering shows the ${modellingTopics} modelling topics`
   );
   document.querySelector("#topicGrid [data-open-topic]").click();
   assert(
@@ -208,8 +239,8 @@ function main() {
   );
   assert(
     document.querySelectorAll("#quizQuestions .quiz-question").length ===
-      20,
-    "selected module test renders 20 questions"
+      expectedQuestions,
+    `selected module test renders ${expectedQuestions} questions`
   );
 
   // Exercise glossary filtering.
@@ -222,7 +253,7 @@ function main() {
     "#glossaryGrid .glossary-card"
   ).length;
   assert(
-    filteredGlossaryCount > 0 && filteredGlossaryCount < 60,
+    filteredGlossaryCount > 0 && filteredGlossaryCount < expectedGlossary,
     "glossary search narrows results"
   );
 

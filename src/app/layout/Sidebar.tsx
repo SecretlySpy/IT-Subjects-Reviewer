@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Book, Code, Smartphone } from 'lucide-react';
 import { cn } from '@/components/ui/Button';
 import { SubjectId } from '@/types/study';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { tokens } from '@/design-system/tokens';
+import { subjectsData } from '@/subjects';
+import { computeSubjectMastery, useProgressStore } from '@/study-engine/progress-store';
 import FocusLock from 'react-focus-lock';
 
 interface SidebarProps {
@@ -13,14 +15,45 @@ interface SidebarProps {
   currentSubject?: SubjectId;
 }
 
-const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
-  { id: 'networking2', label: 'Networking 2', icon: Book, path: '/subject/networking2', subjectId: 'networking2' as SubjectId, mastery: 45, accent: tokens.colors.subject.networking2 },
-  { id: 'sia1', label: 'SIA 1', icon: Code, path: '/subject/sia1', subjectId: 'sia1' as SubjectId, mastery: 12, accent: tokens.colors.subject.sia1 },
-  { id: 'mobile', label: 'Mobile Computing', icon: Smartphone, path: '/subject/mobile', subjectId: 'mobile' as SubjectId, mastery: 80, accent: tokens.colors.subject.mobile },
-];
+/** Icon per subject id, kept separate from the content so data stays the source of truth. */
+const SUBJECT_ICONS: Record<SubjectId, React.ElementType> = {
+  networking2: Book,
+  sia1: Code,
+  mobile: Smartphone,
+};
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, currentSubject }) => {
+  const streak = useProgressStore((state) => state.streak);
+  const topicMastery = useProgressStore((state) => state.topicMastery);
+
+  // Mastery rings and the overall figure are derived from recorded study activity.
+  const navItems = useMemo(() => {
+    const subjectItems = Object.values(subjectsData).map((subject) => ({
+      id: subject.subjectMeta.id as string,
+      label: subject.subjectMeta.shortTitle,
+      icon: SUBJECT_ICONS[subject.subjectMeta.id],
+      path: `/subject/${subject.subjectMeta.id}`,
+      subjectId: subject.subjectMeta.id,
+      accent: subject.subjectMeta.accent,
+      mastery: computeSubjectMastery(
+        subject.topics.map((topic) => topic.id),
+        topicMastery
+      ),
+    }));
+    return [
+      { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/', subjectId: undefined, accent: undefined, mastery: 0 },
+      ...subjectItems,
+    ];
+  }, [topicMastery]);
+
+  const overallProgress = useMemo(() => {
+    const subjectItems = navItems.filter((item) => item.subjectId);
+    if (!subjectItems.length) return 0;
+    return Math.round(
+      subjectItems.reduce((sum, item) => sum + item.mastery, 0) / subjectItems.length
+    );
+  }, [navItems]);
+
   return (
     <>
       {/* Mobile overlay */}
@@ -86,8 +119,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, currentSubjec
           <div className="p-4 rounded-lg bg-bg-base border border-border-subtle">
              <div className="text-xs text-text-tertiary font-medium mb-1">Overall Progress</div>
              <div className="flex items-end gap-2">
-               <span className="text-2xl font-bold text-text-primary">42%</span>
-               <span className="text-sm text-accent-success pb-0.5">🔥 5 day streak</span>
+               <span className="text-2xl font-bold text-text-primary">{overallProgress}%</span>
+               <span className="text-sm text-accent-success pb-0.5">🔥 {streak} day streak</span>
              </div>
           </div>
         </div>

@@ -34,7 +34,7 @@ This repository collects interactive reviewers for IT subjects, providing dual i
 | 📚 Subject / Module | 🎯 What It Covers | 🛠️ Formats | 🔗 Links |
 | :--- | :--- | :--- | :--- |
 | **Networking 2**<br><sub>*Interactive study dashboard*</sub> | Internet architecture, application & transport layers, routing, LANs, wireless/mobile networking, and network security. | \`<Vanilla HTML>\`<br>\`<React JSX>\` | [📁 View Folder](Networking%202/)<br>[🚀 Open Web App](Networking%202/index.html) |
-| **Systems Integration and Architecture 1**<br><sub>*Module 1 interactive reviewer*</sub> | Enterprise Information Architecture, IT Governance, and Information and Data Modelling with blueprint, model-layer, and scenario activities. | \`<Vanilla HTML>\`<br>\`<React JSX>\` | [📁 View Folder](Systems%20Integration%20and%20Architecture%201/)<br>[🚀 Open Web App](Systems%20Integration%20and%20Architecture%201/index.html) |
+| **Systems Integration and Architecture 1**<br><sub>*Modules 1–5 interactive reviewer*</sub> | Enterprise Information Architecture, IT Governance, Information and Data Modelling, SOA, Microservices, XML/JSON, Web Services (SOAP/WSDL/UDDI), EAI, Middleware, and Cloud Computing — with blueprint, model-layer, scenario, and standards-reference activities. | \`<Vanilla HTML>\`<br>\`<React JSX>\` | [📁 View Folder](Systems%20Integration%20and%20Architecture%201/)<br>[🚀 Open Web App](Systems%20Integration%20and%20Architecture%201/index.html) |
 | **Mobile Computing**<br><sub>*Interactive reviewer*</sub> | Concepts, Platforms, Evolution of mobile technologies, and Modern JavaScript with ES6. | \`<Vanilla HTML>\`<br>\`<React JSX>\` | [📁 View Folder](Mobile%20Computing/)<br>[🚀 Open Web App](Mobile%20Computing/index.html) |
 
 <br>
@@ -76,6 +76,19 @@ The codebase is deeply optimized for maintainability and performance. Large data
 \`\`\`text
 IT-Subjects-Reviewer/
 ├─ README.md
+├─ AI Documentation Notes.md          # machine-readable module/function reference
+├─ Tech Stack Setup Guide.md          # stack list, per-OS setup, troubleshooting
+├─ index.html                         # React platform entry
+├─ public/                            # PWA icons
+├─ src/                               # React study platform (Vite + TS + Tailwind)
+│  ├─ app/                            # layout + routes
+│  ├─ components/                     # ui + diagram components
+│  ├─ study-engine/                   # SM-2 scheduling, adaptive quiz, progress store
+│  └─ subjects/<id>/data.ts           # platform content per subject
+├─ html-diagnostics.js                # QA: static + data contract checks
+├─ reviewer-interaction-tests.js      # QA: JSDOM interaction suite (SIA reviewer)
+├─ subject-data-tests.js              # QA: React subject-data integrity
+├─ spa-smoke-tests.js                 # QA: JSDOM runtime smoke test of the SPA
 ├─ Mobile Computing/
 │  ├─ data.js
 │  ├─ index.html
@@ -90,12 +103,26 @@ IT-Subjects-Reviewer/
    └─ SystemsIntegrationArchitectureOneBeginnerGuide.jsx
 \`\`\`
 
-💡 **Pro Tip:** To add a question, term, scenario, or topic, edit that reviewer's \`data.js\`. Both its HTML and React versions consume the same content contract.
+💡 **Pro Tip:** To add a question, term, scenario, or topic to a zero-build reviewer, edit that reviewer's \`data.js\`. Both its HTML and React versions consume the same content contract. To change the React platform's lessons, edit \`src/subjects/<id>/data.ts\`.
+
+<br>
+
+## 🧪 Quality Checks
+
+\`\`\`bash
+npm install
+npm test      # runs all four QA suites
+npm run build # type-checks, bundles the SPA, and copies the reviewers into dist/
+\`\`\`
+
+\`npm test\` runs, in order: repository diagnostics, the JSDOM interaction suite for the Systems Integration reviewer, content-integrity checks for the React subject datasets, and a runtime smoke test of the React application.
 
 <br>
 
 ## 📝 Notes
 
 - Designed specifically for quick studying and rapid exam review.
-- **GitHub Pages** can host the HTML files natively without installing any Node.js dependencies.
+- The zero-build reviewers need **no Node.js and no internet** — open \`index.html\` and study.
+- \`npm run build\` copies all three standalone reviewers into \`dist/\`, so the GitHub Pages deployment serves both the React platform and the zero-build apps.
+- Systems Integration and Architecture 1 cites its primary standards (OASIS SOA-RM, W3C XML/SOAP/WSDL, IETF RFC 8259, NIST SP 800-145 and SP 500-292) in its glossary section so claims can be checked at source.
 - More subjects and modules will be continually added using this scalable, decoupled structure.

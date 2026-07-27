@@ -478,34 +478,50 @@
 
 # Module / File: Systems Integration and Architecture 1/data.js
 
-## Function: buildQuestionSet
-- **Purpose**: Generate one deterministic twenty-question module test from glossary definitions.
+## Function: moduleForGlossaryIndex
+- **Purpose**: Resolve which course module owns a glossary position.
 - **Inputs**:
-  - `entries` (`Array<[string,string]>`): One module’s twenty glossary entries.
+  - `index` (`number`): Zero-based glossary position.
+- **Outputs**: The owning `module` record from `modules[]`.
+- **Dependencies**: `modules`, `TERMS_PER_MODULE`.
+- **Behavior**: Divides the index by `TERMS_PER_MODULE`, clamping to the last module so an off-by-one cannot return `undefined`.
+- **Side Effects**: None.
+
+## Function: buildQuestionSet
+- **Purpose**: Generate one deterministic module test from glossary definitions.
+- **Inputs**:
+  - `entries` (`Array<{term,definition,moduleId,moduleLabel,moduleTitle}>`): One module’s enriched glossary entries.
   - `moduleIndex` (`number`): Module position used to rotate correct answers.
 - **Outputs**: `Question[]` with `q`, four `options`, valid `answer`, and `explain`.
-- **Dependencies**: Array mapping and glossary tuple shape.
-- **Behavior**: Uses three same-module definition offsets as plausible distractors and rotates the correct option across positions.
+- **Dependencies**: Array mapping and the enriched glossary entry shape.
+- **Behavior**: Uses three same-module definition offsets (`+3`, `+7`, `+11`, modulo the segment length) as plausible distractors and rotates the correct option across positions. Because every glossary definition is unique, no generated question can contain a repeated option.
 - **Side Effects**: None.
 
 ## Function: module initialization
-- **Purpose**: Publish the complete SIA 1 Module 1 learning-content contract.
+- **Purpose**: Publish the complete SIA 1 Modules 1–5 learning-content contract.
 - **Inputs**: None.
 - **Outputs**: `globalThis.reviewerData`.
-- **Dependencies**: `buildQuestionSet`, an immediately invoked private function scope, and `globalThis`.
-- **Behavior**: Creates course metadata, three modules, 14 topics, 60 glossary entries, 54 generated flashcards, three generated 20-question tests, four blueprint stages, three model layers, 18 scenarios, and four study steps inside a private scope so their `const` names cannot collide with the inline classic script.
+- **Dependencies**: `moduleForGlossaryIndex`, `buildQuestionSet`, an immediately invoked private function scope, and `globalThis`.
+- **Behavior**: Creates course metadata, ten modules, 28 topics, 200 glossary entries, 200 enriched glossary entries, 200 derived flashcards, ten generated 20-question tests, four blueprint stages, three model layers, 39 scenarios, four study steps, and seven standards references inside a private scope so their `const` names cannot collide with the inline classic script.
 - **Side Effects**: Assigns `globalThis.reviewerData`.
 
 ## Feature / Capability: SIA content model
 - **Purpose**: Keep HTML and React learning content synchronized.
 - **Data Shapes**:
   - `course`: `{ id, title, shortTitle, moduleLabel, description }`.
+  - `termsPerModule`: `number` — the single source of truth for glossary grouping (currently `20`).
   - `modules[]`: `{ id, label, title, objective }`.
   - `topics[]`: Existing shared topic shape plus `moduleId` and `example`.
+  - `glossary[]`: `[term, definition]` tuples, ordered by module.
+  - `glossaryEntries[]`: `{ term, definition, moduleId, moduleLabel, moduleTitle }` — the enriched view every consumer reads.
+  - `flashcards[]`: `{ topic, front, back }`, derived one-per-glossary-entry.
+  - `practiceTests[]`: `{ title, description, questions[] }`, one test per module.
   - `blueprintStages[]`: `{ id, title, question, summary, includes[], example }`.
   - `modelLayers[]`: `{ id, label, question, description, constructs[], example }`.
   - `scenarios[]`: `{ id, moduleId, category, prompt, options[], answer, explanation }`.
-- **Operational Mechanics**: Glossary entries 0–19 map to Module 1.1, 20–39 to 1.2, and 40–59 to 1.3.
+  - `references[]`: `{ id, moduleId, title, publisher, note, url }` — published standards behind Modules 2, 3, and 5.
+- **Operational Mechanics**: Glossary entries are stored in module order, `termsPerModule` at a time. `glossaryEntries` is the only place that grouping rule is applied; `flashcards`, `practiceTests`, `index.html`, and the JSX component all read the enriched view instead of recomputing `Math.floor(index / 20)`.
+- **Module Coverage**: `m1-1` EIA, `m1-2` IT Governance, `m1-3` Information and Data Modelling, `m2-1` SOA, `m2-2` Microservices, `m3-1` XML and JSON, `m3-2` Web Services and SOAP, `m5-1` EAI, `m5-2` Middleware, `m5-3` Cloud Computing. There is no Module 4 in the supplied course materials, and none is invented here.
 
 # Module / File: Systems Integration and Architecture 1/index.html
 
@@ -536,6 +552,15 @@
 - **Outputs**: Escaped `string`.
 - **Dependencies**: String APIs.
 - **Behavior**: Encodes HTML-sensitive characters.
+- **Side Effects**: None.
+
+## Function: safeExternalUrl
+- **Purpose**: Ensure only absolute `https` links reach an `href` attribute.
+- **Inputs**:
+  - `value` (`unknown`): Candidate reference URL.
+- **Outputs**: The normalized `string` URL, or `null` when the value is not an https link.
+- **Dependencies**: `URL`.
+- **Behavior**: Parses the value with the `URL` constructor and returns it only when `protocol === "https:"`, so a malformed or `javascript:` entry in `references[]` cannot become an executable link.
 - **Side Effects**: None.
 
 ## Function: storageGet
@@ -686,6 +711,14 @@
 - **Behavior**: Maps steps to four structured cards.
 - **Side Effects**: Replaces DOM.
 
+## Function: renderReferences
+- **Purpose**: Render the published standards that back Modules 2, 3, and 5.
+- **Inputs**: None.
+- **Outputs**: `void`.
+- **Dependencies**: `references`, `modules`, `safeExternalUrl`, `escapeHtml`, `attachRevealEffects`.
+- **Behavior**: Maps each reference to a card tagged with its module label. A usable https URL becomes an anchor with `target="_blank"` and `rel="noopener noreferrer"`; anything else degrades to plain escaped text rather than disappearing. Returns early when `#referenceList` is absent.
+- **Side Effects**: Replaces the contents of `#referenceList` and registers reveal observers.
+
 ## Function: renderBlueprint
 - **Purpose**: Render the four-stage EIA reference-architecture explorer.
 - **Inputs**: None.
@@ -796,15 +829,15 @@
 - **Inputs**: None.
 - **Outputs**: `void`.
 - **Dependencies**: `modules`, glossary state, `renderGlossary`.
-- **Behavior**: Builds All and three module controls and binds selection.
+- **Behavior**: Builds an All control plus one control per course module and binds selection.
 - **Side Effects**: Replaces DOM, mutates state, and registers listeners.
 
 ## Function: renderGlossary
 - **Purpose**: Render SIA terms matching module and text filters.
 - **Inputs**: None.
 - **Outputs**: `void`.
-- **Dependencies**: `glossary`, `modules`, search input, `escapeHtml`.
-- **Behavior**: Maps each 20-entry range to a module, filters case-insensitively, and renders cards or an empty state.
+- **Dependencies**: `glossaryEntries`, search input, `escapeHtml`.
+- **Behavior**: Filters the pre-grouped `glossaryEntries` by module id and case-insensitive text, then renders cards or an empty state. The module-grouping rule lives in `data.js`, not here.
 - **Side Effects**: Replaces DOM and attaches reveals.
 
 ## Function: renderGlobalSearch
@@ -1134,8 +1167,26 @@
 - **Inputs**:
   - `data` (`object`): Evaluated reviewer data.
 - **Outputs**: `boolean[]`.
-- **Dependencies**: SIA schemas.
-- **Behavior**: Verifies topic/scenario `moduleId` values and non-empty layer construct lists.
+- **Dependencies**: SIA schemas, `checkGlossaryGrouping`, `checkReferences`.
+- **Behavior**: Verifies topic/scenario `moduleId` values and non-empty layer construct lists, then delegates to the glossary-grouping and reference checks.
+- **Side Effects**: Prints results.
+
+## Function: checkGlossaryGrouping
+- **Purpose**: Prove the enriched glossary view has not drifted from the tuple glossary.
+- **Inputs**:
+  - `data` (`object`): Evaluated reviewer data.
+- **Outputs**: `boolean[]`.
+- **Dependencies**: `data.glossary`, `data.glossaryEntries`, `data.modules`, `data.termsPerModule`.
+- **Behavior**: Compares the two glossary views entry for entry, asserts every module owns exactly `termsPerModule` terms, and reports duplicate terms or duplicate definitions. Duplicate definitions matter because `buildQuestionSet` draws distractors from the same module segment, so a repeat would make a generated question ambiguous.
+- **Side Effects**: Prints results.
+
+## Function: checkReferences
+- **Purpose**: Validate the standards reference list.
+- **Inputs**:
+  - `data` (`object`): Evaluated reviewer data.
+- **Outputs**: `boolean[]`.
+- **Dependencies**: `checkUniqueIds`, `data.modules`, `data.references`.
+- **Behavior**: Confirms unique identifiers, a resolvable `moduleId`, present title/publisher/note strings, and an `https://` URL on every reference.
 - **Side Effects**: Prints results.
 
 ## Function: runReviewerDiagnostics
@@ -1180,9 +1231,93 @@
 - **Purpose**: Exercise critical SIA user paths against the real runtime.
 - **Inputs**: None.
 - **Outputs**: `void`.
-- **Dependencies**: Node `fs`/`path`, JSDOM, SIA HTML/data.
-- **Behavior**: Replaces the external `data.js` tag with its real source, lets JSDOM parse both classic scripts in page order, then verifies totals, module filters, dialogs, storage isolation, scenarios, cards, tests, glossary, theme persistence, and global search.
+- **Dependencies**: Node `fs`/`path`/`url`, JSDOM, SIA HTML/data.
+- **Behavior**: Replaces the external `data.js` tag with its real source, lets JSDOM parse both classic scripts in page order, then reads `window.reviewerData` and derives every expected total from it before verifying rendered counts, module filters, standards-reference links, dialogs, storage isolation, scenarios, cards, tests, glossary, theme persistence, and global search. Expected totals are derived rather than hard-coded so adding a module cannot silently invalidate the suite.
 - **Side Effects**: Reads source files, executes code in JSDOM, writes test output, and mutates isolated storage/DOM.
+
+# Module / File: subject-data-tests.js
+
+## Function: loadSubjectsData
+- **Purpose**: Make the TypeScript subject datasets importable from plain Node.
+- **Inputs**: None.
+- **Outputs**: `Promise<object>` resolving to the `subjectsData` map.
+- **Dependencies**: Vite's programmatic `build`, Node `fs`/`path`/`url`.
+- **Behavior**: Runs an SSR build of `src/subjects/index.ts` with the `@` alias configured and `configFile: false`, writes it to `node_modules/.tmp`, then dynamically imports the bundle.
+- **Side Effects**: Writes and later removes a temporary bundle directory.
+
+## Function: checkSubject
+- **Purpose**: Assert content integrity for one subject dataset.
+- **Inputs**:
+  - `key` (`string`): Subject key inside `subjectsData`.
+  - `subject` (`object`): The subject module namespace.
+- **Outputs**: `void`.
+- **Dependencies**: `assert`, `duplicates`.
+- **Behavior**: Verifies `subjectMeta.id`, that `topicCount` equals `topics.length`, unique topic/flashcard/question/glossary identifiers, unique topic `order` values, that every flashcard, question, and glossary term references a real topic, that `relatedTermIds` resolve to glossary entries, that `correct` indexes fall inside `options`, that no question repeats an option, that explanations exist, that professor mode is fully populated, and that table visual aids have rows matching their header count.
+- **Side Effects**: Prints results or throws.
+
+## Function: main
+- **Purpose**: Run the study-platform data suite across every registered subject.
+- **Inputs**: None.
+- **Outputs**: `Promise<void>`.
+- **Dependencies**: `loadSubjectsData`, `checkSubject`.
+- **Behavior**: Checks each subject, then asserts glossary identifiers are unique across all subjects because `GlobalSearch` uses them as React keys, and removes the temporary bundle.
+- **Side Effects**: Writes console output and sets a nonzero exit code on failure.
+
+# Module / File: spa-smoke-tests.js
+
+## Function: bundleApplication
+- **Purpose**: Produce a classic-script build of the React app that JSDOM can execute.
+- **Inputs**: None.
+- **Outputs**: `Promise<string>` containing the bundled source.
+- **Dependencies**: Vite's programmatic `build` in library/IIFE mode, Node `fs`/`path`.
+- **Behavior**: Writes a temporary entry that mounts `App` into `#root`, bundles it as an IIFE with the `@` alias resolved and `process.env.NODE_ENV` defined, and returns the emitted source. JSDOM cannot run ES modules, which is why the IIFE format is required.
+- **Side Effects**: Writes a temporary bundle directory.
+
+## Function: createDom
+- **Purpose**: Build a browser-like document and evaluate the bundle inside it.
+- **Inputs**:
+  - `script` (`string`): Bundled application source.
+- **Outputs**: `JSDOM`.
+- **Dependencies**: `jsdom`.
+- **Behavior**: Supplies `matchMedia`, `IntersectionObserver`, `ResizeObserver`, `scrollTo`, and `scrollIntoView` shims, then appends the bundle as a classic script. IndexedDB is absent, so this run also exercises the progress store's localStorage fallback.
+- **Side Effects**: Creates an isolated DOM and executes the application.
+
+## Function: flush
+- **Purpose**: Wait for React's concurrent renderer and pending effects.
+- **Inputs**:
+  - `window` (`Window`): JSDOM window.
+  - `rounds` (`number`): Macrotask turns to wait; defaults to 6.
+- **Outputs**: `Promise<void>`.
+- **Dependencies**: `window.setTimeout`.
+- **Behavior**: Awaits several short timer turns so React 19 can commit renders and run effects before assertions.
+- **Side Effects**: None.
+
+## Function: main
+- **Purpose**: Verify the React study platform's critical user paths at runtime.
+- **Inputs**: None.
+- **Outputs**: `Promise<void>`.
+- **Dependencies**: `bundleApplication`, `createDom`, `flush`, `findByText`.
+- **Behavior**: Asserts the app mounts, the dashboard renders store-derived figures (0% on a fresh profile), the sia1 subject page opens and lists the newly integrated SOA and Cloud Computing modules, professor mode renders, the adaptive quiz scores an answer and offers the next question, and the flashcard session presents a due card, hides the answer until requested, reveals it, offers SM-2 grade buttons, and advances the queue when graded.
+- **Side Effects**: Writes console output, mutates isolated storage/DOM, and removes the temporary bundle.
+
+# Module / File: vite.config.ts
+
+## Function: copyStandaloneReviewers
+- **Purpose**: Ship the zero-build reviewers with the deployed React app.
+- **Inputs**: None.
+- **Outputs**: `Plugin`.
+- **Dependencies**: Node `fs`/`path`, Vite plugin API.
+- **Behavior**: On `closeBundle` during a build, recursively copies each folder in `STANDALONE_REVIEWERS` into `dist/`, warning instead of failing when a folder is missing. Without this the GitHub Pages deployment, which uploads only `dist/`, would serve the SPA but return 404 for the standalone reviewers.
+- **Side Effects**: Writes directories into `dist/`.
+
+## Feature / Capability: Service-worker routing
+- **Purpose**: Keep the SPA's navigation fallback from hijacking the standalone reviewers.
+- **Behavior**: `REVIEWER_ROUTE_PATTERN` matches a reviewer folder segment anywhere in a path, with literal, `%20`, or `+` encoded spaces, and is passed to Workbox as `navigateFallbackDenylist`. The same folder list is passed as `globIgnores` so three large static apps are not added to the SPA precache.
+- **Invariant**: The pattern is unanchored so it works whether the site is served from a domain root or from the `/IT-Subjects-Reviewer/` base path.
+
+## Feature / Capability: PWA icons
+- **Purpose**: Make the installable manifest self-contained.
+- **Behavior**: The manifest references `public/icon-192.png` and `public/icon-512.png`, which are committed to the repository. The previous configuration pointed at a third-party CDN URL, which broke offline installation and added an external dependency.
 
 # Module / File: package.json
 
@@ -1190,9 +1325,10 @@
 - **Purpose**: Run the complete repeatable QA suite.
 - **Inputs**: None.
 - **Outputs**: Process exit code 0 on success or nonzero on failure.
-- **Dependencies**: Node.js, `html-diagnostics.js`, `reviewer-interaction-tests.js`, `jsdom`.
-- **Behavior**: Runs repository diagnostics first and interaction tests only if diagnostics pass.
-- **Side Effects**: Reads source files and writes console output.
+- **Dependencies**: Node.js, `html-diagnostics.js`, `reviewer-interaction-tests.js`, `subject-data-tests.js`, `spa-smoke-tests.js`, `jsdom`, `vite`.
+- **Behavior**: Runs the four suites in sequence, stopping at the first failure: static/data diagnostics for the zero-build reviewers, the JSDOM interaction suite for the SIA reviewer, content-integrity checks for the React subject datasets, and a runtime smoke test of the React application.
+- **Side Effects**: Reads source files, writes temporary bundles under `node_modules/.tmp`, and writes console output.
+- **Compatibility Note**: `package.json` declares `"type": "module"`, so all four scripts are ES modules. They use `import` and derive `__dirname` from `import.meta.url`.
 
 # Module / File: Repository Architecture
 
@@ -1213,10 +1349,19 @@
 
 ## Feature / Capability: Current QA status
 - **Result**: `QA_PASSED`.
-- **Automated Evidence**: `npm test` passes repository diagnostics, classic-script global-collision checks, and the parser-driven JSDOM interaction suite.
-- **Static Evidence**: `node --check` passes both data files and both QA scripts; `git diff --check` reports no whitespace errors.
-- **Visual Evidence**: Desktop 1440×1200 and responsive 500×900 Edge screenshots render correctly; mobile CSS constrains horizontal overflow and supplies 700/440-pixel refinements.
-- **Regression Evidence**: Networking 2 retains 15 topics, 293 terms, 300 cards, 15 tests, and 450 valid questions.
+- **Automated Evidence**: `npm test` runs four suites and all pass — repository diagnostics (including classic-script global-collision checks), the parser-driven JSDOM interaction suite, the React subject-data integrity suite, and the JSDOM runtime smoke suite for the React application.
+- **Static Evidence**: `tsc -b --force` completes with no diagnostics; `vite build` succeeds and emits the SPA plus all three standalone reviewers into `dist/`.
+- **Regression Evidence**: Networking 2 retains 15 topics, 293 terms, 300 cards, 15 tests, and 450 valid questions. The SIA reviewer's blueprint (4 stages), model lens (3 layers), and study loop (4 steps) are unchanged.
+- **Content Evidence**: SIA 1 now covers ten modules with 28 topics, 200 glossary terms, 200 flashcards, ten 20-question tests, 39 scenarios, and 7 standards references; every module owns exactly 20 terms, and all terms and definitions are unique.
+- **Defects Fixed This Pass**:
+  - `npm test` could not run at all: both QA scripts were CommonJS while `package.json` declares `"type": "module"`. Both are now ES modules.
+  - `src/subjects/mobile/data.ts` referenced a glossary term `term-responsive` that did not exist; the term was added.
+  - `SubjectPage` returned early before `useEffect`, so the hook count changed between valid and invalid subject ids.
+  - `incrementStreak` could never reach 1 on a profile's first study day.
+  - `eslint.config.mjs` contained escaped quotes and was not valid JavaScript.
+  - The PWA manifest icon pointed at a third-party CDN URL; local PNGs are now committed.
+  - The GitHub Pages deployment uploads only `dist/`, so the three standalone reviewers were never deployed; the build now copies them.
+- **Known Limitations**: No browser-automation dependency is installed, so verification is JSDOM-based rather than real-browser. Visual/responsive rendering of the new sections was not re-screenshotted this pass.
 # Module / File: src/design-system/tokens.ts
 
 ## Feature: Design System Tokens
@@ -1294,15 +1439,48 @@
 - **Behavior**: Returns default starting values (ease 2.5, interval 0, etc).
 - **Side Effects**: None.
 
+## Function: selectDueCardIds
+- **Purpose**: Build the review queue for a flashcard deck.
+- **Inputs**:
+  - `cardIds` (`string[]`): Every card identifier in the deck, in authoring order.
+  - `cardStates` (`Record<string, CardState>`): Persisted scheduling state keyed by card identifier.
+  - `now` (`number`): Current epoch milliseconds; injected so the result is testable.
+- **Outputs**: `string[]` of due card identifiers in presentation order.
+- **Dependencies**: None.
+- **Behavior**: Puts never-reviewed cards first, then cards whose `nextReview` has passed, sorted earliest first.
+- **Side Effects**: None (pure function).
+
 # Module / File: src/study-engine/progress-store.ts
+
+## Function: deriveTopicMastery
+- **Purpose**: Compute a topic's mastery level from the evidence actually recorded for it.
+- **Inputs**:
+  - `topicId` (`string`): Topic being recalculated.
+  - `state` (`ProgressSnapshot`): Current progress snapshot.
+- **Outputs**: `MasteryLevel`.
+- **Dependencies**: `MASTERY_WEIGHT`, `state.cardTopics`, `state.cardStates`, `state.quizHistory`.
+- **Behavior**: Averages the weighted mastery of the topic's reviewed flashcards with the topic's quiz accuracy. Returns `new` with no evidence, `mastered` at a combined score of 0.85 or better with at least three data points, `reviewing` from 0.5, and `learning` otherwise. Combining both signals prevents a topic from looking mastered on flashcards alone.
+- **Side Effects**: None (pure function).
+
+## Function: computeSubjectMastery
+- **Purpose**: Average a subject's topics into one percentage for the dashboard and sidebar.
+- **Inputs**:
+  - `topicIds` (`string[]`): Every topic identifier belonging to the subject.
+  - `topicMastery` (`Record<string, MasteryLevel>`): Persisted mastery map.
+- **Outputs**: `number` — a whole-number percentage from 0 to 100.
+- **Dependencies**: `MASTERY_WEIGHT`.
+- **Behavior**: Treats an unrecorded topic as `new` (weight 0) so the reported figure is never flattering, then averages the weights.
+- **Side Effects**: None (pure function).
 
 ## Function: useProgressStore
 - **Purpose**: Provide global state management and IndexedDB persistence for study progress.
 - **Inputs**: None.
 - **Outputs**: Zustand store containing ecordFlashcardReview, ecordQuizAnswer, updateTopicMastery, and incrementStreak.
 - **Dependencies**: zustand, idb-keyval, calculateNextReview.
-- **Behavior**: Wraps progress state (mastery, streaks, quiz history) with a persistence middleware using idb-keyval, falling back to localStorage.
+- **Behavior**: Wraps progress state (mastery, streaks, card states, card-to-topic map, quiz history) with a persistence middleware using idb-keyval, falling back to localStorage. `recordFlashcardReview` reschedules the card with SM-2 and records its owning topic. `recordQuizAnswer` stores `topicId` alongside each answer so mastery can be aggregated per topic. Both then recalculate mastery through `deriveTopicMastery` and advance the streak.
 - **Side Effects**: Reads/Writes browser IndexedDB and localStorage.
+- **Persistence Note**: `lastStudyDate` starts empty rather than at today's date. Seeding it with today made `incrementStreak` return early on a new profile's first session, leaving the streak permanently at 0 for that day.
+- **Migration Note**: `cardTopics` and the per-answer `topicId` are additive. Zustand's default shallow merge keeps the initial `{}` for snapshots persisted before these fields existed, and `topicId` is optional in the type, so older snapshots still load.
 
 # Module / File: src/study-engine/adaptive-quiz.ts
 
@@ -1342,8 +1520,20 @@
 - **Inputs**: None (reads subjectId from route params).
 - **Outputs**: React Component.
 - **Dependencies**: React Router, ProgressStore, AdaptiveQuiz, ProfessorModeRenderer.
-- **Behavior**: Resolves subject data, tracks user progress in tabs (Learn, Flashcard, Quiz), and evaluates quiz answers to pass back into the global ProgressStore.
+- **Behavior**: Resolves subject data, tracks user progress in tabs (Learn, Flashcards, Quiz), delegates the flashcard tab to `FlashcardSession`, and evaluates quiz answers to pass back into the global ProgressStore. The Learn tab renders the selected topic through `ProfessorModeRenderer`; the Quiz tab shows an explicit empty state when a subject has no questions.
 - **Side Effects**: Interacts with local state, URL params, and ProgressStore (IndexedDB).
+- **Hook-Order Invariant**: Every hook runs before the "Subject Not Found" branch. Returning early above `useEffect`/`useCallback` would change the hook count when the route moves between a valid and an invalid subject id, which React rejects. A second effect resets tab, topic, and quiz state whenever `subjectId` changes so content from the previous subject cannot leak into the new one.
+
+# Module / File: src/study-engine/flashcard-session.tsx
+
+## Function: FlashcardSession
+- **Purpose**: Run a spaced-repetition review session over one subject's flashcard deck.
+- **Inputs**:
+  - `cards` (`Flashcard[]`): Every card in the subject deck, in authoring order.
+- **Outputs**: React Component.
+- **Dependencies**: `useProgressStore`, `selectDueCardIds`, `ReviewGrade`, lucide-react.
+- **Behavior**: Shows a start screen reporting how many cards are due, offering either the due queue or a full-deck practice run. During a session it displays the question side, hides the answer until requested, then offers Again/Hard/Good/Easy buttons mapped to SM-2 grades 1/3/4/5. Grading writes through `recordFlashcardReview`, which reschedules the card, and advances the queue. A completion screen reports the number reviewed. A queue entry naming a card that no longer exists renders a skip control rather than crashing.
+- **Side Effects**: Writes card scheduling state and topic mastery through the progress store.
 
 # Module / File: src/app/layout/GlobalSearch.tsx
 ## Function: GlobalSearch
@@ -1364,3 +1554,38 @@
 - **Dependencies**: lucide-react.
 - **Behavior**: Manages internal state to cycle through steps (Simulator) or layers (Explorer) to display educational context interactively.
 - **Side Effects**: None.
+
+# Module / File: src/app/routes/Dashboard.tsx
+
+## Function: Dashboard
+- **Purpose**: Show the student's real, store-derived progress across every registered subject.
+- **Inputs**: None.
+- **Outputs**: React Component.
+- **Dependencies**: `subjectsData`, `useProgressStore`, `computeSubjectMastery`, design-system UI components.
+- **Behavior**: Iterates `subjectsData` to build subject cards, computing mastery percentage and the count of topics not yet mastered for each. Recommended topics are the two least-mastered topics across all subjects, ordered by mastery level then syllabus order. The recent-activity feed reads `quizHistory`.
+- **Side Effects**: Navigates on card click.
+- **Correction Note**: This page previously displayed fixed mastery percentages (45/12/80), fixed "topics left" counts, and hard-coded recommended topics that did not correspond to any recorded progress. Every figure is now derived.
+
+# Module / File: src/app/layout/Sidebar.tsx
+
+## Function: Sidebar
+- **Purpose**: Render primary navigation with per-subject mastery rings and an overall progress panel.
+- **Inputs**:
+  - `isOpen` (`boolean`): Mobile drawer visibility.
+  - `onClose` (`function`): Close callback.
+  - `currentSubject` (`SubjectId | undefined`): Active subject for accent highlighting.
+- **Outputs**: React Component.
+- **Dependencies**: `subjectsData`, `useProgressStore`, `computeSubjectMastery`, `react-focus-lock`, `react-router-dom`.
+- **Behavior**: Builds nav items from `subjectsData` rather than a hard-coded list, so a new subject appears automatically. Mastery rings, the overall percentage, and the streak all come from the progress store.
+- **Side Effects**: None beyond routing and focus management.
+- **Correction Note**: The mastery rings (45/12/80), the "42%" overall figure, and the "5 day streak" were previously hard-coded literals.
+
+# Module / File: src/subjects/sia1/data.ts
+
+## Feature / Capability: SIA 1 study-platform dataset
+- **Purpose**: Supply the React platform with content covering the same course modules as the zero-build reviewer.
+- **Data Shapes**: `subjectMeta`, `topics[]`, `glossary[]`, `flashcards[]`, `questions[]` from `src/types/study.ts`.
+- **Coverage**: Ten topics in syllabus order — EIA, IT Governance, Information and Data Modelling, SOA, Microservice Architecture, Data Representation (XML and JSON), Web Services (SOAP/WSDL/UDDI), EAI, Middleware, and Cloud Computing.
+- **Totals**: 10 topics, 45 glossary terms, 26 flashcards, 15 adaptive questions.
+- **Operational Mechanics**: `topics` is declared before `subjectMeta` so `topicCount` and `estimatedHours` are derived from the topic list and cannot drift. `subject-data-tests.js` enforces that invariant for every subject.
+- **Scope Note**: A pre-existing "RESTful APIs & GraphQL" topic was replaced. GraphQL does not appear anywhere in the supplied course materials; REST is retained where the middleware module actually mentions it.
