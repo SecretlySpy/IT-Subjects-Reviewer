@@ -1375,11 +1375,11 @@
 # Module / File: src/types/study.ts
 
 ## Feature: Core Data Schemas
-- **Purpose**: Define the types and interfaces for the study data module including MasteryLevel, SubjectId, ProfessorMode, Topic, Flashcard, Question, GlossaryTerm, SubjectMeta, and ProgressSnapshot.
+- **Purpose**: Define the study data types, including mastery/progress records and optional rich lesson blocks with source attribution.
 - **Inputs**: None.
 - **Outputs**: TypeScript type definitions.
 - **Dependencies**: None.
-- **Behavior**: Provides strict typing for the application data structures.
+- **Behavior**: Provides strict typing for the application data structures. `Topic` can optionally carry `learningObjectives`, discriminated `lessonBlocks`, and HTTPS-oriented `SourceReference` records without changing legacy topics.
 - **Side Effects**: None
 
 # Module / File: src/components/ui/Button.tsx
@@ -1497,12 +1497,12 @@
 # Module / File: src/study-engine/professor-mode.tsx
 
 ## Function: ProfessorModeRenderer
-- **Purpose**: Render the 4-part lesson structure (ELI5, Deep Dive, Analogy, Visual Aid).
+- **Purpose**: Render the core lesson structure plus optional objectives, rich blocks, authoritative sources, and interactive visual aids.
 - **Inputs**:
   - data (ProfessorMode): Lesson contents.
 - **Outputs**: React Element.
 - **Dependencies**: Card, lucide-react icons.
-- **Behavior**: Displays distinct styled sections for each learning pass based on the layout rules. Renders a placeholder or structural visual aid based on type.
+- **Behavior**: Displays styled learning passes, renders paragraph/list/code/callout blocks by discriminator, labels external references, and maps supported visual-aid types to tables, diagrams, or the safe form capstone.
 - **Side Effects**: None.
 
 # Module / File: src/subjects/index.ts
@@ -1520,7 +1520,7 @@
 - **Inputs**: None (reads subjectId from route params).
 - **Outputs**: React Component.
 - **Dependencies**: React Router, ProgressStore, AdaptiveQuiz, ProfessorModeRenderer.
-- **Behavior**: Resolves subject data, tracks user progress in tabs (Learn, Flashcards, Quiz), delegates the flashcard tab to `FlashcardSession`, and evaluates quiz answers to pass back into the global ProgressStore. The Learn tab renders the selected topic through `ProfessorModeRenderer`; the Quiz tab shows an explicit empty state when a subject has no questions.
+- **Behavior**: Resolves subject data, tracks user progress in tabs (Learn, Flashcards, Quiz), delegates the flashcard tab to `FlashcardSession`, and evaluates quiz answers to pass back into the global ProgressStore. The Learn tab passes the selected topic's core and optional rich fields to `ProfessorModeRenderer`; the Quiz tab shows an explicit empty state when a subject has no questions.
 - **Side Effects**: Interacts with local state, URL params, and ProgressStore (IndexedDB).
 - **Hook-Order Invariant**: Every hook runs before the "Subject Not Found" branch. Returning early above `useEffect`/`useCallback` would change the hook count when the route moves between a valid and an invalid subject id, which React rejects. A second effect resets tab, topic, and quiz state whenever `subjectId` changes so content from the previous subject cannot leak into the new one.
 
@@ -1548,7 +1548,7 @@
 
 # Module / File: src/components/diagrams/*
 ## Function: VisualExplorers
-- **Purpose**: Interactive components (PacketSimulator, ArchitectureExplorer, MobileTimeline) mapped to the ProfessorMode renderer.
+- **Purpose**: Interactive components (PacketSimulator, ArchitectureExplorer, MobileTimeline, and SafeFormLab) mapped to the ProfessorMode renderer.
 - **Inputs**: None.
 - **Outputs**: React Component.
 - **Dependencies**: lucide-react.
@@ -1589,3 +1589,147 @@
 - **Totals**: 10 topics, 45 glossary terms, 26 flashcards, 15 adaptive questions.
 - **Operational Mechanics**: `topics` is declared before `subjectMeta` so `topicCount` and `estimatedHours` are derived from the topic list and cannot drift. `subject-data-tests.js` enforces that invariant for every subject.
 - **Scope Note**: A pre-existing "RESTful APIs & GraphQL" topic was replaced. GraphQL does not appear anywhere in the supplied course materials; REST is retained where the middleware module actually mentions it.
+
+# Project Handover — Mobile Computing Modern JavaScript and Web Forms Integration
+_Generated: 2026-08-09 · For: subsequent LLM session_
+
+## 1. Project Overview
+The Mobile Computing curriculum now includes a beginner-undergraduate, three-topic Interactive Mobile Web Forms module in both the standalone reviewer and the TypeScript single-page application (SPA). The work preserves the PDF's registration-form progression while correcting inaccurate claims about `var`, arrow functions, FormData, validation, and `innerHTML`. The implementation phase is complete; automated verification and production builds pass through direct Node entry points.
+
+## 2. System Architecture
+
+```mermaid
+flowchart LR
+  PDF[Modern JS and Web Forms PDF] --> CUR[Corrected curriculum]
+  WEB[MDN, W3C WAI, OWASP] --> CUR
+  CUR --> SD[Mobile Computing/data.js]
+  CUR --> TD[src/subjects/mobile/data.ts]
+  SD --> HTML[Standalone HTML reviewer]
+  SD --> JSX[Standalone JSX reference]
+  TD --> PM[ProfessorModeRenderer]
+  PM --> SPA[React SPA subject page]
+  HTML --> TEST[Mobile JSDOM suite]
+  SPA --> TEST2[SPA smoke suite]
+```
+
+- **Tech stack**: Classic HTML/CSS/JavaScript for the zero-build reviewer; React 19, TypeScript 7, Vite 8, Tailwind CSS 3, Zustand, and JSDOM for the SPA and tests.
+- **Data model decision**: Ordered arrays preserve lesson order. Optional discriminated `LessonBlock` records render paragraphs, lists, code, and callouts. Source records store title, publisher, and HTTPS URL. Sets and maps validate identifiers and derive glossary-to-module relationships in linear time.
+- **Trust boundary**: Curriculum data is repository-authored, while capstone form values are user-controlled. User values are rendered through React text nodes or `textContent`/`replaceChildren`, never an HTML parsing sink.
+
+## 3. Core Features & Functional Specifications
+- **Implemented**: Three lessons—Mobile-First HTML Form Foundations (35 minutes), Event-Driven JavaScript and FormData (45 minutes), and Validation, Accessibility, and Safe DOM Output (45 minutes).
+- **Implemented**: Twelve matching glossary terms, nine new flashcards, six new adaptive/module-test questions, annotated code, objectives, callouts, prediction prompts, comparison tables, and authoritative references.
+- **Implemented**: A live registration capstone with native submit handling, repeated checkboxes, omitted disabled and unnamed controls, loading/success/offline-error states, value preservation after failure, reset after success, and literal XSS-payload output.
+- **Implemented**: Standalone repair covering data-renderer shape alignment, Mobile-specific local-storage keys, Mobile system copy, a five-stage form pipeline, hardware/software/communication layers, scenarios, flashcards, tests, and glossary module derivation.
+- **Out of scope**: Backend submission, authentication, database storage, a code editor, framework migration, or reproducing the PDF slide design.
+
+## 4. File & Module Map
+- `src/types/study.ts`: Defines `LessonBlock`, `SourceReference`, and optional rich-topic fields.
+- `src/study-engine/professor-mode.tsx`: Renders objectives, lesson blocks, accessible code, callouts, sources, and visual aids.
+- `src/components/diagrams/SafeFormLab.tsx`: SPA live form capstone.
+- `src/subjects/mobile/data.ts`: Seven-topic Mobile SPA curriculum with 24 terms, 15 cards, and 9 questions.
+- `Mobile Computing/data.js`: Three-module standalone curriculum with 10 topics, 22 terms, 17 cards, 10 questions, and 5 scenarios.
+- `Mobile Computing/index.html`: Standalone presentation, persistence, pipeline, layer lens, rich lesson rendering, and capstone behavior.
+- `Mobile Computing/MobileComputingBeginnerGuide.jsx`: React reference presentation using the same standalone data.
+- `mobile-reviewer-interaction-tests.js`: Browser-like standalone behavior and security tests.
+
+## 5. Function Documentation
+
+# Module / File: src/components/diagrams/SafeFormLab.tsx
+
+## Function: SafeFormLab
+- **Purpose**: Demonstrate safe, accessible form submission without a network backend.
+- **Inputs**: None; reads uncontrolled native form controls during submission.
+- **Outputs**: React element containing the registration form and live status panel.
+- **Dependencies**: React `useState`, native `FormData`, `SubmitEvent`, and a 350-millisecond simulated request.
+- **Behavior**: Prevents navigation, snapshots successful controls, reads repeated topics with `getAll`, enters loading, returns a recoverable error for `@offline.test`, or displays a text confirmation and resets after success.
+- **Side Effects**: Updates local component state and resets the form after success.
+- **DSA Used**: Ordered topic array from `getAll`; O(n) time and O(n) space for n selected checkboxes.
+- **Data Analysis Notes**: Disabled and unnamed inputs are deliberately present to demonstrate omission from FormData.
+- **Responsive & Accessibility Notes**: One column on small screens and two columns from the medium breakpoint; explicit labels, fieldset/legend, 44-pixel controls, native constraints, and a polite `role=status` region.
+- **Security Notes**: React escapes the status string; no `dangerouslySetInnerHTML` is used.
+- **Verification Status**: Tested in `spa-smoke-tests.js` for repeated/disabled controls, loading, literal XSS payload, success reset, and error preservation.
+
+# Module / File: src/study-engine/professor-mode.tsx
+
+## Function: ProfessorModeRenderer
+- **Purpose**: Render legacy Professor Mode content plus optional rich lesson material and sources.
+- **Inputs**:
+  - `data` (`ProfessorMode`): ELI5, deep dive, analogy, and visual aid.
+  - `learningObjectives` (`string[] | undefined`): Ordered measurable outcomes.
+  - `lessonBlocks` (`LessonBlock[] | undefined`): Discriminated content blocks.
+  - `sources` (`SourceReference[] | undefined`): Authoritative external references.
+- **Outputs**: React lesson presentation.
+- **Dependencies**: Lucide icons and diagram components including `SafeFormLab`.
+- **Behavior**: Preserves the existing lesson sequence, renders optional blocks by kind, and selects the safe form lab for `visualAidData.type === "safe-form-lab"`.
+- **Side Effects**: None.
+- **DSA Used**: One ordered pass over objectives, blocks, and sources; O(b+s) time and React element space.
+- **Data Analysis Notes**: Optional fields maintain compatibility with every pre-existing topic.
+- **Responsive & Accessibility Notes**: Semantic sections/headings, focusable horizontally scrolling code, visible focus styles, and external-link announcements.
+- **Security Notes**: React escapes all curriculum strings and code examples.
+- **Verification Status**: Type-checked, production-built, data-contract tested, and exercised by the SPA smoke suite.
+
+# Module / File: Mobile Computing/index.html
+
+## Function: renderLessonEnhancements
+- **Purpose**: Convert optional standalone objectives, code/callout blocks, and references into safe topic-dialog markup.
+- **Inputs**:
+  - `topic` (`object`): Active topic record.
+- **Outputs**: Escaped HTML string.
+- **Dependencies**: `escapeHtml`.
+- **Behavior**: Renders only known block shapes and labels external links as opening a new tab.
+- **Side Effects**: None.
+- **DSA Used**: Linear mapping over small author-authored arrays; O(b+s).
+- **Data Analysis Notes**: Three enriched topics currently own eight rendered source references.
+- **Responsive & Accessibility Notes**: Code blocks are keyboard-focusable and horizontally scrollable; source links have 44-pixel minimum height.
+- **Security Notes**: Every interpolated value is passed through `escapeHtml`.
+- **Verification Status**: Parsed by repository diagnostics and executed by the Mobile JSDOM suite.
+
+## Function: bindCapstoneLab
+- **Purpose**: Attach safe simulated submission behavior to the standalone registration capstone.
+- **Inputs**: None; discovers capstone elements after the topic dialog is rendered.
+- **Outputs**: None.
+- **Dependencies**: Native form submit event, `FormData`, `textContent`, `createElement`, and `replaceChildren`.
+- **Behavior**: Reads single and repeated values, displays loading, preserves values for the offline error, displays a safe confirmation, and resets only after success.
+- **Side Effects**: Binds one submit listener, schedules one 350-millisecond timer per submission, updates status text, and may reset the form.
+- **DSA Used**: Linear conversion of selected checkbox entries; O(n) time and O(n) space.
+- **Data Analysis Notes**: The simulated `@offline.test` domain provides deterministic recovery testing.
+- **Responsive & Accessibility Notes**: Native validation, labels, fieldset/legend, polite live status, text error messages, and responsive one/two-column layout.
+- **Security Notes**: User data enters the DOM only through `textContent`.
+- **Verification Status**: Tested for success, failure, loading, repeated values, disabled omission, literal XSS payload, and reset/preservation semantics.
+
+# Module / File: mobile-reviewer-interaction-tests.js
+
+## Function: main
+- **Purpose**: Exercise the standalone Mobile reviewer in a browser-like runtime.
+- **Inputs**: Real `Mobile Computing/index.html` and `data.js` sources.
+- **Outputs**: Passing assertions and `MOBILE_INTERACTION_SUITE_PASSED`, or a nonzero process exit.
+- **Dependencies**: JSDOM and Node file/path APIs.
+- **Behavior**: Inlines data, boots the reviewer, checks all major sections, opens the new lesson, exercises progress, capstone states/security, scenarios, flashcards, quizzes, glossary, and global search.
+- **Side Effects**: Creates an in-memory DOM/localStorage instance and closes it after completion.
+- **DSA Used**: Linear DOM collection checks over small bounded datasets.
+- **Data Analysis Notes**: Expected lesson and module counts are asserted against the approved curriculum.
+- **Responsive & Accessibility Notes**: Verifies semantic source links, status states, and real form elements; visual contrast and physical viewport rendering remain reasoned rather than screenshot-measured.
+- **Security Notes**: Explicitly verifies that an HTML/XSS payload creates no image element or event execution.
+- **Verification Status**: Tested; suite passes.
+
+## 6. Immediate Next Steps
+1. No required implementation remains. Future curriculum additions must use the optional `LessonBlock` and `SourceReference` shapes and extend data-contract tests.
+2. If the repository standardizes executable permissions in `node_modules`, rerun `npm run build`; direct `node node_modules/typescript/bin/tsc -b` and `node node_modules/vite/bin/vite.js build` already pass.
+
+## 7. Open Questions & Blockers
+- No product blockers.
+- The local installed `node_modules/.bin/tsc` file lacks execute permission, so the npm build wrapper reports `tsc: Permission denied`; this is generated-environment state, not a TypeScript or application failure.
+- A full `npm audit` reports seven dependency findings (one moderate, six high); `npm audit --omit=dev` reports three high-severity runtime findings in `react-router` and `undici`. No automatic upgrade was applied because dependency upgrades were outside the curriculum scope and could introduce unrelated behavior changes.
+
+## 8. Critical Context
+- Do not reintroduce the PDF's `innerHTML` example with user input. The safe output path is a deliberate security correction.
+- Do not replace `getAll("topics")` with `Object.fromEntries(formData).topics`; repeated checkbox values would be lost.
+- Do not change Mobile persistence keys back to `sia1*`; the previous values were copied defects that leaked course state across reviewers.
+- The escaped `<\/script>` in standalone `data.js` is deliberate: it evaluates to a normal closing script tag in the displayed code while preventing JSDOM's inlined classic script from terminating early.
+- The capstone resets only on success and preserves data on failure by design.
+
+## 9. Verification Status
+- **Tested**: Repository diagnostics, SIA interactions, Mobile interactions, subject-data integrity, SPA runtime behavior, TypeScript project build, and Vite production build.
+- **Reasoned**: WCAG contrast against existing design tokens and layout survival at 200% zoom; no automated visual-regression tool is configured.
+- **Unverified**: Real-device virtual keyboard selection and external source availability while offline; core lessons remain locally available without those links.

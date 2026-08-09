@@ -273,6 +273,58 @@ async function main() {
     "grading a card advances the session queue"
   );
 
+  // The Mobile curriculum must render its rich lesson model and safe live capstone.
+  window.location.hash = "#/subject/mobile";
+  await flush(window);
+  await flush(window);
+  assert(
+    Boolean(findByText(document, "h1", "Mobile Computing & Development")),
+    "the Mobile Computing subject page opens"
+  );
+  assert(
+    Boolean(findByText(document, "button", "Mobile-First HTML Form Foundations")) &&
+      Boolean(findByText(document, "button", "Event-Driven JavaScript and FormData")) &&
+      Boolean(findByText(document, "button", "Validation, Accessibility, and Safe DOM Output")),
+    "the syllabus lists all three enriched web-form lessons"
+  );
+
+  findByText(document, "button", "Validation, Accessibility, and Safe DOM Output").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h2", "Learning objectives")), "rich lesson objectives render");
+  assert(document.querySelectorAll("pre[aria-label$='code example']").length > 0, "rich lesson code renders in a keyboard-scrollable block");
+  assert(document.querySelectorAll("a[href^='https://'][target='_blank']").length >= 3, "rich lesson HTTPS sources render as external links");
+
+  const safeForm = document.querySelector("#safe-form-username").closest("form");
+  const safeUsername = document.querySelector("#safe-form-username");
+  const safeEmail = document.querySelector("#safe-form-email");
+  const safeTopics = [...safeForm.querySelectorAll('input[name="topics"]')];
+  const safeSubmitter = safeForm.querySelector('button[type="submit"]');
+  assert(!safeForm.checkValidity(), "SPA capstone rejects missing required fields with native constraints");
+  safeUsername.value = "Student";
+  safeEmail.value = "not-an-email";
+  assert(!safeForm.checkValidity(), "SPA capstone rejects malformed email with native constraints");
+  safeUsername.value = '<img src=x onerror="window.spaInjected=true">';
+  safeEmail.value = "student@example.com";
+  safeTopics.forEach((control) => { control.checked = true; });
+  const safeSnapshot = new window.FormData(safeForm);
+  assert(safeSnapshot.getAll("topics").length === 2 && !safeSnapshot.has("disabledExample"), "SPA capstone demonstrates repeated and disabled control behavior");
+  safeForm.requestSubmit(safeSubmitter);
+  await flush(window, 2);
+  assert(Boolean(findByText(document, "p[role='status']", "Processing")), "SPA capstone exposes a loading state");
+  await new Promise((resolve) => window.setTimeout(resolve, 400));
+  await flush(window);
+  const safeStatus = document.querySelector("p[role='status']");
+  assert(safeStatus.textContent.includes("<img") && !safeStatus.querySelector("img") && !window.spaInjected, "SPA capstone renders HTML-looking input as literal text");
+  assert(safeUsername.value === "" && safeEmail.value === "", "SPA capstone resets after success");
+
+  safeUsername.value = "Student";
+  safeEmail.value = "student@offline.test";
+  safeForm.dispatchEvent(new window.SubmitEvent("submit", { bubbles: true, cancelable: true, submitter: safeSubmitter }));
+  await new Promise((resolve) => window.setTimeout(resolve, 400));
+  await flush(window);
+  assert(document.querySelector("p[role='status']").textContent.includes("answers were preserved"), "SPA capstone explains recoverable offline failure");
+  assert(safeEmail.value === "student@offline.test", "SPA capstone preserves values after failure");
+
   dom.window.close();
   fs.rmSync(outDir, { recursive: true, force: true });
   console.log("\nSPA_SMOKE_SUITE_PASSED");

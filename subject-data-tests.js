@@ -222,6 +222,40 @@ function checkSubject(key, subject) {
         : ""
     }`
   );
+
+  const invalidLessonContent = topics.filter((topic) => {
+    const hasRichContent = topic.learningObjectives || topic.lessonBlocks || topic.sources;
+    if (!hasRichContent) return false;
+    const validBlocks = Array.isArray(topic.lessonBlocks) && topic.lessonBlocks.length > 0 &&
+      topic.lessonBlocks.every((block) => {
+        if (block.kind === "paragraph") return typeof block.text === "string" && block.text.trim();
+        if (block.kind === "list") return Array.isArray(block.items) && block.items.length > 0;
+        if (block.kind === "code") {
+          return ["html", "javascript"].includes(block.language) &&
+            typeof block.code === "string" && block.code.trim() &&
+            typeof block.caption === "string" && block.caption.trim();
+        }
+        return block.kind === "callout" &&
+          ["note", "warning", "security"].includes(block.tone) &&
+          typeof block.text === "string" && block.text.trim();
+      });
+    const validSources = Array.isArray(topic.sources) && topic.sources.length > 0 &&
+      topic.sources.every((source) =>
+        typeof source.title === "string" && source.title.trim() &&
+        typeof source.publisher === "string" && source.publisher.trim() &&
+        /^https:\/\//.test(source.url)
+      );
+    return !Array.isArray(topic.learningObjectives) || !topic.learningObjectives.length ||
+      !validBlocks || !validSources;
+  });
+  assert(
+    invalidLessonContent.length === 0,
+    `${key}: optional rich lessons have objectives, renderable blocks, and HTTPS sources${
+      invalidLessonContent.length
+        ? ` (bad: ${invalidLessonContent.map((topic) => topic.id).join(", ")})`
+        : ""
+    }`
+  );
 }
 
 /**

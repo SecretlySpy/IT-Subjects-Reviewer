@@ -25,7 +25,7 @@ If you only want to *study*, you need nothing but a browser. If you want to *dev
 | Accessibility | react-focus-lock | `^2.13.7` | Traps focus in the mobile sidebar drawer |
 | Build tool | Vite | `^8.1.5` | Dev server and production bundler |
 | PWA | vite-plugin-pwa (Workbox) | `^1.3.0` | Service worker, manifest, offline precache |
-| Test runtime | jsdom | `^29.1.1` | Browser-like DOM for all four test suites |
+| Test runtime | jsdom | `^29.1.1` | Browser-like DOM for all five test stages |
 | Runtime | Node.js | **20 or newer** (24 recommended) | Required only for development; CI uses 20 |
 | Package manager | npm | Ships with Node.js | `package-lock.json` is committed |
 
@@ -119,7 +119,7 @@ npm run dev
 | `npm run dev` | Vite dev server with hot reload | While developing |
 | `npm run build` | Type-checks, bundles, and copies the standalone reviewers into `dist/` | Before deploying |
 | `npm run preview` | Serves the built `dist/` locally | To sanity-check a production build |
-| `npm test` | Runs all four QA suites in sequence | Before every commit |
+| `npm test` | Runs diagnostics, two standalone interaction suites, subject-data checks, and the SPA smoke suite | Before every commit |
 | `npx tsc -b --force` | Full type-check with no incremental cache | When types look stale |
 
 ---
@@ -131,7 +131,7 @@ npm run dev
 ```mermaid
 flowchart TD
     A[What do you want to do?] --> B{Study or develop?}
-    B -->|Just study| C[Open a reviewer folder]
+    B -->|Study only| C[Open a reviewer folder]
     C --> D[Double-click index.html]
     D --> E([Done — no install needed])
     B -->|Develop| F[Install Node.js 20+]
@@ -182,7 +182,10 @@ flowchart LR
 | :--- | :--- | :--- |
 | A SIA 1 term, topic, scenario, or test question | `Systems Integration and Architecture 1/data.js` | Both `index.html` and the `.jsx` component |
 | A SIA 1 lesson in the React platform | `src/subjects/sia1/data.ts` | The React SPA only |
-| Networking 2 or Mobile Computing content | That folder's `data.js`, or `src/subjects/<id>/data.ts` | Same split as above |
+| Mobile standalone topics, form pipeline, scenarios, or tests | `Mobile Computing/data.js` | Mobile `index.html` and the JSX reference component |
+| Mobile SPA lessons, terms, cards, or questions | `src/subjects/mobile/data.ts` | The React SPA |
+| Rich lesson block or source-link rendering | `src/types/study.ts` and `src/study-engine/professor-mode.tsx` | Every SPA subject with optional rich content |
+| Networking 2 content | `Networking 2/data.js`, or `src/subjects/networking2/data.ts` | Same standalone/SPA split |
 | Colours, spacing, typography | `src/design-system/tokens.ts` | The React SPA |
 | Expected content totals in the tests | `html-diagnostics.js` (`expectedCounts`) | `npm test` |
 
@@ -211,4 +214,14 @@ Node 24  ──✓── recommended for local development
 | Stale content after deploying | An old service worker is still cached | Hard-reload, or unregister the service worker in DevTools |
 | `IndexedDB failed, falling back to localStorage` in test output | Expected — JSDOM has no IndexedDB | Not an error; this exercises the store's fallback path |
 | `npm test` hangs or is slow on first run | The React suites bundle the app with Vite before asserting | Normal; subsequent runs reuse the npm/Vite caches |
+| `Cannot find native binding` mentions Rolldown or Rollup | npm omitted an operating-system-specific optional package | Run `npm install` again from the repository root. Keep `package-lock.json`; do not invent or substitute a similarly named package. |
+| `tsc: Permission denied` even though TypeScript is installed | The generated `node_modules/.bin/tsc` wrapper lost its execute bit | Reinstall dependencies. For diagnosis, `node node_modules/typescript/bin/tsc -b` runs the same compiler entry directly. |
 | Paths with spaces fail in a shell | Folder names contain spaces | Quote them: `cd "Mobile Computing"` |
+
+## 5. Why Mobile Content Has Two Data Files
+
+Plain-language view: the repository ships a zero-build course and a bundled SPA, so each delivery surface keeps content in the format it can load without extra infrastructure.
+
+Precise view: `Mobile Computing/data.js` publishes a classic-script `globalThis.reviewerData` contract, while `src/subjects/mobile/data.ts` exports typed ES modules. Their three web-form lessons must stay conceptually aligned even though their surrounding course schemas differ.
+
+Analogy: think of the two files as print and digital editions of one lesson. A correction belongs in both editions. The analogy breaks because these are executable datasets with different interfaces, not identical pages that can be copied mechanically.

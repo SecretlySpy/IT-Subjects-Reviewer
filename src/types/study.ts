@@ -11,6 +11,37 @@ export interface ProfessorMode {
   visualAidData: Record<string, any>; // structure depends on type
 }
 
+export interface SourceReference {
+  title: string;
+  publisher: string;
+  url: string;
+}
+
+export type LessonBlock =
+  | {
+      kind: "paragraph";
+      title: string;
+      text: string;
+    }
+  | {
+      kind: "list";
+      title: string;
+      items: string[];
+    }
+  | {
+      kind: "code";
+      title: string;
+      language: "html" | "javascript";
+      code: string;
+      caption: string;
+    }
+  | {
+      kind: "callout";
+      tone: "note" | "warning" | "security";
+      title: string;
+      text: string;
+    };
+
 export interface Topic {
   id: string;                 // e.g. "networking2-tcp-reliability"
   subjectId: SubjectId;
@@ -20,6 +51,9 @@ export interface Topic {
   professorMode: ProfessorMode;
   relatedTermIds: string[];
   tags: string[];
+  learningObjectives?: string[];
+  lessonBlocks?: LessonBlock[];
+  sources?: SourceReference[];
 }
 
 export interface Flashcard {

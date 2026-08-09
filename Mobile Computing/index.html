@@ -690,7 +690,7 @@
 
     .architecture-path {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 0.65rem;
       margin-bottom: 1rem;
     }
@@ -901,6 +901,75 @@
       padding: clamp(1rem, 4vw, 2rem);
     }
 
+    .lesson-blocks {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .lesson-code,
+    .lesson-callout,
+    .lesson-sources {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-2);
+      padding: 1rem;
+    }
+
+    .lesson-code pre {
+      max-width: 100%;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: #080c12;
+      padding: 1rem;
+      color: #e2e8f0;
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+
+    .lesson-code code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .lesson-callout[data-tone="warning"] { border-left: 4px solid var(--amber); }
+    .lesson-callout[data-tone="security"] { border-left: 4px solid var(--rose); }
+    .lesson-callout[data-tone="note"] { border-left: 4px solid var(--blue); }
+
+    .lesson-sources a {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      color: var(--teal);
+      text-underline-offset: 0.2em;
+    }
+
+    .capstone-lab {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.75fr);
+      gap: 1rem;
+      margin-top: 1.25rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-2);
+      padding: 1rem;
+    }
+
+    .capstone-lab form,
+    .capstone-lab fieldset {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .capstone-lab input:not([type="checkbox"]) {
+      width: 100%;
+    }
+
+    .capstone-result {
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 1rem;
+    }
+
     .compare-table {
       width: 100%;
       border-collapse: collapse;
@@ -1084,7 +1153,8 @@
       .glossary-grid,
       .two-column,
       .stage-layout,
-      .study-grid {
+      .study-grid,
+      .capstone-lab {
         grid-template-columns: 1fr;
       }
 
@@ -1151,8 +1221,8 @@
   <header class="topbar">
     <div class="container topbar-inner">
       <a class="brand" href="#home" aria-label="Go to reviewer home">
-        <span class="brand-mark">S1</span>
-        <span class="brand-text">Systems Integration &amp; Architecture 1</span>
+        <span class="brand-mark">MC</span>
+        <span class="brand-text">Mobile Computing</span>
       </a>
 
       <nav class="desktop-nav" aria-label="Primary navigation">
@@ -1188,11 +1258,11 @@
   <main>
     <section id="home" class="container hero">
       <div>
-        <span class="eyebrow">Module 1 • Blueprint your understanding</span>
+        <span class="eyebrow">Mobile Computing • Learn, trace, and apply</span>
         <h1>See the <span style="color: var(--teal)">whole system</span>, one clear idea at a time.</h1>
         <p class="lead">
-          Build a friendly mental model of enterprise information architecture,
-          IT governance, and information and data modelling—then test it with realistic decisions.
+          Connect mobile hardware, software, and communication with modern JavaScript,
+          then build accessible, secure web forms designed for phones and tablets.
         </p>
         <div class="button-row">
           <a class="btn primary" href="#dashboard">Start reviewing</a>
@@ -1206,18 +1276,18 @@
         </div>
       </div>
 
-      <div class="hero-visual" aria-label="Enterprise architecture blueprint illustration">
+      <div class="hero-visual" aria-label="Mobile computing system illustration">
         <div class="blueprint-card">
           <div class="blueprint-grid">
-            <div class="blueprint-node">Business<br>Goals</div>
-            <div class="blueprint-node">Trusted<br>Information</div>
-            <div class="blueprint-node">Governed<br>Technology</div>
-            <div class="blueprint-node">Measurable<br>Value</div>
+            <div class="blueprint-node">Mobile<br>Hardware</div>
+            <div class="blueprint-node">Mobile<br>Software</div>
+            <div class="blueprint-node">Wireless<br>Network</div>
+            <div class="blueprint-node">Safe Web<br>Interaction</div>
           </div>
         </div>
         <div class="floating-note">
           <strong>Big idea:</strong><br>
-          Architecture connects strategy, information, people, process, and technology.
+          A mobile experience crosses device, software, communication, accessibility, and security boundaries.
         </div>
       </div>
     </section>
@@ -1259,12 +1329,12 @@
       <div class="section-heading reveal">
         <span class="section-icon">02</span>
         <div>
-          <h2>EIA blueprint explorer</h2>
-          <p>Move from high-level intent to real operation. Each stage adds detail without losing the business meaning established before it.</p>
+          <h2>Form interaction pipeline</h2>
+          <p>Trace a mobile form from semantic HTML through submission, extraction, validation, safe output, and recovery.</p>
         </div>
       </div>
       <div class="panel reveal">
-        <div id="architecturePath" class="architecture-path" aria-label="Reference architecture stages"></div>
+          <div id="architecturePath" class="architecture-path" aria-label="Form interaction stages"></div>
         <div class="stage-layout">
           <div id="stageList" class="stage-list" role="tablist" aria-label="Blueprint stages"></div>
           <div id="stageDetail" class="stage-detail" role="tabpanel"></div>
@@ -1276,8 +1346,8 @@
       <div class="section-heading reveal">
         <span class="section-icon">03</span>
         <div>
-          <h2>Information and data model lens</h2>
-          <p>Switch lenses to see what, how, and where—then match representative constructs to the correct layer.</p>
+          <h2>Mobile system layer lens</h2>
+          <p>Switch between hardware, software, and communication, then match representative components to their layer.</p>
         </div>
       </div>
       <div class="two-column">
@@ -1297,8 +1367,8 @@
       <div class="section-heading reveal">
         <span class="section-icon">04</span>
         <div>
-          <h2>Enterprise decision lab</h2>
-          <p>Classify data realms, choose governance actions, and identify model layers. Every answer includes a plain-language explanation.</p>
+          <h2>Mobile decision lab</h2>
+          <p>Choose accessible, secure, and resilient implementation decisions. Every answer includes a plain-language explanation.</p>
         </div>
       </div>
       <div id="scenarioFilters" class="chip-row reveal" aria-label="Filter scenario categories"></div>
@@ -1361,7 +1431,7 @@
       </div>
       <div class="panel reveal">
         <label for="glossarySearch"><strong>Find a term or meaning</strong></label>
-        <input id="glossarySearch" class="search-input" type="search" placeholder="Try “governance”, “metadata”, or “logical”…">
+        <input id="glossarySearch" class="search-input" type="search" placeholder="Try “FormData”, “sensor”, or “inputmode”…">
         <div id="glossaryFilters" class="chip-row" style="margin-top: 0.8rem" aria-label="Filter glossary by module"></div>
         <div id="glossaryGrid" class="glossary-grid"></div>
       </div>
@@ -1403,6 +1473,7 @@
       practiceTests,
       blueprintStages,
       modelLayers,
+      modelMatchItems,
       scenarios,
       studySteps,
     } = globalThis.reviewerData;
@@ -1412,6 +1483,14 @@
 
     // Cache valid scenario identifiers for the same defensive restoration behavior.
     const validScenarioIds = new Set(scenarios.map((scenario) => scenario.id));
+
+    // Associate terms with modules through the topic data instead of relying on fixed-size glossary groups.
+    const glossaryModuleByTerm = new Map();
+    topics.forEach((topic) => {
+      topic.terms.forEach((term) => {
+        if (!glossaryModuleByTerm.has(term)) glossaryModuleByTerm.set(term, topic.moduleId);
+      });
+    });
 
     // Select one DOM element and keep call sites compact.
     const $ = (selector, root = document) => root.querySelector(selector);
@@ -1486,17 +1565,17 @@
     }
 
     // Restore topic completion only when the stored shape and identifiers are valid.
-    const storedStudied = readStoredJson("sia1Studied", []);
+    const storedStudied = readStoredJson("mobileStudied", []);
 
     // Restore scenario progress with separate completed and correct identifiers.
-    const storedScenarioProgress = readStoredJson("sia1ScenarioProgress", {
+    const storedScenarioProgress = readStoredJson("mobileScenarioProgress", {
       completed: [],
       correct: [],
     });
 
     // Hold all short-lived and persistent UI state in one explicit object.
     const state = {
-      theme: storageGet("sia1Theme") === "dark" ? "dark" : "light",
+      theme: storageGet("mobileTheme") === "dark" ? "dark" : "light",
       moduleFilter: "All",
       glossaryFilter: "All",
       studied: new Set(
@@ -1504,8 +1583,8 @@
           ? storedStudied.filter((id) => validTopicIds.has(id))
           : []
       ),
-      bestQuizScore: Math.min(100, safeCount(storageGet("sia1BestScore"))),
-      cardsSeen: safeCount(storageGet("sia1SeenCards")),
+      bestQuizScore: Math.min(100, safeCount(storageGet("mobileBestScore"))),
+      cardsSeen: safeCount(storageGet("mobileSeenCards")),
       blueprintIndex: 0,
       modelLayerIndex: 0,
       modelMatchIndex: 0,
@@ -1531,16 +1610,6 @@
       submitted: false,
     };
 
-    // Define representative constructs for the lightweight layer-matching exercise.
-    const modelMatchItems = [
-      { construct: "Information Concept", layerId: "conceptual" },
-      { construct: "Data Subject", layerId: "conceptual" },
-      { construct: "Information View", layerId: "logical" },
-      { construct: "Data Representation", layerId: "logical" },
-      { construct: "Information Store", layerId: "physical" },
-      { construct: "Physical Data Object", layerId: "physical" },
-    ];
-
     // Keep a single timeout reference so rapid toasts replace rather than overlap.
     let toastTimer = null;
 
@@ -1549,11 +1618,11 @@
      * @returns {void}
      */
     function saveProgress() {
-      storageSet("sia1Studied", JSON.stringify([...state.studied]));
-      storageSet("sia1BestScore", String(state.bestQuizScore));
-      storageSet("sia1SeenCards", String(state.cardsSeen));
+      storageSet("mobileStudied", JSON.stringify([...state.studied]));
+      storageSet("mobileBestScore", String(state.bestQuizScore));
+      storageSet("mobileSeenCards", String(state.cardsSeen));
       storageSet(
-        "sia1ScenarioProgress",
+        "mobileScenarioProgress",
         JSON.stringify({
           completed: [...state.scenarioCompleted],
           correct: [...state.scenarioCorrect],
@@ -1586,7 +1655,7 @@
         "aria-label",
         state.theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
       );
-      storageSet("sia1Theme", state.theme);
+      storageSet("mobileTheme", state.theme);
     }
 
     /**
@@ -1717,6 +1786,7 @@
               <div class="topic-meta">
                 <span class="pill">${topic.terms.length} key terms</span>
                 <span class="pill">${topic.keyPoints.length} takeaways</span>
+                ${topic.estimatedMinutes ? `<span class="pill">${escapeHtml(topic.estimatedMinutes)} minutes</span>` : ""}
               </div>
               <div class="button-row">
                 <button class="btn primary" type="button" data-open-topic="${escapeHtml(topic.id)}">Open guide</button>
@@ -1758,6 +1828,103 @@
     }
 
     /**
+     * Render optional rich lesson blocks while escaping every data value.
+     * @param {object} topic - Topic that may contain objectives, blocks, and sources.
+     * @returns {string} Safe HTML assembled from escaped text.
+     */
+    function renderLessonEnhancements(topic) {
+      const objectives = Array.isArray(topic.objectives) && topic.objectives.length
+        ? `<section><h3>Learning objectives</h3><ul>${topic.objectives.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></section>`
+        : "";
+      const blocks = Array.isArray(topic.lessonBlocks)
+        ? topic.lessonBlocks.map((block) => {
+            if (block.kind === "code") {
+              return `<section class="lesson-code"><h3>${escapeHtml(block.title)}</h3><pre tabindex="0" aria-label="${escapeHtml(block.title)} code example"><code>${escapeHtml(block.code)}</code></pre><p>${escapeHtml(block.caption)}</p></section>`;
+            }
+            if (block.kind === "callout") {
+              return `<section class="lesson-callout" data-tone="${escapeHtml(block.tone)}"><h3>${escapeHtml(block.title)}</h3><p>${escapeHtml(block.text)}</p></section>`;
+            }
+            return "";
+          }).join("")
+        : "";
+      const references = Array.isArray(topic.sources) && topic.sources.length
+        ? `<section class="lesson-sources"><h3>Sources and further reading</h3><ul>${topic.sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer" aria-label="${escapeHtml(`${source.publisher}: ${source.title} (opens in a new tab)`)}">${escapeHtml(source.publisher)}: ${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul></section>`
+        : "";
+      return objectives || blocks || references
+        ? `<div class="lesson-blocks">${objectives}${blocks}${references}</div>`
+        : "";
+    }
+
+    /**
+     * Render the live form capstone only for the safety lesson.
+     * @param {object} topic - Active topic.
+     * @returns {string} Capstone markup or an empty string.
+     */
+    function renderCapstoneLab(topic) {
+      if (topic.id !== "web-form-safety") return "";
+      return `
+        <section class="capstone-lab" aria-labelledby="capstoneTitle">
+          <form id="capstoneForm" aria-describedby="capstoneHelp">
+            <h3 id="capstoneTitle">Safe registration capstone</h3>
+            <p id="capstoneHelp">Use an address ending in <code>@offline.test</code> to exercise the recoverable error state.</p>
+            <label for="capstoneUsername">Username</label>
+            <input id="capstoneUsername" name="username" autocomplete="username" required minlength="2">
+            <label for="capstoneEmail">Email address</label>
+            <input id="capstoneEmail" name="email" type="email" autocomplete="email" required>
+            <fieldset>
+              <legend>Topics</legend>
+              <label><input type="checkbox" name="topics" value="apps"> Apps</label>
+              <label><input type="checkbox" name="topics" value="security"> Security</label>
+            </fieldset>
+            <input class="hidden" name="disabledExample" value="omitted" disabled aria-hidden="true">
+            <input class="hidden" value="unnamed controls are omitted" tabindex="-1" aria-hidden="true">
+            <button id="capstoneSubmit" class="btn primary" type="submit">Create account</button>
+          </form>
+          <div class="capstone-result">
+            <h3>Live result</h3>
+            <p id="capstoneStatus" role="status" aria-live="polite" data-state="idle">Complete the form, then submit it with the button or Enter key.</p>
+            <small>Output is created with textContent so HTML-looking usernames remain text.</small>
+          </div>
+        </section>`;
+    }
+
+    /**
+     * Bind the capstone after its dialog markup exists.
+     * @returns {void}
+     */
+    function bindCapstoneLab() {
+      const form = $("#capstoneForm");
+      if (!(form instanceof HTMLFormElement)) return;
+      const status = $("#capstoneStatus");
+      const submit = $("#capstoneSubmit");
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const username = String(formData.get("username") ?? "").trim();
+        const email = String(formData.get("email") ?? "").trim();
+        const selectedTopics = formData.getAll("topics").map(String);
+        submit.disabled = true;
+        submit.textContent = "Processing…";
+        status.dataset.state = "loading";
+        status.textContent = "Processing the simulated request…";
+        window.setTimeout(() => {
+          submit.disabled = false;
+          submit.textContent = "Create account";
+          if (email.toLowerCase().endsWith("@offline.test")) {
+            status.dataset.state = "error";
+            status.textContent = "The simulated network is offline. Your answers were preserved; change the email or try again.";
+            return;
+          }
+          const message = document.createElement("span");
+          message.textContent = `Welcome, ${username}. We will contact ${email}. Topics: ${selectedTopics.length ? selectedTopics.join(", ") : "none selected"}.`;
+          status.dataset.state = "success";
+          status.replaceChildren(message);
+          form.reset();
+        }, 350);
+      });
+    }
+
+    /**
      * Render a full topic guide in the native accessible dialog.
      * @param {string} topicId - Topic identifier to display.
      * @param {boolean} show - Whether to open a closed dialog.
@@ -1769,13 +1936,15 @@
       const module = modules.find((entry) => entry.id === topic.moduleId);
       $("#topicDialogTitle").textContent = `${topic.unit} ${topic.title}`;
       $("#topicDialogBody").innerHTML = `
-        <span class="eyebrow">${escapeHtml(module.label)} • ${escapeHtml(module.title)}</span>
+        <span class="eyebrow">${escapeHtml(module.label)} • ${escapeHtml(module.title)}${topic.estimatedMinutes ? ` • ${escapeHtml(topic.estimatedMinutes)} minutes` : ""}</span>
         <h2 style="margin-top: 0.8rem">${escapeHtml(topic.title)}</h2>
         <p class="lead">${escapeHtml(topic.beginner)}</p>
         <div class="panel" style="margin-bottom: 1rem">
           <strong>Relatable example</strong>
           <p style="margin-bottom: 0">${escapeHtml(topic.example)}</p>
         </div>
+        ${renderLessonEnhancements(topic)}
+        ${renderCapstoneLab(topic)}
         <div class="two-column">
           <div>
             <h3>Key points</h3>
@@ -1804,6 +1973,7 @@
         </div>
       `;
       $("[data-dialog-studied]").addEventListener("click", () => toggleStudied(topic.id));
+      bindCapstoneLab();
       if (show && !$("#topicDialog").open) $("#topicDialog").showModal();
     }
 
@@ -2268,10 +2438,10 @@
     function renderGlossary() {
       const query = $("#glossarySearch").value.trim().toLowerCase();
       const entries = glossary
-        .map(([term, definition], index) => ({
+        .map(([term, definition]) => ({
           term,
           definition,
-          module: modules[Math.min(Math.floor(index / 20), modules.length - 1)],
+          module: modules.find((module) => module.id === glossaryModuleByTerm.get(term)) || modules[0],
         }))
         .filter((entry) => {
           const moduleMatches =
@@ -2522,4 +2692,3 @@
   </script>
 </body>
 </html>
-

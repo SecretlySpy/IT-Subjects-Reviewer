@@ -80,6 +80,38 @@ const REVIEWERS = [
       references: 7,
     },
   },
+  {
+    name: "Mobile Computing",
+    directory: "Mobile Computing",
+    requiredIds: [
+      "dashboard",
+      "topicGrid",
+      "blueprint",
+      "architecturePath",
+      "model-lens",
+      "modelMatch",
+      "scenarios",
+      "scenarioCard",
+      "practice",
+      "flashcardPanel",
+      "quizPanel",
+      "glossary",
+      "glossaryGrid",
+    ],
+    expectedCounts: {
+      modules: 3,
+      topics: 10,
+      glossary: 22,
+      flashcards: 17,
+      practiceTests: 3,
+      questions: 10,
+      blueprintStages: 5,
+      modelLayers: 3,
+      modelMatchItems: 6,
+      scenarios: 5,
+      studySteps: 4,
+    },
+  },
 ];
 
 /**
@@ -364,6 +396,52 @@ function checkSharedDataShapes(data) {
 }
 
 /**
+ * Validate optional objectives, lesson blocks, and source links.
+ * @param {object} data - Evaluated reviewer data.
+ * @returns {boolean[]} Individual diagnostic outcomes.
+ */
+function checkLessonEnhancements(data) {
+  const enriched = data.topics.filter(
+    (topic) => topic.objectives || topic.lessonBlocks || topic.sources
+  );
+  if (!enriched.length) return [];
+  const results = [];
+  const validBlocks = enriched.every(
+    (topic) =>
+      Array.isArray(topic.objectives) && topic.objectives.length > 0 &&
+      Array.isArray(topic.lessonBlocks) && topic.lessonBlocks.length > 0 &&
+      topic.lessonBlocks.every((block) => {
+        if (block.kind === "code") {
+          return ["html", "javascript"].includes(block.language) &&
+            typeof block.code === "string" && block.code.trim() &&
+            typeof block.caption === "string" && block.caption.trim();
+        }
+        return block.kind === "callout" &&
+          ["note", "warning", "security"].includes(block.tone) &&
+          typeof block.text === "string" && block.text.trim();
+      })
+  );
+  results.push(
+    validBlocks
+      ? pass(`All ${enriched.length} enriched topics define objectives and renderable lesson blocks.`)
+      : fail("One or more enriched topics have invalid objectives or lesson blocks.")
+  );
+  const sourceUrls = enriched.flatMap((topic) => topic.sources || []);
+  const validSources = sourceUrls.length > 0 && sourceUrls.every(
+    (source) =>
+      typeof source.title === "string" && source.title.trim() &&
+      typeof source.publisher === "string" && source.publisher.trim() &&
+      /^https:\/\//.test(String(source.url))
+  );
+  results.push(
+    validSources
+      ? pass(`All ${sourceUrls.length} lesson references use titled HTTPS sources.`)
+      : fail("One or more lesson references are incomplete or do not use HTTPS.")
+  );
+  return results;
+}
+
+/**
  * Validate every quiz and scenario answer index.
  * @param {object} data - Evaluated reviewer data.
  * @returns {boolean[]} Individual diagnostic outcomes.
@@ -426,11 +504,11 @@ function checkAnswerIndexes(data) {
 }
 
 /**
- * Validate SIA-specific module relationships and advanced interaction data.
+ * Validate module relationships and advanced interaction data when present.
  * @param {object} data - Evaluated reviewer data.
  * @returns {boolean[]} Individual diagnostic outcomes.
  */
-function checkSiaRelationships(data) {
+function checkModuleRelationships(data) {
   if (!Array.isArray(data.modules)) return [];
   const results = [];
   const moduleIds = new Set(data.modules.map((module) => module.id));
@@ -565,8 +643,9 @@ function runReviewerDiagnostics(reviewer) {
     results.push(checkUniqueIds(data.scenarios, "Scenario"));
   }
   results.push(...checkSharedDataShapes(data));
+  results.push(...checkLessonEnhancements(data));
   results.push(...checkAnswerIndexes(data));
-  results.push(...checkSiaRelationships(data));
+  results.push(...checkModuleRelationships(data));
   return results.every(Boolean);
 }
 

@@ -25,6 +25,7 @@ const {
   practiceTests = [],
   blueprintStages = [],
   modelLayers = [],
+  modelMatchItems = [],
   scenarios = [],
   studySteps = [],
 } = data;
@@ -38,6 +39,13 @@ const toneMap = {
   green: "border-emerald-500 text-emerald-700 dark:text-emerald-300",
   rose: "border-rose-500 text-rose-700 dark:text-rose-300",
 };
+
+const glossaryModuleByTerm = new Map();
+topics.forEach((topic) => {
+  topic.terms.forEach((term) => {
+    if (!glossaryModuleByTerm.has(term)) glossaryModuleByTerm.set(term, topic.moduleId);
+  });
+});
 
 /**
  * Render a compact semantic label.
@@ -82,6 +90,61 @@ function readStoredJson(key, fallback) {
 }
 
 /**
+ * Demonstrate safe form submission without a backend.
+ * @returns {React.ReactElement} Interactive registration capstone.
+ */
+function SafeFormCapstone() {
+  const [state, setState] = useState("idle");
+  const [message, setMessage] = useState("Complete the form, then submit it with the button or Enter key.");
+
+  async function submit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const username = String(formData.get("username") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const selectedTopics = formData.getAll("topics").map(String);
+    setState("loading");
+    setMessage("Processing the simulated request…");
+    await new Promise((resolve) => window.setTimeout(resolve, 350));
+    if (email.toLowerCase().endsWith("@offline.test")) {
+      setState("error");
+      setMessage("The simulated network is offline. Your answers were preserved; change the email or try again.");
+      return;
+    }
+    setState("success");
+    setMessage(`Welcome, ${username}. We will contact ${email}. Topics: ${selectedTopics.length ? selectedTopics.join(", ") : "none selected"}.`);
+    form.reset();
+  }
+
+  return (
+    <section className="my-6 grid gap-4 rounded-xl border border-stone-300 p-4 dark:border-stone-700 md:grid-cols-[1fr_0.8fr]" aria-labelledby="react-capstone-title">
+      <form onSubmit={submit} className="grid gap-3" aria-describedby="react-capstone-help">
+        <h4 id="react-capstone-title" className="text-xl font-bold">Safe registration capstone</h4>
+        <p id="react-capstone-help" className="text-sm text-stone-600 dark:text-stone-300">Use an address ending in <code>@offline.test</code> to exercise the error state.</p>
+        <label htmlFor="react-capstone-username">Username</label>
+        <input id="react-capstone-username" name="username" autoComplete="username" required minLength={2} className="min-h-11 rounded-xl border border-stone-300 bg-white px-3 dark:border-stone-700 dark:bg-stone-900" />
+        <label htmlFor="react-capstone-email">Email address</label>
+        <input id="react-capstone-email" name="email" type="email" autoComplete="email" required className="min-h-11 rounded-xl border border-stone-300 bg-white px-3 dark:border-stone-700 dark:bg-stone-900" />
+        <fieldset className="rounded-xl border border-stone-300 p-3 dark:border-stone-700">
+          <legend>Topics</legend>
+          <label className="mr-4 inline-flex min-h-11 items-center gap-2"><input type="checkbox" name="topics" value="apps" /> Apps</label>
+          <label className="inline-flex min-h-11 items-center gap-2"><input type="checkbox" name="topics" value="security" /> Security</label>
+        </fieldset>
+        <input name="disabledExample" value="omitted" disabled readOnly className="hidden" aria-hidden="true" />
+        <input defaultValue="unnamed controls are omitted" className="hidden" aria-hidden="true" tabIndex={-1} />
+        <button type="submit" disabled={state === "loading"} className="min-h-11 rounded-xl bg-teal-800 px-4 font-bold text-white disabled:opacity-60">{state === "loading" ? "Processing…" : "Create account"}</button>
+      </form>
+      <div className="rounded-xl bg-stone-100 p-4 dark:bg-stone-800">
+        <h4 className="font-bold">Live result</h4>
+        <p role="status" aria-live="polite" className={state === "error" ? "text-rose-700 dark:text-rose-300" : state === "success" ? "text-emerald-700 dark:text-emerald-300" : ""}>{message}</p>
+        <small>React displays the message as text, so HTML-looking usernames cannot create elements.</small>
+      </div>
+    </section>
+  );
+}
+
+/**
  * Render one expanded topic guide.
  * @param {{topic: object, studied: boolean, onToggle: Function, onClose: Function}} props - Topic interaction contract.
  * @returns {React.ReactElement} Expanded topic content.
@@ -92,7 +155,7 @@ function TopicDetail({ topic, studied, onToggle, onClose }) {
     <Panel className="col-span-full scroll-mt-24 border-teal-500">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Chip>{module?.label} • {topic.unit}</Chip>
+          <Chip>{module?.label} • {topic.unit}{topic.estimatedMinutes ? ` • ${topic.estimatedMinutes} minutes` : ""}</Chip>
           <h3 className="mt-3 font-['Space_Grotesk'] text-3xl font-bold text-teal-950 dark:text-teal-100">
             {topic.title}
           </h3>
@@ -111,6 +174,28 @@ function TopicDetail({ topic, studied, onToggle, onClose }) {
       <div className="my-5 rounded-xl bg-amber-50 p-4 text-amber-950 dark:bg-amber-950/30 dark:text-amber-100">
         <strong>Relatable example:</strong> {topic.example}
       </div>
+
+      {topic.objectives?.length > 0 && (
+        <section className="my-5 rounded-xl border border-stone-300 p-4 dark:border-stone-700">
+          <h4 className="font-bold text-teal-950 dark:text-teal-100">Learning objectives</h4>
+          <ul className="list-disc space-y-2 pl-5 text-stone-700 dark:text-stone-300">
+            {topic.objectives.map((objective) => <li key={objective}>{objective}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {topic.lessonBlocks?.map((block, index) => block.kind === "code" ? (
+        <section key={`${block.title}-${index}`} className="my-5 overflow-hidden rounded-xl border border-stone-700 bg-slate-950 text-slate-100">
+          <h4 className="border-b border-slate-700 px-4 py-3 font-bold">{block.title}</h4>
+          <pre className="overflow-x-auto p-4 text-sm leading-6" tabIndex={0} aria-label={`${block.title} code example`}><code>{block.code}</code></pre>
+          <p className="border-t border-slate-700 px-4 py-3 text-sm text-slate-300">{block.caption}</p>
+        </section>
+      ) : (
+        <section key={`${block.title}-${index}`} className={`my-5 rounded-xl border-l-4 p-4 ${block.tone === "security" ? "border-rose-600 bg-rose-50 dark:bg-rose-950/30" : block.tone === "warning" ? "border-amber-600 bg-amber-50 dark:bg-amber-950/30" : "border-blue-600 bg-blue-50 dark:bg-blue-950/30"}`}>
+          <h4 className="font-bold">{block.title}</h4>
+          <p>{block.text}</p>
+        </section>
+      ))}
 
       <div className="grid gap-5 md:grid-cols-2">
         <div>
@@ -157,6 +242,23 @@ function TopicDetail({ topic, studied, onToggle, onClose }) {
         ))}
       </div>
 
+      {topic.sources?.length > 0 && (
+        <section className="mt-6 border-t border-stone-300 pt-5 dark:border-stone-700">
+          <h4 className="font-bold text-teal-950 dark:text-teal-100">Sources and further reading</h4>
+          <ul className="list-disc space-y-2 pl-5">
+            {topic.sources.map((source) => (
+              <li key={source.url}>
+                <a className="inline-flex min-h-11 items-center text-teal-700 underline dark:text-teal-300" href={source.url} target="_blank" rel="noreferrer">
+                  {source.publisher}: {source.title} <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {topic.id === "web-form-safety" && <SafeFormCapstone />}
+
       <button
         type="button"
         onClick={onToggle}
@@ -177,7 +279,7 @@ function TopicDashboard() {
   const [filter, setFilter] = useState("All");
   const [selectedTopicId, setSelectedTopicId] = useState(null);
   const [studied, setStudied] = useState(() => {
-    const stored = readStoredJson("sia1Studied", []);
+    const stored = readStoredJson("mobileStudied", []);
     return new Set(Array.isArray(stored) ? stored.filter((id) => validIds.has(id)) : []);
   });
 
@@ -188,7 +290,7 @@ function TopicDashboard() {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem("sia1Studied", JSON.stringify([...studied]));
+      window.localStorage.setItem("mobileStudied", JSON.stringify([...studied]));
     } catch {
       // Keep the component usable when the host blocks storage.
     }
@@ -296,7 +398,7 @@ function TopicDashboard() {
 }
 
 /**
- * Render the four-stage EIA blueprint explorer.
+ * Render the form-interaction pipeline explorer.
  * @returns {React.ReactElement} Blueprint section.
  */
 function BlueprintExplorer() {
@@ -307,7 +409,7 @@ function BlueprintExplorer() {
     <section id="blueprint" className="scroll-mt-24 py-16">
       <Chip>02 • Blueprint</Chip>
       <h2 className="mt-3 font-['Space_Grotesk'] text-4xl font-bold text-teal-950 dark:text-teal-100">
-        EIA blueprint explorer
+        Form interaction pipeline
       </h2>
       <div className="grid gap-4 lg:grid-cols-[0.42fr_1fr]">
         <div className="grid gap-2" role="tablist" aria-label="Blueprint stages">
@@ -346,14 +448,7 @@ function BlueprintExplorer() {
  * @returns {React.ReactElement} Model lens section.
  */
 function ModelLens() {
-  const matches = [
-    { construct: "Information Concept", layerId: "conceptual" },
-    { construct: "Data Subject", layerId: "conceptual" },
-    { construct: "Information View", layerId: "logical" },
-    { construct: "Data Representation", layerId: "logical" },
-    { construct: "Information Store", layerId: "physical" },
-    { construct: "Physical Data Object", layerId: "physical" },
-  ];
+  const matches = modelMatchItems;
   const [layerIndex, setLayerIndex] = useState(0);
   const [matchIndex, setMatchIndex] = useState(0);
   const [selection, setSelection] = useState(null);
@@ -364,7 +459,7 @@ function ModelLens() {
     <section id="models" className="scroll-mt-24 py-16">
       <Chip>03 • Model lens</Chip>
       <h2 className="mt-3 font-['Space_Grotesk'] text-4xl font-bold text-teal-950 dark:text-teal-100">
-        Conceptual, logical, and physical
+        Hardware, software, and communication
       </h2>
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel>
@@ -448,7 +543,7 @@ function ScenarioLab() {
   const [index, setIndex] = useState(0);
   const [selection, setSelection] = useState(null);
   const [completed, setCompleted] = useState(() => {
-    const stored = readStoredJson("sia1ScenarioProgress", { completed: [] });
+    const stored = readStoredJson("mobileScenarioProgress", { completed: [] });
     return new Set(Array.isArray(stored?.completed) ? stored.completed : []);
   });
   const available = useMemo(
@@ -460,7 +555,7 @@ function ScenarioLab() {
   useEffect(() => {
     try {
       window.localStorage.setItem(
-        "sia1ScenarioProgress",
+        "mobileScenarioProgress",
         JSON.stringify({ completed: [...completed] })
       );
     } catch {
@@ -477,7 +572,7 @@ function ScenarioLab() {
     <section id="scenarios" className="scroll-mt-24 py-16">
       <Chip>04 • Apply</Chip>
       <h2 className="mt-3 font-['Space_Grotesk'] text-4xl font-bold text-teal-950 dark:text-teal-100">
-        Enterprise decision lab
+        Mobile decision lab
       </h2>
       <div className="mb-5 flex flex-wrap gap-2">
         {categories.map((category) => (
@@ -702,10 +797,10 @@ function Glossary() {
   const entries = useMemo(
     () =>
       glossary
-        .map(([term, definition], index) => ({
+        .map(([term, definition]) => ({
           term,
           definition,
-          module: modules[Math.min(Math.floor(index / 20), modules.length - 1)],
+          module: modules.find((module) => module.id === glossaryModuleByTerm.get(term)) || modules[0],
         }))
         .filter((entry) => {
           const moduleMatches = moduleId === "All" || entry.module.id === moduleId;
@@ -726,7 +821,7 @@ function Glossary() {
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Try governance, metadata, or logical…"
+          placeholder="Try FormData, sensor, or inputmode…"
           className="mt-2 w-full rounded-xl border border-stone-300 bg-white p-3 dark:border-stone-700 dark:bg-stone-900"
         />
         <div className="my-4 flex flex-wrap gap-2">
@@ -762,7 +857,7 @@ export default function MobileComputingBeginnerGuide() {
         <header className="sticky top-0 z-40 border-b border-stone-300 bg-white/90 backdrop-blur dark:border-stone-700 dark:bg-stone-900/90">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
             <a href="#home" className="font-['Space_Grotesk'] font-bold text-teal-950 dark:text-teal-100">
-              S1 • {course.title}
+              MC • {course.title}
             </a>
             <nav className="hidden gap-4 text-sm font-bold md:flex" aria-label="Reviewer navigation">
               <a href="#dashboard">Topics</a>
@@ -796,7 +891,7 @@ export default function MobileComputingBeginnerGuide() {
             <Panel className="rotate-1 border-teal-500 bg-teal-50 dark:bg-teal-950/20">
               <h2 className="text-2xl font-bold text-teal-950 dark:text-teal-100">Your learning blueprint</h2>
               <div className="grid gap-3 sm:grid-cols-2">
-                {["Business goals", "Trusted information", "Governed technology", "Measurable value"].map((label) => (
+                {["Mobile hardware", "Mobile software", "Wireless network", "Safe web interaction"].map((label) => (
                   <div key={label} className="grid min-h-28 place-items-center rounded-xl border border-dashed border-teal-600 bg-white p-4 text-center font-bold dark:bg-stone-900">
                     {label}
                   </div>
@@ -830,4 +925,3 @@ export default function MobileComputingBeginnerGuide() {
     </div>
   );
 }
-

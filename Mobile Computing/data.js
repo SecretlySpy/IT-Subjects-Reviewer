@@ -25,7 +25,23 @@ const modules = [
     title: "Modern JavaScript with ES6",
     objective: "Learn modern JS features including variable scoping, arrow functions, destructuring, promises, and classes.",
   },
+  {
+    id: "m3",
+    label: "3",
+    title: "Interactive Mobile Web Forms",
+    objective: "Build, process, validate, and safely present data from an accessible mobile-first web form.",
+  },
 ];
+
+const sources = {
+  javascript: { title: "JavaScript language overview", publisher: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Language_overview" },
+  formData: { title: "FormData", publisher: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/API/FormData" },
+  submit: { title: "HTMLFormElement: submit event", publisher: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event" },
+  validation: { title: "Using HTML form validation and the Constraint Validation API", publisher: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Constraint_validation" },
+  labels: { title: "Labeling Controls", publisher: "W3C Web Accessibility Initiative", url: "https://www.w3.org/WAI/tutorials/forms/labels/" },
+  errors: { title: "Understanding Error Identification", publisher: "W3C Web Accessibility Initiative", url: "https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html" },
+  xss: { title: "DOM based XSS Prevention Cheat Sheet", publisher: "OWASP", url: "https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html" },
+};
 
 const topics = [
   {
@@ -297,6 +313,193 @@ const topics = [
       ["Structure", "Wrap complex business logic into an ES6 Class."],
     ],
   },
+  {
+    id: "web-form-foundations",
+    moduleId: "m3",
+    unit: "3.1",
+    estimatedMinutes: 35,
+    title: "Mobile-First HTML Form Foundations",
+    color: "cyan",
+    subtitle: "Build semantic controls that work with touch, keyboards, and assistive technology.",
+    beginner: "A form is a conversation with the browser. Labels ask clear questions, inputs give users a place to answer, and useful attributes help phones show the right keyboard or saved information.",
+    example: "A registration form pairs every visible label with an input, uses name for submission keys, and keeps an action URL as a non-JavaScript fallback.",
+    objectives: [
+      "Build a semantic registration form with explicit labels and named controls.",
+      "Choose input types, autocomplete tokens, and keyboard hints for mobile users.",
+      "Explain how progressive enhancement keeps a form useful when JavaScript fails.",
+    ],
+    terms: ["Semantic Form", "Accessible Name", "autocomplete", "inputmode"],
+    keyPoints: [
+      "A label for value must match the input id; name provides the submission key.",
+      "Placeholders are examples, not replacements for persistent labels.",
+      "Input types add semantics and constraints; inputmode only hints at a virtual keyboard.",
+      "A deferred script can enhance a form without making HTML parsing depend on script placement.",
+    ],
+    compare: {
+      headers: ["Attribute", "Purpose", "Mobile benefit"],
+      rows: [
+        ["id + label for", "Connect visible text to a control", "Larger tap area and accessible name"],
+        ["name", "Define the submitted key", "Reliable FormData extraction"],
+        ["type", "Add input semantics and validation", "Suitable keyboard where supported"],
+        ["autocomplete", "Identify expected personal data", "Less typing and memory load"],
+      ],
+    },
+    flow: [
+      ["Structure", "Group related controls in a form."],
+      ["Label", "Connect visible instructions to each control."],
+      ["Optimize", "Add types, autocomplete, and keyboard hints."],
+      ["Enhance", "Load behavior with a deferred script."],
+    ],
+    lessonBlocks: [
+      {
+        kind: "code",
+        title: "Accessible registration form",
+        language: "html",
+        code: `<form id="registerForm" action="/register" method="post">
+  <label for="username">Username</label>
+  <input id="username" name="username" autocomplete="username" required>
+
+  <label for="email">Email address</label>
+  <input id="email" name="email" type="email" autocomplete="email" required>
+
+  <fieldset>
+    <legend>Topics</legend>
+    <label><input type="checkbox" name="topics" value="apps"> Apps</label>
+    <label><input type="checkbox" name="topics" value="security"> Security</label>
+  </fieldset>
+
+  <button type="submit">Create account</button>
+</form>
+<div id="outputMessage" role="status" aria-live="polite"></div>
+<script src="app.js" defer><\/script>`,
+        caption: "The action preserves a fallback path; JavaScript progressively enhances it.",
+      },
+      { kind: "callout", tone: "warning", title: "Common mistake", text: "An id can connect a label and support DOM selection, but a control without name is omitted from FormData." },
+      { kind: "callout", tone: "note", title: "Predict before revealing", text: "A placeholder disappears during typing, so it cannot replace a persistent visible label." },
+    ],
+    sources: [sources.labels, sources.validation],
+  },
+  {
+    id: "web-formdata",
+    moduleId: "m3",
+    unit: "3.2",
+    estimatedMinutes: 45,
+    title: "Event-Driven JavaScript and FormData",
+    color: "amber",
+    subtitle: "Handle every submission path and preserve repeated values.",
+    beginner: "JavaScript waits for the form to submit, pauses the browser's normal navigation, and packages eligible named answers into FormData. Clicking the button and pressing Enter reach the same handler.",
+    example: "Two checked topic boxes share one name, so getAll('topics') preserves both values while get('topics') returns only the first.",
+    objectives: [
+      "Handle native submission paths with one form-level submit listener.",
+      "Extract single and repeated FormData entries without data loss.",
+      "Choose const, let, and arrow functions based on their actual semantics.",
+    ],
+    terms: ["Submit Event", "preventDefault()", "FormData", "Successful Form Control", "Object.fromEntries()"],
+    keyPoints: [
+      "var remains valid JavaScript, but const and let provide predictable block scope for new code.",
+      "Arrow functions close over surrounding this; they are not universal replacements for traditional functions.",
+      "Listen for submit on the form so button and Enter-key submission share one path.",
+      "Disabled, unnamed, and unchecked controls are not successful controls.",
+      "Use getAll() for repeated names; Object.fromEntries() cannot preserve duplicate keys.",
+    ],
+    compare: {
+      headers: ["Control", "Included?", "Reason"],
+      rows: [
+        ["Named text input", "Yes", "Successful named control"],
+        ["Disabled input", "No", "Disabled controls are excluded"],
+        ["Unnamed input", "No", "No submission key exists"],
+        ["Repeated checkbox name", "Yes, multiple", "Read with getAll()"],
+      ],
+    },
+    flow: [
+      ["Validate", "The browser checks native constraints."],
+      ["Submit", "The valid form emits one submit event."],
+      ["Intercept", "preventDefault replaces navigation only when needed."],
+      ["Extract", "FormData snapshots successful controls."],
+      ["Process", "Application rules produce feedback."],
+    ],
+    lessonBlocks: [
+      {
+        kind: "code",
+        title: "Capture repeated form values",
+        language: "javascript",
+        code: `const form = document.querySelector('#registerForm');
+const output = document.querySelector('#outputMessage');
+
+if (form instanceof HTMLFormElement && output) {
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const formData = new FormData(form, event.submitter);
+    const username = String(formData.get('username') ?? '').trim();
+    const email = String(formData.get('email') ?? '').trim();
+    const topics = formData.getAll('topics').map(String);
+    console.log({ username, email, topics });
+  });
+}`,
+        caption: "Runtime guards handle missing elements; getAll retains every selected topic.",
+      },
+      { kind: "callout", tone: "warning", title: "Duplicate-key trap", text: "Object.fromEntries is concise only when every control name is unique. Use getAll or explicit accumulation for checkbox groups." },
+      { kind: "callout", tone: "note", title: "Predict before revealing", text: "Pressing Enter in a text field reaches the form submit listener, even though the submit button was not clicked." },
+    ],
+    sources: [sources.javascript, sources.submit, sources.formData],
+  },
+  {
+    id: "web-form-safety",
+    moduleId: "m3",
+    unit: "3.3",
+    estimatedMinutes: 45,
+    title: "Validation, Accessibility, and Safe DOM Output",
+    color: "rose",
+    subtitle: "Protect user work, explain recovery, and keep input out of executable HTML.",
+    beginner: "A good form points to errors in words, keeps the user's answers, and treats everything typed as text rather than browser instructions.",
+    example: "The username <img src=x onerror=alert(1)> must appear literally in a confirmation, not create an image element.",
+    objectives: [
+      "Separate browser validation, application rules, and server-side trust boundaries.",
+      "Provide accessible loading, error, and success feedback without discarding input.",
+      "Render user-controlled values as text so they cannot become executable markup.",
+    ],
+    terms: ["Constraint Validation", "DOM-based XSS", "textContent"],
+    keyPoints: [
+      "Client-side validation improves feedback but never replaces server validation.",
+      "Errors must identify the field and problem in text, not color alone.",
+      "Use textContent and createElement for user-controlled strings instead of innerHTML.",
+      "Preserve values on failure and reset only after confirmed success.",
+      "A role=status live region can announce non-urgent results without stealing focus.",
+    ],
+    compare: {
+      headers: ["State", "Interface response", "Data handling"],
+      rows: [
+        ["Loading", "Prevent duplicate submission and announce progress", "Keep values"],
+        ["Error", "Identify the problem and recovery", "Preserve answers"],
+        ["Success", "Announce confirmation", "Reset after success"],
+        ["Offline", "Explain the failed connection", "Allow retry"],
+      ],
+    },
+    flow: [
+      ["Check", "Run browser and application constraints."],
+      ["Protect", "Send requests to a server that validates again."],
+      ["Report", "Describe status and errors in text."],
+      ["Render", "Insert untrusted values with textContent."],
+      ["Recover", "Preserve or reset based on the result."],
+    ],
+    lessonBlocks: [
+      {
+        kind: "code",
+        title: "Safe confirmation output",
+        language: "javascript",
+        code: `const message = document.createElement('p');
+message.textContent = \`Welcome, \${username}. We will contact \${email}.\`;
+output.replaceChildren(message);
+
+// Reset only after the simulated operation succeeds.
+form.reset();`,
+        caption: "textContent keeps the interpolated values in a text context.",
+      },
+      { kind: "callout", tone: "security", title: "Security boundary", text: "If user input creates an element or runs an event handler, the application has used an unsafe HTML sink." },
+      { kind: "callout", tone: "note", title: "Predict before revealing", text: "preventDefault changes navigation behavior; it does not make client data trustworthy." },
+    ],
+    sources: [sources.validation, sources.errors, sources.xss],
+  },
 ];
 
 const glossary = [
@@ -310,113 +513,248 @@ const glossary = [
   ["Lexical this", "When an arrow function inherits 'this' from its surrounding context rather than creating its own."],
   ["Promise", "An object representing the eventual completion or failure of an asynchronous operation."],
   ["Destructuring", "Syntax that makes it possible to unpack values from arrays or properties from objects into distinct variables."],
+  ["Semantic Form", "A form built with native HTML elements whose structure communicates the purpose and relationships of its controls."],
+  ["Accessible Name", "The programmatic name assistive technology uses to identify an interface control."],
+  ["autocomplete", "An attribute that identifies a field's expected purpose so the browser can offer appropriate saved information."],
+  ["inputmode", "A hint that asks a mobile browser to show a suitable virtual keyboard without adding validation rules."],
+  ["Submit Event", "The form-level event produced by supported submission paths such as a button, Enter key, or requestSubmit()."],
+  ["preventDefault()", "An Event method that cancels the browser action associated with an event when application code replaces it."],
+  ["FormData", "A browser interface representing key/value entries produced by successful form controls."],
+  ["Successful Form Control", "A control eligible to contribute a name/value entry during form submission."],
+  ["Object.fromEntries()", "A method that creates an object from key/value pairs but cannot retain repeated values under one key."],
+  ["Constraint Validation", "Browser checks driven by input types and attributes such as required, pattern, min, and max."],
+  ["DOM-based XSS", "Cross-site scripting caused when client code sends attacker-controlled data into an executable DOM context."],
+  ["textContent", "A DOM property that writes text without parsing the value as HTML markup."],
 ];
 
 const flashcards = [
-  { topic: "mc-intro", prompt: "What percentage of the global population has smartphone access (2024)?", answer: "97.6%" },
-  { topic: "mc-concepts", prompt: "What are the three main concepts of Mobile Computing?", answer: "Mobile Communication, Mobile Hardware, and Mobile Software." },
-  { topic: "mc-evolution", prompt: "Which network generation introduced digital signals as a global standard?", answer: "2G & GSM" },
-  { topic: "es6-basics", prompt: "What is the scope of variables declared with 'let' or 'const'?", answer: "Block scope." },
-  { topic: "es6-basics", prompt: "Can you reassign a 'const' variable?", answer: "No, but if it holds an object, the object's properties can be mutated." },
-  { topic: "es6-functions", prompt: "Why are arrow functions bad for DOM event listeners?", answer: "They inherit 'this' from the surrounding window rather than binding to the clicked element." },
-  { topic: "es6-objects", prompt: "What does the Spread Operator (...) do?", answer: "It expands an iterable (like an array) into individual elements." },
-  { topic: "es6-async", prompt: "What is the modern, synchronous-looking alternative to Promise chains?", answer: "async/await" },
+  { topic: "mc-intro", front: "What does ubiquitous connectivity mean?", back: "Network access is available across locations and contexts rather than being tied to one fixed workstation." },
+  { topic: "mc-concepts", front: "What are the three main concepts of Mobile Computing?", back: "Mobile Communication, Mobile Hardware, and Mobile Software." },
+  { topic: "mc-evolution", front: "Which network generation introduced digital mobile signals as a global standard?", back: "2G and GSM." },
+  { topic: "es6-basics", front: "What is the scope of variables declared with let or const?", back: "Block scope." },
+  { topic: "es6-basics", front: "Does const make an object immutable?", back: "No. It prevents rebinding the variable; the object's properties may still change." },
+  { topic: "es6-functions", front: "What does lexical this mean for an arrow function?", back: "The arrow closes over this from its surrounding scope instead of receiving a new this from the caller." },
+  { topic: "es6-objects", front: "What does spread syntax (...) do?", back: "It expands iterable values or object properties into another literal or call." },
+  { topic: "es6-async", front: "What is the synchronous-looking syntax built on Promises?", back: "async and await." },
+  { topic: "web-form-foundations", front: "Which two attributes explicitly connect a visible label to an input?", back: "The label for attribute and the input id must match." },
+  { topic: "web-form-foundations", front: "What does name contribute that id does not?", back: "name supplies the key used by form submission and FormData." },
+  { topic: "web-form-foundations", front: "Does inputmode validate a value?", back: "No. It only hints at a suitable virtual keyboard." },
+  { topic: "web-formdata", front: "Why listen for submit on the form instead of click on the button?", back: "It receives supported button, Enter-key, and requestSubmit submission paths." },
+  { topic: "web-formdata", front: "Which FormData method preserves every value under a repeated name?", back: "getAll(name)." },
+  { topic: "web-formdata", front: "Name three controls FormData omits.", back: "Disabled controls, unnamed controls, and unchecked checkboxes or radio buttons." },
+  { topic: "web-form-safety", front: "Why use textContent instead of innerHTML for user input?", back: "textContent displays text; innerHTML parses markup and can create a DOM XSS sink." },
+  { topic: "web-form-safety", front: "When should a form reset after an asynchronous operation?", back: "Only after confirmed success." },
+  { topic: "web-form-safety", front: "Does browser validation replace server validation?", back: "No. Clients can be modified or bypassed, so servers must validate every request." },
 ];
 
 const practiceTests = [
   {
-    topic: "mc-concepts",
-    question: "Which aspect of mobile computing handles protocols, bandwidth, and unguided media?",
-    options: ["Mobile Software", "Mobile Hardware", "Mobile Communication", "Mobile Portals"],
-    correctIndex: 2,
-    explanation: "Mobile Communication refers to the infrastructure (radio waves, protocols, cell towers) that enables data transfer.",
+    title: "Module 1 • Mobile Computing Concepts",
+    description: "Check the hardware, software, communication, and network-evolution foundations.",
+    questions: [
+      {
+        q: "Which mobile-computing aspect handles protocols, bandwidth, and unguided media?",
+        options: ["Mobile Software", "Mobile Hardware", "Mobile Communication", "Mobile Portals"],
+        answer: 2,
+        explain: "Mobile Communication is the infrastructure that carries data through radio systems and protocols.",
+      },
+    ],
   },
   {
-    topic: "es6-basics",
-    question: "What happens if you try to access a 'let' variable in its Temporal Dead Zone?",
-    options: ["It returns undefined", "It returns null", "It throws a ReferenceError", "It hoists the value to the top"],
-    correctIndex: 2,
-    explanation: "Unlike 'var' which returns undefined, accessing a 'let' or 'const' variable before initialization throws a ReferenceError.",
+    title: "Module 2 • Modern JavaScript with ES6",
+    description: "Review block scope, lexical this, promises, and classes.",
+    questions: [
+      {
+        q: "What happens when code accesses a let binding in its temporal dead zone?",
+        options: ["It returns undefined", "It returns null", "It throws a ReferenceError", "It moves the value upward"],
+        answer: 2,
+        explain: "let and const exist in the scope but cannot be accessed before initialization.",
+      },
+      {
+        q: "What does lexical this mean in an arrow function?",
+        options: ["It always means window", "It is inherited from the surrounding scope", "It points to the event target", "It cannot be read"],
+        answer: 1,
+        explain: "An arrow function does not create its own this binding; it closes over the surrounding one.",
+      },
+      {
+        q: "What must a derived class constructor call before accessing this?",
+        options: ["class()", "bind(this)", "super()", "init()"],
+        answer: 2,
+        explain: "super() runs the parent constructor and initializes this for the derived instance.",
+      },
+    ],
   },
   {
-    topic: "es6-functions",
-    question: "What is the primary benefit of the 'lexical this' in arrow functions?",
-    options: ["It runs faster", "It drops the need for .bind(this)", "It prevents DOM memory leaks", "It creates a strict mode context"],
-    correctIndex: 1,
-    explanation: "Arrow functions inherit 'this' from their surroundings, making old hacks like var that = this or .bind(this) obsolete.",
-  },
-  {
-    topic: "es6-async",
-    question: "What must you write inside an ES6 subclass constructor before accessing 'this'?",
-    options: ["class()", "bind(this)", "super()", "init()"],
-    correctIndex: 2,
-    explanation: "You must call super() in a derived class constructor to execute the parent class constructor before you can use 'this'.",
+    title: "Module 3 • Interactive Mobile Web Forms",
+    description: "Apply semantic HTML, FormData, accessible recovery, and safe DOM output.",
+    questions: [
+      {
+        q: "An input has id=email but no name. What does FormData do with it?",
+        options: ["Uses email as the key", "Omits it", "Uses the label text", "Throws an error"],
+        answer: 1,
+        explain: "id connects labels and supports DOM selection; name supplies the submission key.",
+      },
+      {
+        q: "Which attribute hints at a telephone-friendly virtual keyboard without validating the value?",
+        options: ["required=tel", "autocomplete=keyboard", "inputmode=tel", "name=telephone"],
+        answer: 2,
+        explain: "inputmode is a keyboard hint. Validation rules come from the input type and application constraints.",
+      },
+      {
+        q: "Which listener handles both tapping Submit and pressing Enter in a field?",
+        options: ["click on the input", "keydown on document", "submit on the form", "change on the button"],
+        answer: 2,
+        explain: "The form submit event unifies supported native submission paths after constraints pass.",
+      },
+      {
+        q: "Three checked boxes share name=topics. Which call preserves every value?",
+        options: ["formData.get('topics')", "Object.fromEntries(formData).topics", "formData.getAll('topics')", "formData.topics.values"],
+        answer: 2,
+        explain: "getAll returns every entry under a repeated key.",
+      },
+      {
+        q: "Which output technique safely displays a username containing HTML-like text?",
+        options: ["innerHTML", "insertAdjacentHTML", "textContent", "document.write"],
+        answer: 2,
+        explain: "textContent keeps untrusted input in a text context instead of parsing it as markup.",
+      },
+      {
+        q: "A simulated network submission fails. What should the form do?",
+        options: ["Reset immediately", "Keep values, explain the error, and allow retry", "Reload the page", "Disable submission permanently"],
+        answer: 1,
+        explain: "Accessible recovery preserves user work, describes the problem in text, and provides a retry path.",
+      },
+    ],
   },
 ];
 
 const blueprintStages = [
   {
-    title: "1G to 4G Evolution",
-    description: "The progression from basic analog voice to modern high-speed data.",
-    icon: "📡",
-    items: [
-      "1G: Basic analog voice without forward compatibility.",
-      "2G (GSM): Digital signals and global standards.",
-      "EDGE: Expanded networks for basic data.",
-      "4G LTE: High-speed broadband powering the modern app economy.",
-    ],
+    title: "Structure",
+    question: "Which controls and relationships exist before JavaScript runs?",
+    summary: "Semantic HTML establishes labels, names, types, constraints, and a native submission path.",
+    includes: ["form and fieldset structure", "visible labels", "named controls", "submit button"],
+    example: "The email label for=email matches input id=email, while name=email supplies the submission key.",
   },
   {
-    title: "The ECMAScript Timeline",
-    description: "The evolution of the JavaScript standard.",
-    icon: "📜",
-    items: [
-      "1995: Created as Mocha/LiveScript.",
-      "1997: ECMA Standardization (ES1).",
-      "2009: ES5 brings strict mode and JSON.",
-      "2015: ES6 revolutionizes the language with let/const, arrows, classes.",
-    ],
+    title: "Submit",
+    question: "How do mouse, touch, and keyboard users reach one handler?",
+    summary: "A form-level submit listener receives supported native submission paths after constraint validation succeeds.",
+    includes: ["button activation", "Enter-key submission", "requestSubmit()", "event.submitter"],
+    example: "Pressing Enter in the email field and tapping Create account both emit submit on the form.",
+  },
+  {
+    title: "Extract",
+    question: "Which current controls become FormData entries?",
+    summary: "FormData snapshots successful named controls and preserves repeated entries.",
+    includes: ["get() for one value", "getAll() for repeated names", "File values", "omitted disabled controls"],
+    example: "Two selected topics produce two topics entries and must be read with getAll('topics').",
+  },
+  {
+    title: "Validate",
+    question: "Where are usability checks and trust checks enforced?",
+    summary: "Browser constraints improve feedback, application rules enforce the experience, and the server validates every request.",
+    includes: ["native constraints", "business rules", "server validation", "accessible error text"],
+    example: "type=email can catch malformed input early, but the server still verifies the submitted value.",
+  },
+  {
+    title: "Render and Recover",
+    question: "How does the interface report results without creating an injection sink?",
+    summary: "Safe DOM APIs display values as text, status regions announce results, and the form resets only after success.",
+    includes: ["textContent", "createElement", "role=status", "preserved values on failure"],
+    example: "An HTML-looking username remains visible text and cannot create an element or execute an event handler.",
   },
 ];
 
 const modelLayers = [
   {
-    layer: "Hardware Layer",
-    description: "Physical devices like smartphones and tablets.",
-    components: ["Receptor Medium", "Battery", "Touch Interface", "Full-Duplex Radios"],
+    id: "hardware",
+    label: "Hardware",
+    question: "Which physical capabilities make mobile interaction possible?",
+    description: "Device components sense touch, present the interface, manage power, and communicate through radios.",
+    constructs: ["Touch Interface", "Battery", "Sensors", "Full-Duplex Radios"],
+    example: "The touchscreen supplies pointer input while the cellular or Wi-Fi radio carries a form request.",
   },
   {
-    layer: "Software Layer",
-    description: "Operating systems and app ecosystems.",
-    components: ["Android", "iOS", "App Stores", "Browser Engines (V8)"],
+    id: "software",
+    label: "Software",
+    question: "Which programs interpret the form and manage interaction?",
+    description: "The operating system, browser engine, HTML, CSS, and JavaScript turn device capabilities into an application experience.",
+    constructs: ["Android or iOS", "Browser Engine", "HTML and CSS", "JavaScript"],
+    example: "The browser selects a virtual keyboard from input semantics and dispatches the submit event to JavaScript.",
   },
   {
-    layer: "Communication Layer",
-    description: "The invisible infrastructure carrying data.",
-    components: ["Cell Towers", "Radio Waves", "Protocols", "Bandwidth Management"],
+    id: "communication",
+    label: "Communication",
+    question: "How does submitted data travel beyond the device?",
+    description: "Wireless links, protocols, servers, and network conditions carry and protect data outside the local interface.",
+    constructs: ["Wi-Fi or Cellular Link", "HTTPS", "Server Endpoint", "Offline State"],
+    example: "A failed connection keeps the form values on the device so the user can retry after connectivity returns.",
   },
+];
+
+const modelMatchItems = [
+  { construct: "Touch Interface", layerId: "hardware" },
+  { construct: "Battery", layerId: "hardware" },
+  { construct: "Browser Engine", layerId: "software" },
+  { construct: "JavaScript", layerId: "software" },
+  { construct: "HTTPS", layerId: "communication" },
+  { construct: "Offline State", layerId: "communication" },
 ];
 
 const scenarios = [
   {
-    title: "Handling API Responses",
-    context: "You need to fetch user data from an external server without blocking the UI.",
-    challenge: "Traditional callbacks lead to 'callback hell' and nested, hard-to-read code.",
-    solution: "Use the `fetch()` API which returns a Promise. Chain `.then()` to parse JSON, and another `.then()` to handle the data. For cleaner syntax, wrap it in an `async` function and use `await fetch()` followed by `await response.json()`, wrapping the block in a `try/catch` for error handling.",
+    id: "scenario-api-response",
+    moduleId: "m2",
+    category: "JavaScript",
+    prompt: "A fetch request fails while loading optional profile data. Which structure gives the clearest recovery path?",
+    options: ["Ignore the Promise", "Use await inside try/catch and show a recoverable error", "Reload continuously", "Replace fetch with a blocking loop"],
+    answer: 1,
+    explanation: "try/catch around awaited work keeps the asynchronous flow readable and makes failure handling explicit.",
   },
   {
-    title: "Mobile App Distribution",
-    context: "A company wants to release a new medical tracking app.",
-    challenge: "They need global reach but must ensure user trust and data accuracy.",
-    solution: "Publish through established platforms (Apple App Store, Google Play). These platforms provide global discovery, handle revenue splits securely, and enforce strict regulatory requirements necessary for health apps.",
+    id: "scenario-mobile-layers",
+    moduleId: "m1",
+    category: "Mobile Layers",
+    prompt: "A phone displays a form correctly but cannot reach the server while offline. Which layer is currently blocking completion?",
+    options: ["Hardware only", "Software only", "Communication", "The label layer"],
+    answer: 2,
+    explanation: "The interface can remain usable locally, but network communication is required to reach the remote endpoint.",
+  },
+  {
+    id: "scenario-enter-submit",
+    moduleId: "m3",
+    category: "Forms",
+    prompt: "A keyboard user presses Enter in the email field. Which design handles the submission without extra key detection?",
+    options: ["Listen for click on the button", "Listen for submit on the form", "Listen for mouseup on document", "Disable native submission"],
+    answer: 1,
+    explanation: "The form submit event is the semantic path shared by button and keyboard activation.",
+  },
+  {
+    id: "scenario-duplicate-topics",
+    moduleId: "m3",
+    category: "Forms",
+    prompt: "A learner selects two checkboxes named topics. Which extraction keeps both selections?",
+    options: ["get('topics')", "getAll('topics')", "Object.fromEntries(formData).topics", "querySelector('topics')"],
+    answer: 1,
+    explanation: "getAll returns every FormData entry for a repeated name.",
+  },
+  {
+    id: "scenario-safe-output",
+    moduleId: "m3",
+    category: "Security",
+    prompt: "A username contains HTML-like text. Which output API keeps it from becoming executable markup?",
+    options: ["innerHTML", "document.write", "textContent", "insertAdjacentHTML"],
+    answer: 2,
+    explanation: "textContent inserts a text node representation instead of asking the browser to parse HTML.",
   },
 ];
 
 const studySteps = [
-  { step: 1, title: "Understand Mobile Concepts", desc: "Separate the hardware, software, and communication layers." },
-  { step: 2, title: "Review ES6 Scoping", desc: "Understand why let/const replaced var, and how the Temporal Dead Zone works." },
-  { step: 3, title: "Master Modern Syntax", desc: "Practice writing arrow functions, destructuring objects, and using the spread operator." },
-  { step: 4, title: "Grasp Asynchronous JS", desc: "Trace how a Promise moves from pending to resolved/rejected, and rewrite it using async/await." },
+  { step: 1, title: "Understand", text: "Explain the mobile layers and each form feature in your own words." },
+  { step: 2, title: "Trace", text: "Follow one submission from semantic HTML through FormData to safe feedback." },
+  { step: 3, title: "Retrieve", text: "Use flashcards and module tests without looking back at the lesson." },
+  { step: 4, title: "Apply", text: "Solve scenarios, then rebuild the safe registration form from memory." },
 ];
 
 globalThis.reviewerData = {
@@ -428,6 +766,7 @@ globalThis.reviewerData = {
   practiceTests,
   blueprintStages,
   modelLayers,
+  modelMatchItems,
   scenarios,
   studySteps,
 };

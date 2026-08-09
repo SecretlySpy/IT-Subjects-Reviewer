@@ -155,7 +155,12 @@ export function SubjectPage() {
                 <h2 className="text-2xl font-bold text-[var(--text-primary)]">{currentTopic.title}</h2>
                 <span className="text-sm text-[var(--text-muted)]">{currentTopic.estimatedMinutes} mins</span>
               </div>
-              <ProfessorModeRenderer data={currentTopic.professorMode} />
+              <ProfessorModeRenderer
+                data={currentTopic.professorMode}
+                learningObjectives={currentTopic.learningObjectives}
+                lessonBlocks={currentTopic.lessonBlocks}
+                sources={currentTopic.sources}
+              />
               
               <div className="mt-12 flex justify-end">
                 <button 
