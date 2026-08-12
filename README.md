@@ -113,6 +113,7 @@ IT-Subjects-Reviewer/
 npm install
 npm test      # runs all five QA stages
 npm run build # type-checks, bundles the SPA, and copies the reviewers into dist/
+npm run check:deploy # rejects raw-source or broken GitHub Pages artifacts
 \`\`\`
 
 \`npm test\` runs, in order: repository diagnostics, JSDOM interaction suites for the Systems Integration and Mobile Computing reviewers, content-integrity checks for the React subject datasets, and a runtime smoke test of the React application.
@@ -124,6 +125,7 @@ npm run build # type-checks, bundles the SPA, and copies the reviewers into dist
 - Designed specifically for quick studying and rapid exam review.
 - The zero-build reviewers need **no Node.js and no internet** — open \`index.html\` and study.
 - \`npm run build\` copies all three standalone reviewers into \`dist/\`, so the GitHub Pages deployment serves both the React platform and the zero-build apps.
+- GitHub Pages must use **Settings → Pages → Source: GitHub Actions**. Publishing from \`main / (root)\` serves uncompiled TSX and cannot run the React platform.
 - Systems Integration and Architecture 1 cites its primary standards (OASIS SOA-RM, W3C XML/SOAP/WSDL, IETF RFC 8259, NIST SP 800-145 and SP 500-292) in its glossary section so claims can be checked at source.
 - The Mobile Computing web-form module cites MDN, W3C Web Accessibility Initiative, and OWASP guidance while keeping its lessons and capstone usable offline.
 - More subjects and modules will be continually added using this scalable, decoupled structure.

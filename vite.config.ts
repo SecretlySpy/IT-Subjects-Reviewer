@@ -45,8 +45,23 @@ const REVIEWER_ROUTE_PATTERN = new RegExp(
   `/(${STANDALONE_REVIEWERS.map((name) => name.replace(/ /g, '(?:%20|\\+| )')).join('|')})/`
 );
 
-// https://vitejs.dev/config/
-export default defineConfig({
+/**
+ * Resolve the production base from GitHub Pages metadata when available.
+ * Local development stays at `/`, while a manual production build retains the
+ * repository's known project-site path as a safe default.
+ */
+function productionBase(command: string): string {
+  if (command !== 'build') return '/';
+
+  const configuredBase = process.env.VITE_BASE_PATH ?? '/IT-Subjects-Reviewer/';
+  const withLeadingSlash = configuredBase.startsWith('/')
+    ? configuredBase
+    : `/${configuredBase}`;
+  return withLeadingSlash.endsWith('/') ? withLeadingSlash : `${withLeadingSlash}/`;
+}
+
+// https://vite.dev/config/
+export default defineConfig(({ command }) => ({
   plugins: [
     react(),
     copyStandaloneReviewers(),
@@ -92,5 +107,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: '/IT-Subjects-Reviewer/', // For GitHub Pages
-});
+  base: productionBase(command),
+}));

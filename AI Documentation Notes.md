@@ -1315,6 +1315,20 @@
 - **Behavior**: `REVIEWER_ROUTE_PATTERN` matches a reviewer folder segment anywhere in a path, with literal, `%20`, or `+` encoded spaces, and is passed to Workbox as `navigateFallbackDenylist`. The same folder list is passed as `globIgnores` so three large static apps are not added to the SPA precache.
 - **Invariant**: The pattern is unanchored so it works whether the site is served from a domain root or from the `/IT-Subjects-Reviewer/` base path.
 
+## Function: productionBase
+- **Purpose**: Produce the correct Vite base path for local development and GitHub Pages production builds.
+- **Inputs**:
+  - `command` (`string`): Vite command name, normally `serve` or `build`.
+- **Outputs**: Normalized root-relative base path with leading and trailing slashes.
+- **Dependencies**: `process.env.VITE_BASE_PATH` supplied by the Pages workflow.
+- **Behavior**: Returns `/` outside production builds; during a build, normalizes the workflow-provided Pages base path or falls back to `/IT-Subjects-Reviewer/` for manual builds.
+- **Side Effects**: None.
+- **DSA Used**: Constant-time string prefix/suffix checks; O(p) space for a base path of length p.
+- **Data Analysis Notes**: The dynamic value removes a hard-coded coupling if the repository name changes.
+- **Responsive & Accessibility Notes**: None; this function controls resource URLs.
+- **Security Notes**: The value comes from trusted workflow metadata or a committed fallback, not visitor input.
+- **Verification Status**: Production-built and checked by `deployment-diagnostics.js`.
+
 ## Feature / Capability: PWA icons
 - **Purpose**: Make the installable manifest self-contained.
 - **Behavior**: The manifest references `public/icon-192.png` and `public/icon-512.png`, which are committed to the repository. The previous configuration pointed at a third-party CDN URL, which broke offline installation and added an external dependency.
@@ -1326,9 +1340,67 @@
 - **Inputs**: None.
 - **Outputs**: Process exit code 0 on success or nonzero on failure.
 - **Dependencies**: Node.js, `html-diagnostics.js`, `reviewer-interaction-tests.js`, `subject-data-tests.js`, `spa-smoke-tests.js`, `jsdom`, `vite`.
-- **Behavior**: Runs the four suites in sequence, stopping at the first failure: static/data diagnostics for the zero-build reviewers, the JSDOM interaction suite for the SIA reviewer, content-integrity checks for the React subject datasets, and a runtime smoke test of the React application.
+- **Behavior**: Runs five stages in sequence, stopping at the first failure: static/data diagnostics for the zero-build reviewers, JSDOM interaction suites for SIA and Mobile, content-integrity checks for the React subject datasets, and a runtime smoke test of the React application.
 - **Side Effects**: Reads source files, writes temporary bundles under `node_modules/.tmp`, and writes console output.
 - **Compatibility Note**: `package.json` declares `"type": "module"`, so all four scripts are ES modules. They use `import` and derive `__dirname` from `import.meta.url`.
+
+# Module / File: index.html
+
+## Function: showBootFailure
+- **Purpose**: Replace the loading screen with an actionable error instead of leaving a blank React root when the production module cannot load.
+- **Inputs**: None; reads `#root` and `[data-boot-screen]` from the document.
+- **Outputs**: None.
+- **Dependencies**: Browser DOM, a capture-phase `error` listener, and an eight-second timeout.
+- **Behavior**: Returns after React removes the boot screen; otherwise changes the live region to an alert, explains the deployment/cache recovery path, and exposes a reload button.
+- **Side Effects**: Replaces only the still-active boot screen and may reload the page after an explicit button press.
+- **DSA Used**: Constant-size DOM lookup and replacement; O(1) time and space for the fixed fallback.
+- **Data Analysis Notes**: Resource errors are observed in capture mode because they do not bubble from script elements.
+- **Responsive & Accessibility Notes**: Responsive text size, readable dark fallback, polite loading status, assertive failure alert, and a 44-pixel minimum button target.
+- **Security Notes**: The replacement markup is a fixed repository-authored string; no external or visitor-controlled data is interpolated.
+- **Verification Status**: Preserved in the production build and asserted by `deployment-diagnostics.js`; real-device presentation remains to be checked after deployment.
+
+# Module / File: deployment-diagnostics.js
+
+## Function: assetPathInDist
+- **Purpose**: Map a Vite-generated Pages URL to the corresponding file beneath `dist/`.
+- **Inputs**:
+  - `assetUrl` (`string`): Generated JavaScript or CSS URL from the built entry point.
+- **Outputs**: Absolute filesystem path beneath the local `dist/assets/` directory.
+- **Dependencies**: Node `path`.
+- **Behavior**: Finds the stable `/assets/` boundary, rejects URLs outside it, strips the deployment base prefix, and joins portable path segments.
+- **Side Effects**: Throws through `fail` for an invalid URL.
+- **DSA Used**: Linear substring search and split over one short URL; O(u) time and space.
+- **Data Analysis Notes**: The base prefix may change, but the Vite asset directory is invariant.
+- **Responsive & Accessibility Notes**: None; this is build-time validation.
+- **Security Notes**: Only generated HTML is consumed, and the `/assets/` boundary prevents arbitrary project-path mapping.
+- **Verification Status**: Executed successfully against the current production build.
+
+## Function: checkBootFallback
+- **Purpose**: Prove that a production module-load error activates the visible recovery state.
+- **Inputs**:
+  - `html` (`string`): Generated production entry-point markup.
+- **Outputs**: None on success; throws a deployment-contract error on failure.
+- **Dependencies**: JSDOM and the inline `showBootFailure` listener in `index.html`.
+- **Behavior**: Runs the built inline script in a browser-like document, dispatches an error from the production module element, requires the boot screen to become an alert, then closes the document to cancel timers.
+- **Side Effects**: Creates and closes an in-memory DOM and writes one passing diagnostic.
+- **DSA Used**: Constant-size DOM selection and event dispatch; O(1) time and space outside the fixed HTML parse.
+- **Data Analysis Notes**: This reproduces the important network-failure state without depending on an external server.
+- **Responsive & Accessibility Notes**: Requires the failure element to expose `role="alert"` and helpful text.
+- **Security Notes**: JSDOM executes only the repository-authored inline script; the external production module is not fetched.
+- **Verification Status**: Executed successfully in the final `npm run check:deploy` gate on 2026-08-12.
+
+## Function: main
+- **Purpose**: Block deployment of raw Vite source or an artifact with missing generated assets.
+- **Inputs**: `dist/index.html` and its referenced asset files.
+- **Outputs**: Pass messages plus `DEPLOYMENT_DIAGNOSTICS_PASSED`, or a nonzero process result.
+- **Dependencies**: Node `fs`, `path`, `url`, `pass`, `fail`, and `assetPathInDist`.
+- **Behavior**: Requires the Pages entry at artifact root, rejects `/src/main.tsx`, requires the boot fallback, extracts generated asset URLs, deduplicates them, and verifies every URL resolves to an existing file.
+- **Side Effects**: Reads build artifacts and writes diagnostic output.
+- **DSA Used**: One scan of a small HTML file plus a Set for expected O(n) URL deduplication; O(n) time and space.
+- **Data Analysis Notes**: At least two generated asset URLs are required to cover the JavaScript and stylesheet bundles.
+- **Responsive & Accessibility Notes**: Enforces retention of the accessible boot fallback.
+- **Security Notes**: Detects a deployment that would expose source paths instead of using the compiled entry.
+- **Verification Status**: Executed successfully after `npm run build` on 2026-08-12.
 
 # Module / File: Repository Architecture
 
@@ -1349,7 +1421,7 @@
 
 ## Feature / Capability: Current QA status
 - **Result**: `QA_PASSED`.
-- **Automated Evidence**: `npm test` runs four suites and all pass — repository diagnostics (including classic-script global-collision checks), the parser-driven JSDOM interaction suite, the React subject-data integrity suite, and the JSDOM runtime smoke suite for the React application.
+- **Automated Evidence**: `npm test` runs five stages and all pass — repository diagnostics (including classic-script global-collision checks), parser-driven SIA and Mobile JSDOM interaction suites, the React subject-data integrity suite, and the JSDOM runtime smoke suite for the React application.
 - **Static Evidence**: `tsc -b --force` completes with no diagnostics; `vite build` succeeds and emits the SPA plus all three standalone reviewers into `dist/`.
 - **Regression Evidence**: Networking 2 retains 15 topics, 293 terms, 300 cards, 15 tests, and 450 valid questions. The SIA reviewer's blueprint (4 stages), model lens (3 layers), and study loop (4 steps) are unchanged.
 - **Content Evidence**: SIA 1 now covers ten modules with 28 topics, 200 glossary terms, 200 flashcards, ten 20-question tests, 39 scenarios, and 7 standards references; every module owns exactly 20 terms, and all terms and definitions are unique.
@@ -1733,3 +1805,81 @@ flowchart LR
 - **Tested**: Repository diagnostics, SIA interactions, Mobile interactions, subject-data integrity, SPA runtime behavior, TypeScript project build, and Vite production build.
 - **Reasoned**: WCAG contrast against existing design tokens and layout survival at 200% zoom; no automated visual-regression tool is configured.
 - **Unverified**: Real-device virtual keyboard selection and external source availability while offline; core lessons remain locally available without those links.
+
+# Project Handover — GitHub Pages Blank Screen Repair
+_Generated: 2026-08-12 · For: subsequent LLM session_
+
+## 1. Project Overview
+
+The live project site returned HTTP 200 but rendered a white page on fresh/secondary devices. Direct inspection found that GitHub Pages was configured with `build_type: legacy`, `source.branch: main`, and `source.path: /`. The live HTML was the 1,013-byte repository source entry and requested `https://secretlyspy.github.io/src/main.tsx`, which returned 404. React therefore never mounted. Local implementation and QA are complete; production activation still requires a repository administrator to select GitHub Actions as the Pages publishing source and push these changes.
+
+## 2. System Architecture
+
+```mermaid
+flowchart LR
+    SRC[index.html + src/main.tsx] --> VITE[Vite production build]
+    META[configure-pages base_path] --> VITE
+    VITE --> DIST[dist/index.html + hashed assets]
+    DIST --> CHECK[deployment-diagnostics.js]
+    CHECK --> ART[Pages artifact]
+    ART --> DEPLOY[deploy-pages]
+    DEPLOY --> LIVE[Project site]
+    LIVE --> VERIFY[Compiled-entry smoke check]
+```
+
+- **Tech stack**: React 19, TypeScript 7, Vite 8, HashRouter, Tailwind CSS 3, Workbox/PWA, GitHub Actions, GitHub Pages, Node 20 CI, JSDOM tests.
+- **Routing decision**: Hash routing stays in place, so client routes need no server rewrite. Vite's production base comes from Pages metadata and falls back to `/IT-Subjects-Reviewer/` for manual builds.
+- **Trust boundary**: The Pages base path is trusted workflow metadata. Visitor data never participates in asset-path construction or boot-fallback HTML.
+- **Rejected diagnosis**: CORS, HTTP/HTTPS mixed content, and a missing npm install were not the live failure. The module URL itself was outside the project subpath and the published entry was uncompiled source.
+
+## 3. Core Features & Functional Specifications
+
+- **Implemented**: Accessible loading state and module-load/timeout recovery screen in the source and production entry.
+- **Implemented**: Dynamic, normalized Vite production base derived from `actions/configure-pages` output.
+- **Implemented**: Current Pages workflow pattern using `configure-pages@v5`, `upload-pages-artifact@v4`, and `deploy-pages@v4`.
+- **Implemented**: Artifact validation rejects raw `/src/main.tsx`, missing boot fallback, absent module/CSS URLs, and missing generated files.
+- **Implemented**: Post-deployment check retries with cache-busting and fails with the exact Pages setting correction if source HTML remains live.
+- **Implemented**: Dependency security patch in the lock/vendor tree: React Router 7.18.2, Undici 7.29.0, PostCSS 8.5.26, Nano ID 3.3.18, brace-expansion 2.1.4/5.0.9, and fast-uri 3.1.5.
+- **Out of scope**: Custom domain changes, DNS, a backend, or deleting the repository's already-tracked `node_modules/` tree.
+
+## 4. File & Module Map
+
+- `index.html`: React mount point plus loading and boot-failure recovery UI.
+- `vite.config.ts`: Standalone-reviewer copy, PWA routes, and dynamic Pages base.
+- `.github/workflows/deploy.yml`: Build, validate, upload, deploy, and verify workflow.
+- `deployment-diagnostics.js`: Built-entry, generated-asset, and failure-state contract tests.
+- `package.json`: Adds `npm run check:deploy`.
+- `package-lock.json` and tracked dependency files: Resolve current advisory fixes.
+- `Tech Stack Setup Guide.md`: Admin activation and secondary-device cache recovery procedure.
+
+## 5. Function Documentation
+
+The new functions `productionBase`, `showBootFailure`, `assetPathInDist`, `checkBootFallback`, and deployment-diagnostics `main` are documented above in the machine-parseable module sections.
+
+## 6. Immediate Next Steps
+
+1. Review, commit, and push the working-tree changes to `main`. Acceptance: the Deploy to GitHub Pages workflow starts for the pushed commit.
+2. In GitHub **Settings → Pages → Build and deployment → Source**, select **GitHub Actions**. Acceptance: the authenticated Pages API reports `build_type: workflow` rather than `legacy`.
+3. Run or rerun **Deploy to GitHub Pages**. Acceptance: build, artifact validation, deployment, and deployed-entry verification all pass.
+4. Fetch the live entry with a cache-busting query. Acceptance: HTML references `/IT-Subjects-Reviewer/assets/…`, while `/src/main.tsx` is absent; `manifest.webmanifest` and `sw.js` return HTTP 200.
+5. On affected secondary devices, clear site data/service workers only after the correct deployment is live. Acceptance: a fresh visit renders the dashboard without relying on an old cache.
+
+## 7. Open Questions & Blockers
+
+- **Production blocker**: Pages is still configured for legacy `main /` publishing. Changing this setting requires repository admin/maintainer authority and is not represented by a source-code edit.
+- **Publication blocker**: The repaired working tree has not been committed or pushed because the user did not authorize an external Git write in this turn.
+- **Environment note**: The `gh` CLI is unavailable locally; the authenticated GitHub connector and public API were sufficient for read-only diagnosis but expose no Pages-source mutation.
+
+## 8. Critical Context
+
+- A successful custom deploy workflow does not prove the site is serving its artifact when Pages remains configured for legacy branch publishing. The live Pages API and returned HTML are the decisive evidence.
+- A primary device can mask this defect with a previously installed service worker. Fresh devices reveal the actual broken production entry, explaining the device-specific report.
+- Changing `/src/main.tsx` from absolute to relative would still be wrong: browsers cannot directly run the uncompiled TypeScript/JSX application. The publishing source must change to the built artifact.
+- Cache clearing before correcting the publishing source can make a previously working device fail too. Fix deployment first, then clear stale caches.
+- The repository tracks many `node_modules/` files despite ignoring the directory. Dependency patches therefore update both the lockfile and tracked vendor files; removing them from version control is a separate destructive cleanup decision.
+
+## 9. Verification Status
+
+- **QA_PASSED (local)**: Clean `npm ci`; all five `npm test` stages; TypeScript/Vite production build; deployment diagnostics including simulated module failure; production-only audit; full dependency audit. Both audits report zero vulnerabilities.
+- **Verified live diagnosis**: HTTP 200 source entry, 404 domain-root module URL, absent manifest/service worker, Pages API `build_type: legacy`, successful build/deploy workflow history, and a valid Pages artifact for commit `93f08bba`.
+- **Unverified production fix**: The repaired commit is not yet pushed and the admin-only Pages source is not yet switched, so the public URL remains broken at handover time.

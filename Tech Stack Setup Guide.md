@@ -5,7 +5,7 @@ This repository holds two things that ship together:
 1. **Zero-build reviewers** — self-contained HTML/CSS/JS study apps you can open straight from disk. No Node.js, no install, no internet.
 2. **A React study platform** — a Vite + TypeScript + Tailwind single-page app with spaced repetition, an adaptive quiz, and offline (PWA) support.
 
-If you only want to *study*, you need nothing but a browser. If you want to *develop*, you need Node.js.
+If you only want to *study*, you need nothing but a browser. If you want to *develop*, you need Node.js 20.19 or newer (22.12+ for the Node 22 line).
 
 ---
 
@@ -26,7 +26,7 @@ If you only want to *study*, you need nothing but a browser. If you want to *dev
 | Build tool | Vite | `^8.1.5` | Dev server and production bundler |
 | PWA | vite-plugin-pwa (Workbox) | `^1.3.0` | Service worker, manifest, offline precache |
 | Test runtime | jsdom | `^29.1.1` | Browser-like DOM for all five test stages |
-| Runtime | Node.js | **20 or newer** (24 recommended) | Required only for development; CI uses 20 |
+| Runtime | Node.js | **`^20.19.0` or `>=22.12.0`** (24 recommended) | Required only for development; CI resolves the newest Node 20 release |
 | Package manager | npm | Ships with Node.js | `package-lock.json` is committed |
 
 > **Module system:** `package.json` sets `"type": "module"`. Every `.js` file at the repository root is an ES module and must use `import`, not `require`. The reviewer `data.js` files are the exception — they are classic browser scripts loaded by `<script src>`, never by Node's module loader.
@@ -48,7 +48,7 @@ That's it. The reviewer runs entirely in the browser and saves your progress in 
 ### 2.2 Developer setup — macOS
 
 ```bash
-# 1. Install Node.js 20+ (Homebrew shown; nodejs.org installer works too)
+# 1. Install Node.js 20.19+ (Homebrew shown; nodejs.org installer works too)
 brew install node
 
 # 2. Confirm the version
@@ -70,7 +70,7 @@ npm run dev           # opens on http://localhost:5173
 Use **PowerShell** or **Git Bash**. PowerShell 5.1 does not support `&&`, so run the commands one per line.
 
 ```powershell
-# 1. Install Node.js 20+ (winget shown; the .msi from nodejs.org also works)
+# 1. Install Node.js 20.19+ (winget shown; the .msi from nodejs.org also works)
 winget install OpenJS.NodeJS.LTS
 
 # 2. Close and reopen the terminal, then confirm the version
@@ -92,7 +92,7 @@ npm run dev
 ### 2.4 Developer setup — Linux
 
 ```bash
-# 1. Install Node.js 20+ via nvm (recommended over distro packages, which lag)
+# 1. Install Node.js 20.19+ via nvm (recommended over distro packages, which lag)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 source ~/.bashrc
 nvm install 20
@@ -118,6 +118,7 @@ npm run dev
 | :--- | :--- | :--- |
 | `npm run dev` | Vite dev server with hot reload | While developing |
 | `npm run build` | Type-checks, bundles, and copies the standalone reviewers into `dist/` | Before deploying |
+| `npm run check:deploy` | Confirms `dist/index.html` uses real compiled assets under the Pages base path | Immediately after `npm run build` |
 | `npm run preview` | Serves the built `dist/` locally | To sanity-check a production build |
 | `npm test` | Runs diagnostics, two standalone interaction suites, subject-data checks, and the SPA smoke suite | Before every commit |
 | `npx tsc -b --force` | Full type-check with no incremental cache | When types look stale |
@@ -134,14 +135,15 @@ flowchart TD
     B -->|Study only| C[Open a reviewer folder]
     C --> D[Double-click index.html]
     D --> E([Done — no install needed])
-    B -->|Develop| F[Install Node.js 20+]
+    B -->|Develop| F[Install Node.js 20.19+]
     F --> G[git clone the repository]
     G --> H[npm install]
     H --> I{Which task?}
     I -->|Write code| J[npm run dev]
     I -->|Check quality| K[npm test]
     I -->|Ship it| L[npm run build]
-    L --> M([dist/ contains SPA + all 3 reviewers])
+    L --> M[npm run check:deploy]
+    M --> N([dist/ contains SPA + all 3 reviewers])
 ```
 
 ### 3.2 What the build produces
@@ -192,9 +194,11 @@ flowchart LR
 ### 3.4 Node.js version support
 
 ```text
-Node 18  ──✗── unsupported (CI targets 20; some APIs used here landed later)
-Node 20  ──✓── minimum; this is what GitHub Actions runs
-Node 22  ──✓── fine
+Node 18         ──✗── unsupported
+Node 20.0–20.18 ──✗── below Vite 8's minimum
+Node 20.19+     ──✓── supported; GitHub Actions resolves the newest Node 20
+Node 22.0–22.11 ──✗── below Vite 8's minimum for the Node 22 line
+Node 22.12+     ──✓── supported
 Node 24  ──✓── recommended for local development
 ```
 
@@ -210,6 +214,9 @@ Node 24  ──✓── recommended for local development
 | `Referenced project ... may not disable emit` | `tsconfig.node.json` is a referenced composite project, which must emit | Keep `outDir` pointed at `./node_modules/.tmp/tsconfig.node` instead of setting `noEmit` |
 | `vite.config.js` / `*.tsbuildinfo` keep reappearing in the repo root | `tsc -b` was emitting into the root | Already fixed via `outDir` and `tsBuildInfoFile`; the files are also in `.gitignore` |
 | GitHub Pages serves the SPA but 404s on a reviewer folder | Only `dist/` is deployed | The `copyStandaloneReviewers` Vite plugin copies them; re-run `npm run build` |
+| GitHub Pages is blank and its HTML contains `/src/main.tsx` | Pages is publishing `main / (root)` instead of the compiled artifact | In the repository, open **Settings → Pages → Build and deployment → Source**, select **GitHub Actions**, then run the deploy workflow again |
+| The deploy workflow succeeds but the live page still serves source HTML | The Pages publishing source is still the legacy branch configuration | Confirm the Pages source says **GitHub Actions**; the workflow's final production check intentionally fails when the wrong entry point remains live |
+| A previously used device works but a new device is blank | The old device has a previously working service-worker cache while the new device receives the broken live entry | Fix the publishing source first, redeploy, then remove the old service worker/site data and reload on each affected device |
 | A reviewer folder loads the SPA shell instead of the reviewer | The service worker's navigation fallback caught the request | `navigateFallbackDenylist` in `vite.config.ts` excludes reviewer paths; clear the old service worker in DevTools → Application → Service Workers |
 | Stale content after deploying | An old service worker is still cached | Hard-reload, or unregister the service worker in DevTools |
 | `IndexedDB failed, falling back to localStorage` in test output | Expected — JSDOM has no IndexedDB | Not an error; this exercises the store's fallback path |
@@ -217,6 +224,28 @@ Node 24  ──✓── recommended for local development
 | `Cannot find native binding` mentions Rolldown or Rollup | npm omitted an operating-system-specific optional package | Run `npm install` again from the repository root. Keep `package-lock.json`; do not invent or substitute a similarly named package. |
 | `tsc: Permission denied` even though TypeScript is installed | The generated `node_modules/.bin/tsc` wrapper lost its execute bit | Reinstall dependencies. For diagnosis, `node node_modules/typescript/bin/tsc -b` runs the same compiler entry directly. |
 | Paths with spaces fail in a shell | Folder names contain spaces | Quote them: `cd "Mobile Computing"` |
+
+### 4.1 GitHub Pages blank-screen recovery
+
+Plain-language view: Vite source code is the recipe; `dist/` is the finished meal. GitHub Pages must serve the files in `dist/`, because browsers cannot execute the repository's TypeScript/JSX entry directly. The analogy breaks because `dist/` also includes routing, service-worker, and hashed-cache metadata—not only a transformed copy of the source.
+
+1. Build and validate locally:
+
+   ```bash
+   npm ci
+   npm test
+   npm run build
+   npm run check:deploy
+   ```
+
+   Success ends with `DEPLOYMENT_DIAGNOSTICS_PASSED`.
+
+2. Open the repository on GitHub and choose **Settings → Pages**.
+3. Under **Build and deployment**, change **Source** from **Deploy from a branch** to **GitHub Actions**.
+4. Open **Actions → Deploy to GitHub Pages → Run workflow**, select `main`, and run it.
+5. Confirm the workflow's **Verify deployed entry point** step passes.
+6. Open `https://secretlyspy.github.io/IT-Subjects-Reviewer/?refresh=1` on a secondary device. The returned HTML must reference `/IT-Subjects-Reviewer/assets/…`, never `/src/main.tsx`.
+7. If one device still shows old content, remove the site's service worker and cached site data, close the tab, and reopen the URL. Cache clearing is a cleanup step; it cannot repair an incorrect Pages publishing source.
 
 ## 5. Why Mobile Content Has Two Data Files
 
