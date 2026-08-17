@@ -1931,11 +1931,11 @@ flowchart LR
 - **Unverified**: Screenshot pixel-diff baselines and real assistive-technology sessions; semantic accessibility was checked through DOM roles, labels, captions, keyboard controls, and accessibility snapshots.
 
 # Project Handover — GitHub Pages Blank Screen Repair
-_Generated: 2026-08-12 · For: subsequent LLM session_
+_Updated: 2026-08-17 · For: subsequent LLM session_
 
 ## 1. Project Overview
 
-The live project site returned HTTP 200 but rendered a white page on fresh/secondary devices. Direct inspection found that GitHub Pages was configured with `build_type: legacy`, `source.branch: main`, and `source.path: /`. The live HTML was the 1,013-byte repository source entry and requested `https://secretlyspy.github.io/src/main.tsx`, which returned 404. React therefore never mounted. Local implementation and QA are complete; production activation still requires a repository administrator to select GitHub Actions as the Pages publishing source and push these changes.
+The live project site previously returned HTTP 200 but rendered a white page on fresh/secondary devices. Direct inspection found that GitHub Pages was configured with `build_type: legacy`, `source.branch: main`, and `source.path: /`. The live HTML was the repository source entry and requested `https://secretlyspy.github.io/src/main.tsx`, which returned 404, so React never mounted. On 2026-08-17, the repository administrator changed **Settings → Pages → Build and deployment → Source** to **GitHub Actions** and dispatched workflow run `32021424484` (run #10). Build, artifact validation, deployment, and post-deployment verification all passed. The production site now serves the compiled SPA, PWA files, and standalone reviewers.
 
 ## 2. System Architecture
 
@@ -1963,6 +1963,8 @@ flowchart LR
 - **Implemented**: Current Pages workflow pattern using `configure-pages@v5`, `upload-pages-artifact@v4`, and `deploy-pages@v4`.
 - **Implemented**: Artifact validation rejects raw `/src/main.tsx`, missing boot fallback, absent module/CSS URLs, and missing generated files.
 - **Implemented**: Post-deployment check retries with cache-busting and fails with the exact Pages setting correction if source HTML remains live.
+- **Activated**: GitHub Pages publishing source is now GitHub Actions rather than legacy `main /` branch publishing.
+- **Deployed**: Workflow run `32021424484` published commit `e323cf46a8ef22e70986bcb87aa55db546363b23` and completed successfully.
 - **Implemented**: Dependency security patch in the lock/vendor tree: React Router 7.18.2, Undici 7.29.0, PostCSS 8.5.26, Nano ID 3.3.18, brace-expansion 2.1.4/5.0.9, and fast-uri 3.1.5.
 - **Out of scope**: Custom domain changes, DNS, a backend, or deleting the repository's already-tracked `node_modules/` tree.
 
@@ -1982,21 +1984,18 @@ The new functions `productionBase`, `showBootFailure`, `assetPathInDist`, `check
 
 ## 6. Immediate Next Steps
 
-1. Review, commit, and push the working-tree changes to `main`. Acceptance: the Deploy to GitHub Pages workflow starts for the pushed commit.
-2. In GitHub **Settings → Pages → Build and deployment → Source**, select **GitHub Actions**. Acceptance: the authenticated Pages API reports `build_type: workflow` rather than `legacy`.
-3. Run or rerun **Deploy to GitHub Pages**. Acceptance: build, artifact validation, deployment, and deployed-entry verification all pass.
-4. Fetch the live entry with a cache-busting query. Acceptance: HTML references `/IT-Subjects-Reviewer/assets/…`, while `/src/main.tsx` is absent; `manifest.webmanifest` and `sw.js` return HTTP 200.
-5. On affected secondary devices, clear site data/service workers only after the correct deployment is live. Acceptance: a fresh visit renders the dashboard without relying on an old cache.
+1. No corrective deployment work remains. Future pushes to `main` should trigger the existing Pages workflow; acceptance: both `build` and `deploy` jobs pass, including **Verify deployed entry point**.
+2. Preserve **Settings → Pages → Source: GitHub Actions**. Acceptance: production HTML continues to reference `/IT-Subjects-Reviewer/assets/…` and never `/src/main.tsx`.
+3. If an individual device retains stale output, clear that site's service worker and cached site data only after confirming the current workflow is green; acceptance: a fresh visit renders the dashboard.
 
 ## 7. Open Questions & Blockers
 
-- **Production blocker**: Pages is still configured for legacy `main /` publishing. Changing this setting requires repository admin/maintainer authority and is not represented by a source-code edit.
-- **Publication blocker**: The repaired working tree has not been committed or pushed because the user did not authorize an external Git write in this turn.
-- **Environment note**: The `gh` CLI is unavailable locally; the authenticated GitHub connector and public API were sufficient for read-only diagnosis but expose no Pages-source mutation.
+- No production or publication blockers remain.
+- The local `gh` CLI is not authenticated. Repository-administration changes therefore still require an authenticated maintainer or a separately authorized admin token; normal deployment does not require either because the configured workflow uses `GITHUB_TOKEN` with `pages: write` and `id-token: write`.
 
 ## 8. Critical Context
 
-- A successful custom deploy workflow does not prove the site is serving its artifact when Pages remains configured for legacy branch publishing. The live Pages API and returned HTML are the decisive evidence.
+- A successful artifact upload does not prove the site is serving that artifact when Pages remains configured for legacy branch publishing. Keep the post-deployment entry check; run #9 exposed the mismatch even though its build and deploy action completed.
 - A primary device can mask this defect with a previously installed service worker. Fresh devices reveal the actual broken production entry, explaining the device-specific report.
 - Changing `/src/main.tsx` from absolute to relative would still be wrong: browsers cannot directly run the uncompiled TypeScript/JSX application. The publishing source must change to the built artifact.
 - Cache clearing before correcting the publishing source can make a previously working device fail too. Fix deployment first, then clear stale caches.
@@ -2005,5 +2004,6 @@ The new functions `productionBase`, `showBootFailure`, `assetPathInDist`, `check
 ## 9. Verification Status
 
 - **QA_PASSED (local)**: Clean `npm ci`; all five `npm test` stages; TypeScript/Vite production build; deployment diagnostics including simulated module failure; production-only audit; full dependency audit. Both audits report zero vulnerabilities.
-- **Verified live diagnosis**: HTTP 200 source entry, 404 domain-root module URL, absent manifest/service worker, Pages API `build_type: legacy`, successful build/deploy workflow history, and a valid Pages artifact for commit `93f08bba`.
-- **Unverified production fix**: The repaired commit is not yet pushed and the admin-only Pages source is not yet switched, so the public URL remains broken at handover time.
+- **Verified resolved workflow**: Run `32021424484` (run #10, `workflow_dispatch`, commit `e323cf46`) completed successfully on 2026-08-17. Its `build` job passed checkout, Node setup, Pages configuration, `npm ci`, production build, deployable-artifact validation, and artifact upload. Its `deploy` job passed both `actions/deploy-pages@v4` and **Verify deployed entry point**.
+- **Verified live production**: `https://secretlyspy.github.io/IT-Subjects-Reviewer/` returns HTML referencing `/IT-Subjects-Reviewer/assets/index-CST3qfXy.js` and `/IT-Subjects-Reviewer/assets/index-zobBKoUZ.css`; `/src/main.tsx` is absent. `manifest.webmanifest` and `sw.js` return successfully, the React dashboard renders “Welcome back!”, and `Networking%202/index.html` serves the standalone reviewer.
+- **Residual unverified scope**: No authenticated Pages API read was available from the local workspace, but the successful configure/deploy/verify workflow and independently fetched compiled production entry provide direct behavioral confirmation of the corrected publishing source.
