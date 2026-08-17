@@ -17,7 +17,73 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!--
+        Vite replaces this boot screen when React mounts. Keeping a small HTML
+        fallback prevents a failed bundle request from becoming a blank page.
+      -->
+      <main
+        data-boot-screen
+        role="status"
+        aria-live="polite"
+        style="min-height:100vh;display:grid;place-items:center;padding:1.5rem;background:#0b0f14;color:#f4f7fb;font-family:Inter,system-ui,sans-serif"
+      >
+        <section style="max-width:36rem;text-align:center">
+          <h1 style="margin:0 0 .75rem;font-size:clamp(1.5rem,5vw,2.25rem)">Loading IT Subjects Reviewer…</h1>
+          <p style="margin:0;color:#aeb8c4;line-height:1.6">Preparing your study dashboard.</p>
+        </section>
+      </main>
+    </div>
+    <noscript>
+      <p style="padding:1rem;font-family:system-ui,sans-serif">
+        JavaScript is required to run the interactive reviewer. Enable JavaScript, then reload this page.
+      </p>
+    </noscript>
+    <script>
+      (() => {
+        // A missing or uncompiled production bundle must produce a useful error,
+        // especially on fresh devices that do not have a service-worker cache.
+        const showBootFailure = () => {
+          const root = document.getElementById('root');
+          const bootScreen = root?.querySelector('[data-boot-screen]');
+
+          // React removes the boot screen as soon as it mounts, so no fallback is
+          // shown after a successful start even if this timeout fires later.
+          if (!root || !bootScreen) return;
+
+          bootScreen.setAttribute('role', 'alert');
+          bootScreen.innerHTML = `
+            <section style="max-width:38rem;text-align:center">
+              <h1 style="margin:0 0 .75rem;font-size:clamp(1.5rem,5vw,2.25rem)">The reviewer could not start</h1>
+              <p style="margin:0 0 1.25rem;color:#aeb8c4;line-height:1.6">
+                The application files did not load. Reload once; if this continues,
+                clear this site's cached data and verify that GitHub Pages deploys the built <code>dist/</code> artifact.
+              </p>
+              <button
+                type="button"
+                onclick="window.location.reload()"
+                style="min-height:44px;padding:.7rem 1rem;border:1px solid #6ee7f2;border-radius:.5rem;background:#10232a;color:#f4f7fb;font:inherit;font-weight:700;cursor:pointer"
+              >
+                Reload reviewer
+              </button>
+            </section>`;
+        };
+
+        // Resource load failures fire on the element during capture and do not
+        // bubble, so capture mode is required to catch a missing module script.
+        window.addEventListener(
+          'error',
+          (event) => {
+            if (event.target instanceof HTMLScriptElement) showBootFailure();
+          },
+          true
+        );
+
+        // Also cover module evaluation failures or browsers that hide the
+        // underlying network event from the page.
+        window.setTimeout(showBootFailure, 8000);
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

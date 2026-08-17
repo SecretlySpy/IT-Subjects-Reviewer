@@ -12,7 +12,8 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  # Let an active production deployment finish before the next one starts.
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -25,12 +26,21 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
       - name: Install dependencies
         run: npm ci
       - name: Build
         run: npm run build
+        env:
+          # The action reports the correct project-site subpath, avoiding
+          # domain-root asset URLs when the repository name changes.
+          VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+      - name: Validate deployable artifact
+        run: npm run check:deploy
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
 
@@ -46,3 +56,21 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           timeout: 1800000 # 30 minutes in milliseconds
+      - name: Verify deployed entry point
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          # Cache-busting plus retries allows the Pages edge cache to converge.
+          for attempt in {1..6}; do
+            # Keep curl inside an if condition so Bash's fail-fast mode still
+            # permits the next retry after a transient edge/network failure.
+            if html="$(curl --fail --silent --show-error "${SITE_URL}?deployment=${GITHUB_SHA}&attempt=${attempt}")" &&
+              grep -q '/assets/' <<< "$html" && ! grep -q '/src/main.tsx' <<< "$html"; then
+              echo "Production entry point references the compiled bundle."
+              exit 0
+            fi
+            sleep 10
+          done
+
+          echo "::error::GitHub Pages is not serving the compiled artifact. In Settings > Pages, set Source to GitHub Actions."
+          exit 1
