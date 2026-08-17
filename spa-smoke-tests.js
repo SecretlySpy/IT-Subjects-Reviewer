@@ -299,6 +299,27 @@ async function main() {
     "the syllabus lists the final security unit, so all 15 units are present"
   );
 
+  // The generic network diagrams are data-driven, so one assertion per renderer
+  // family guards the registration chain: data -> dispatcher -> component.
+  assert(
+    Boolean(findByText(document, "h3", "Where a packet spends its time")),
+    "the opening unit renders its path-chain diagram"
+  );
+
+  findByText(document, "button", "Data Link Layer Control, Packetizing, and Error Detection").click();
+  await flush(window);
+  assert(
+    Boolean(findByText(document, "h3", "The three families of multiple access protocol")),
+    "the data link unit renders its hierarchy diagram"
+  );
+
+  findByText(document, "button", "Wireless Networks and Wi-Fi").click();
+  await flush(window);
+  assert(
+    Boolean(findByText(document, "h3", "The hidden terminal problem")),
+    "the wireless unit renders its radio-range diagram"
+  );
+
   findByText(document, "button", "Reliable Data Transfer and TCP Control").click();
   await flush(window);
   assert(Boolean(findByText(document, "h3", "TCP three-way handshake")), "the TCP topic renders the complete handshake visual");

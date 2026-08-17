@@ -160,32 +160,6 @@ const topics = [
                   "Explain why residential access technologies are asymmetric and where each one shares capacity.",
                   "Trace how access ISPs, regional ISPs, IXPs, and tier-1 ISPs interconnect."
             ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Worked example: the four delay components",
-                        "text": "A 10,000-bit packet crosses a 100 Mb/s link that is 1,000 km long. Transmission delay = L/R = 10,000 / 100,000,000 = 0.1 ms. Propagation delay = d/s = 1,000,000 m / (2 x 10^8 m/s) = 5 ms. Processing delay is typically well under a millisecond. Queueing delay depends entirely on how busy the router is. Here propagation dominates by 50x, which is why doubling link speed does almost nothing for a long-haul round trip."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Store-and-forward, stated precisely",
-                        "text": "A router must receive the entire packet before it may begin forwarding it. So sending one L-bit packet across N links of rate R with zero propagation delay takes N x L/R seconds, not L/R. The lecture example uses L = 10 Kbits and R = 100 Mb/s for a one-hop delay of 0.1 ms and an end-to-end delay of 0.2 ms over two links."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "Access-network rates in the slides are dated",
-                        "text": "The lecture deck quotes HFC at 40 Mbps to 1.2 Gbps downstream and DSL at 24-52 Mbps downstream. These are pre-DOCSIS-4.0, pre-fibre-to-the-home figures. The durable exam point is the asymmetry and the shared-versus-dedicated distinction, not the specific numbers. Check current CableLabs and ITU specifications before quoting a rate."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "Root server and traffic statistics have moved on",
-                        "text": "The deck's '~200 root servers in the US' understates reality by an order of magnitude: the root server system has 13 identities run by 12 organisations, deployed as roughly two thousand anycast instances worldwide. Likewise the '~18B connected devices (2017)' and 'Facebook ~2.5 billion users' figures are dated framing, and 5G is deployed rather than 'coming'. Added from root-servers.org."
-                  }
-            ],
             "sources": [
                   {
                         "title": "Root Server Technical Operations Association",
@@ -364,38 +338,6 @@ const topics = [
                   "Trace a DNS lookup through local, root, TLD, and authoritative servers in both iterative and recursive form.",
                   "Describe how DASH and CDN placement together make video streaming scale."
             ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Worked example: why persistent HTTP wins",
-                        "text": "A page has a base HTML file and 8 referenced objects, and RTT is 100 ms. Non-persistent, serial: (1 + 8) x 2 RTT = 1.8 s before transmission time. Persistent with pipelining: 2 RTT for the base file, then about 1 RTT for all 8 referenced objects = roughly 0.3 s. The saving is entirely connection setup, which is why browsers also opened parallel connections before HTTP/2 existed."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "The slides cite superseded HTTP specifications",
-                        "text": "The lecture deck cites HTTP/2 as RFC 7540 (2015). RFC 9113 obsoleted RFC 7540 in June 2022, and HTTP/1.1 was likewise re-specified as RFC 9110-9112. HTTP/3, which the deck mentions without a citation, is RFC 9114 and runs over QUIC (RFC 9000). Corrected against the IETF Datatracker."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "Two e-mail RFC numbers in the deck are wrong",
-                        "text": "One slide reads 'SMTP ... defined in RFC 531'. SMTP is RFC 5321 - the same deck states this correctly two slides earlier, so 531 is text-extraction damage. The deck also cites RFC 822 for message format; that was superseded by RFC 2822 and then RFC 5322."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "security",
-                        "title": "Why DNS is attractive to attackers",
-                        "text": "DNS runs over UDP with no authentication by default, so a forged reply that arrives before the real one is accepted and cached - cache poisoning. The same property enables amplification: a small spoofed query produces a large reply aimed at the victim. DNSSEC adds origin authentication and integrity to records; it does not add confidentiality."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Beyond the lecture deck: RTP",
-                        "text": "RTP appears in this unit's term list but not in the slides. It is covered in the multimedia chapter of the textbook and is included here because it completes the streaming picture alongside DASH."
-                  }
-            ],
             "sources": [
                   {
                         "title": "RFC 9113: HTTP/2",
@@ -548,26 +490,6 @@ const topics = [
                   "Explain why a matching checksum does not guarantee an error-free segment.",
                   "Justify choosing UDP for a given application from its delay and loss requirements."
             ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Demultiplexing, stated as a rule",
-                        "text": "Three segments all arrive at host B on port 80. Under UDP they would all be handed to one socket. Under TCP they land on three different sockets if they came from different (source IP, source port) pairs. This is exactly why a web server can serve many clients on a single well-known port."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "The Internet checksum is weak protection",
-                        "text": "The deck demonstrates this directly: take two 16-bit words, flip a 0 to 1 in one and a 1 to 0 in the matching position of the other, and the sum is unchanged - so the checksum still matches and the error passes undetected. This is why link layers add CRC, which catches far more error patterns, and why the checksum is a cheap sanity check rather than a guarantee."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Source coverage gap",
-                        "text": "The lecture deck for this unit ends at the checksum slide, even though its own roadmap promises reliable data transfer, TCP, and congestion control. That material is covered in unit 2.1B of this reviewer and is standard textbook content, but it is not backed by the supplied slides. See docs/networking2/CONTENT-REVIEW.md."
-                  }
-            ],
             "sources": [
                   {
                         "title": "RFC 768: User Datagram Protocol",
@@ -718,26 +640,6 @@ const topics = [
                   "Compute a TCP timeout interval from EstimatedRTT and DevRTT.",
                   "Trace the congestion window through slow start, congestion avoidance, fast retransmit, and timeout.",
                   "Explain why AIMD drives competing TCP flows toward a fair share of a bottleneck link."
-            ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "This unit has no lecture-deck source",
-                        "text": "The supplied transport deck (2.1) stops at the checksum slide even though its roadmap promises reliable data transfer, TCP, and congestion control. Everything in this unit is standard Kurose and Ross chapter 3 material and is exam-relevant, but it could not be cross-checked against the slides. If the instructor has the remaining slides, they should be added. See docs/networking2/CONTENT-REVIEW.md, Table 2."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Worked example: why three duplicate ACKs",
-                        "text": "A sender transmits segments 1 through 5. Segment 2 is lost. The receiver ACKs 1, then on receiving 3, 4, and 5 it re-sends the ACK for 1 each time, because a cumulative ACK can only report the last in-order byte. The sender now has three duplicate ACKs for 1 - evidence that 3, 4, and 5 arrived and only 2 is missing - so it resends segment 2 without waiting for the timer. One duplicate could just be reordering; three is a strong signal."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Beyond the lecture deck: modern congestion control",
-                        "text": "Reno is the teaching model. Most Linux servers today default to CUBIC, which grows the window as a cubic function of time since the last loss so it recovers faster on high bandwidth-delay-product paths. BBR takes a different approach again, modelling bottleneck bandwidth and round-trip propagation time instead of treating loss as the congestion signal. Added for currency; the exam model is still AIMD."
-                  }
             ],
             "sources": [
                   {
@@ -902,26 +804,6 @@ const topics = [
                   "Explain head-of-line blocking and why output queueing avoids it.",
                   "Identify where inside a router queueing delay and loss actually occur."
             ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Worked example: longest prefix matching",
-                        "text": "A table holds 11001000 00010111 00010*** ******** on interface 0 and 11001000 00010111 00011000 ******** on interface 1, plus 11001000 00010111 00011*** ******** on interface 2. The address 11001000 00010111 00011000 10101010 matches both interface 1 (a 24-bit prefix) and interface 2 (a 21-bit prefix). The longer prefix wins, so it leaves on interface 1. Always compare prefix length, never table order."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Head-of-line blocking, concretely",
-                        "text": "Two input ports each hold a red packet destined for the same output port, and behind one of them sits a green packet destined for a free output port. Only one red packet can be switched, so the other waits - and the green packet waits behind it despite its own output port being idle. The queue discipline, not the fabric capacity, is what wastes the opportunity."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "Source coverage gap for IP addressing",
-                        "text": "The supplied network-layer deck ends at output port queueing, although its roadmap promises the IP datagram format, addressing, NAT, IPv6, generalized forwarding with OpenFlow, and middleboxes. The IPv4/IPv6, CIDR, DHCP, NAT, and fragmentation material in this unit is standard chapter 4 content but is not backed by the supplied slides. See docs/networking2/CONTENT-REVIEW.md, Table 2."
-                  }
-            ],
             "sources": [
                   {
                         "title": "RFC 791: Internet Protocol",
@@ -1075,26 +957,6 @@ const topics = [
                   "Apply the Bellman-Ford equation to compute a distance vector entry and its next hop.",
                   "Explain count-to-infinity and why link-state and distance-vector fail differently."
             ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Worked example: the Bellman-Ford equation",
-                        "text": "Node u has neighbours v, x, and w with link costs c(u,v)=2, c(u,x)=1, c(u,w)=5. Their advertised costs to z are Dv(z)=5, Dx(z)=3, Dw(z)=3. Then Du(z) = min{2+5, 1+3, 5+3} = min{7, 4, 8} = 4. The minimum is achieved via x, so x becomes u's next hop toward z. The next hop falls out of the same computation as the cost - you never compute it separately."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Count-to-infinity, step by step",
-                        "text": "x-y costs 4, y-z costs 1, x-z costs 50. The x-y link jumps to 60. y sees its direct cost is now 60 but z advertises a path at 5, so y computes 6 via z - not knowing z's path runs through y. y tells z 6, so z computes 7. y then computes 8, z computes 9, and so on. Each router is reasoning correctly from information that is already stale. This is why 'bad news travels slow'."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Beyond the lecture deck: poisoned reverse",
-                        "text": "This unit's term list includes poisoned reverse, but the slides only say 'see text for solutions'. The idea: if y routes to x through z, y advertises to z that its distance to x is infinity, so z will never route back through y. It fixes two-node loops but not loops involving three or more routers. Added from the textbook to complete the term."
-                  }
-            ],
             "sources": [
                   {
                         "title": "RFC 2328: OSPF Version 2",
@@ -1247,26 +1109,6 @@ const topics = [
                   "Apply the BGP route-selection order to choose between competing advertisements.",
                   "Name the four BGP message types and what each one does.",
                   "Reconstruct how traceroute uses ICMP TTL-expired and port-unreachable messages."
-            ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Worked example: hot potato routing",
-                        "text": "Router 2d learns via iBGP that it can reach X through gateway 2a or gateway 2c. The intra-domain OSPF cost to 2a is 112 and to 2c is 263. Hot potato picks 2a purely because it is cheaper to reach internally - even though the path through 2a crosses more autonomous systems afterwards. The AS is minimising its own carrying cost and pushing the traffic out of its network as fast as possible."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Reading the BGP selection order correctly",
-                        "text": "Local preference comes first, and it is a policy value set by the local administrator. That is why a route with a longer AS-PATH can still win: the operator has decided that reaching a destination through a particular neighbour is commercially preferable. Only when local preference ties does path length matter, and only when that ties does hot potato apply."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Beyond the lecture deck: MED and route aggregation",
-                        "text": "MED (Multi-Exit Discriminator) and route aggregation appear in this unit's term list but not in the slides. MED lets an AS hint which of several entry points a neighbour should prefer. Route aggregation combines several specific prefixes into one shorter advertisement, which is the main reason the global routing table has not grown even faster than it has. Added from the textbook."
-                  }
             ],
             "sources": [
                   {
@@ -1425,20 +1267,6 @@ const topics = [
                   "Match each SNMP message type to the management task it performs.",
                   "Name the core NETCONF operations and explain why locking and atomic commit matter.",
                   "Explain the division of labour between NETCONF and YANG."
-            ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Why NETCONF exists when SNMP already did",
-                        "text": "SNMP is excellent at reading one variable from one device. It has no notion of 'apply this change to forty routers, and if any of them refuses, undo it everywhere'. NETCONF adds datastores, locking, and atomic commit precisely so a network-wide change is a single transaction rather than forty independent edits that can half-succeed."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "security",
-                        "title": "SNMP versions matter for security",
-                        "text": "The management model in the slides is version-neutral, but in practice SNMPv1 and SNMPv2c authenticate with a plaintext community string that travels in the clear - effectively a shared password anyone on the path can read. SNMPv3 adds authentication and encryption. NETCONF sidesteps the issue by requiring a secure transport. Added because the deck does not raise it."
-                  }
             ],
             "sources": [
                   {
@@ -1615,26 +1443,6 @@ const topics = [
                   "Explain why CRC detects burst errors that parity misses.",
                   "Contrast FDMA, TDMA, and CDMA by what resource each one divides."
             ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Worked example: even parity",
-                        "text": "The data unit 1010100 contains three 1s. For even parity the sender appends a 1, making 10101001 with four 1s. The receiver counts: four is even, so it strips the parity bit and accepts. Now suppose one bit flips in transit to 10101011 - five 1s, odd, so the frame is rejected. But if two bits flip, the count returns to even and the error passes undetected. That single sentence is the whole limitation of parity."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "CRC in one line",
-                        "text": "Choose r CRC bits R so that the transmitted value <D,R> = D x 2^r XOR R is exactly divisible by the generator G in modulo-2 arithmetic. The receiver divides the received value by G and expects remainder zero. Any non-zero remainder means an error. Ethernet and 802.11 both use this, which is why it is worth knowing the mechanism rather than just the name."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Why load determines the right protocol",
-                        "text": "At low load, random access wins: one active node gets the entire channel, whereas TDMA would give it 1/N of the capacity and leave the other slots empty. At high load, channel partitioning wins: it shares fairly with no collision overhead, whereas random access spends more and more time colliding. Taking-turns protocols exist to capture both ends."
-                  }
-            ],
             "sources": [
                   {
                         "title": "IEEE 802 LAN/MAN Standards Committee",
@@ -1799,26 +1607,6 @@ const topics = [
                   "Describe what 802.1Q tagging adds and why the native VLAN is untagged.",
                   "Separate collision domains from broadcast domains and say which device bounds each."
             ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Worked example: addressing across a router",
-                        "text": "Host A (IP 111.111.111.111, MAC 74-29-9C-E8-FF-55) sends to host B (IP 222.222.222.222) through router R. On the first link the frame carries source MAC A and destination MAC E6-E9-00-17-BB-4B, which is R's near-side interface - not B. The IP header says A to B the whole way. R strips the frame, builds a new one with source MAC 1A-23-F9-CD-06-9B (its far-side interface) and destination MAC 49-BD-D2-C7-56-2A (B). MAC addresses are rewritten every hop; IP addresses are not."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "What a switch does when it does not know",
-                        "text": "If the destination MAC is not in the table, the switch floods the frame out every port except the one it arrived on. The real destination replies, and that reply teaches the switch where it lives. So a switch's table is built entirely from source addresses it has overheard - it never asks."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "The Ethernet speed range in the slides is out of date",
-                        "text": "The deck says Ethernet 'kept up with the speed race: 10 Mbps to 400 Gbps'. IEEE Std 802.3df-2024, approved in February 2024, defines 800 Gb/s operation. The teaching point - that Ethernet has repeatedly absorbed each speed generation while keeping one MAC protocol and frame format - is unchanged. Corrected against the IEEE Standards Association."
-                  }
-            ],
             "sources": [
                   {
                         "title": "IEEE 802.3df-2024: Ethernet Amendment 9 (800 Gb/s)",
@@ -1974,26 +1762,6 @@ const topics = [
                   "Describe the tiered structure of a datacentre network and why multipath is designed in.",
                   "Name the protocols involved, in order, when a laptop joins a network and loads a web page.",
                   "Identify why datacentres use ECN-based congestion control instead of loss-based."
-            ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "A day in the life of a web request",
-                        "text": "A laptop attaches to the campus network and asks for www.google.com. 1) DHCP: a request is broadcast inside UDP inside IP inside an Ethernet frame with destination FF-FF-FF-FF-FF-FF; the DHCP ACK returns the laptop's IP address, its first-hop router, and the DNS server. 2) ARP: to send anything off-subnet the laptop needs the router's MAC, so it broadcasts an ARP query and receives an ARP reply. 3) DNS: a query travels to the DNS server and returns Google's IP address. 4) TCP: SYN, SYNACK, ACK establish a connection to the web server. 5) HTTP: the GET is sent and the page returns. Every layer studied in this course appears exactly once, in order."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Why the datagram keeps its IP address under MPLS",
-                        "text": "It would be simpler to strip the IP header and rebuild it at the far end, but then the MPLS domain could not hand a packet back to plain IP routing partway through, and any failure would strand the traffic. Keeping the IP header means an MPLS network is an optimisation layered over IP, not a replacement for it."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Terminology note: leaf-spine and tier-1/tier-2",
-                        "text": "This reviewer uses leaf-spine, which is the common industry name. The lecture deck describes the same idea as a border router / tier-1 / tier-2 / top-of-rack hierarchy and cites Facebook's F16 topology. They describe the same design goal - many equal-cost paths between any two racks - so expect either vocabulary in an exam question."
-                  }
             ],
             "sources": [
                   {
@@ -2165,32 +1933,6 @@ const topics = [
                   "Relate SNR, BER, and modulation choice through rate adaptation.",
                   "Describe how the hidden terminal problem arises and how RTS/CTS addresses it."
             ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Why wireless cannot detect collisions",
-                        "text": "A radio transmitting at full power hears its own signal enormously more strongly than any distant station's. Trying to detect a remote collision underneath your own transmission is like trying to hear a whisper while shouting. Even with perfect hardware, hidden terminals mean the collision happens at the receiver, where the sender cannot observe it at all. Hence avoidance plus per-frame acknowledgement rather than detection."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "The Bluetooth slot figure in the slides is wrong",
-                        "text": "The deck reads 'TDM, 625 msec sec. slot'. The Bluetooth baseband specification defines a 625 microsecond slot, giving 1,600 hops per second across the 79 RF channels. At 625 milliseconds the deck's own 'up to 3 Mbps' figure would be impossible. Corrected against the Bluetooth SIG Core Specification."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "The 802.11 generation table stops too early",
-                        "text": "The deck's table ends at 802.11ax (Wi-Fi 6), marked '2020 (exp.)'. 802.11ax was published in 2021. Missing from the table are Wi-Fi 6E, which extends Wi-Fi 6 into the 6 GHz band, and Wi-Fi 7 (IEEE 802.11be), approved by the IEEE in September 2024 with 320 MHz channels and multi-link operation. Wi-Fi Alliance certification for Wi-Fi 7 began in January 2024. The exam-relevant pattern is unchanged: each generation widens channels, adds spatial streams, and uses denser modulation."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "CDMA in one sentence",
-                        "text": "Every station transmits over the entire band at the same time, and each is separated by its own chipping sequence. Encoding is the inner product of the data with the code; decoding is the summed inner product of the received signal with the same code. Because the codes are orthogonal, the other senders sum to approximately zero for a given receiver - which is why CDMA is neither frequency division nor time division."
-                  }
-            ],
             "sources": [
                   {
                         "title": "Bluetooth Core Specification: Baseband Specification",
@@ -2354,26 +2096,6 @@ const topics = [
                   "Explain how registration lets a home network answer 'where is this subscriber now'.",
                   "Compare indirect and direct routing by transparency and by path efficiency.",
                   "State what 5G NR changes relative to 4G and what that costs in deployment density."
-            ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Why tunnelling solves mobility",
-                        "text": "A datagram addressed to the mobile's permanent IP address cannot be routed to a visited network, because routing follows the address prefix and the prefix belongs to the home network. Tunnelling wraps that datagram inside a new one addressed to the visited network. Nothing about the inner datagram changes, so ongoing TCP connections do not notice the move - only the outer wrapper is rewritten."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "Mobile IP is a teaching model, not current practice",
-                        "text": "This unit's terms include home agent and foreign agent from Mobile IP. The lecture deck lists Mobile IP in its outline but never delivers those slides, and one slide states that such architectures 'exist (mobile IP) for 4G-like mobility, but not used'. Treat home agent and foreign agent as the conceptual model that explains indirection; production mobility uses the 4G/5G core tunnelling described above. See docs/networking2/CONTENT-REVIEW.md, flag 15."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Triangle routing, concretely",
-                        "text": "A correspondent in Manila sends to a mobile whose home network is in Manila but which is currently roaming in Manila on a different carrier. Under indirect routing the datagram still travels to the home network, is tunnelled to the visited network, and only then reaches the device. The inefficiency is not distance in the abstract - it is that the path is forced through a fixed anchor point regardless of where the two endpoints actually are."
-                  }
             ],
             "sources": [
                   {
@@ -2541,32 +2263,6 @@ const topics = [
                   "Explain why each step of the ap1.0 to ap5.0 ladder fails and what the next step adds.",
                   "Describe how a certificate authority closes the man-in-the-middle gap in public-key exchange.",
                   "Justify why real systems use public-key crypto only to establish a symmetric session key."
-            ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "security",
-                        "title": "MD5 and SHA-1 are taught here as history, not as recommendations",
-                        "text": "The lecture deck presents MD5 (128-bit) and SHA-1 (160-bit) as current choices. They are not. RFC 6151 states MD5 is no longer acceptable where collision resistance is required - collisions can be found in seconds. NIST is transitioning away from SHA-1 for all applications by 31 December 2030. Use SHA-2 (FIPS 180-4) or SHA-3 (FIPS 202) for anything new, and HMAC-SHA256 rather than HMAC-MD5. Learn MD5 and SHA-1 to answer exam questions; never specify them in a design."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "security",
-                        "title": "3DES is no longer the answer to DES being weak",
-                        "text": "The deck offers '3DES: encrypt 3 times with 3 different keys' as the way to make DES more secure. NIST SP 800-131A Rev. 2 deprecated three-key TDEA through 2023 and disallows it for encryption after 31 December 2023; only decryption of legacy data remains permitted. The correct modern answer is AES, which the deck's very next slide introduces."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "warning",
-                        "title": "The TLS 1.3 RFC number in the slides is wrong",
-                        "text": "The deck cites 'TLS 1.3: RFC 8846 [2018]'. TLS 1.3 is RFC 8446, published August 2018. RFC 8846 is an unrelated document. The deck is correct that SSL was deprecated in 2015 (RFC 7568); note also that TLS 1.0 and 1.1 were deprecated by RFC 8996 in 2021, so TLS 1.2 and 1.3 are the live versions."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Why the nonce in ap4.0 is necessary",
-                        "text": "In ap3.0 Trudy records Alice's packet and replays it later; encrypting the password changes nothing, because Trudy replays the encrypted version just as happily. A nonce is a number used once: Bob sends a fresh R, and only someone holding the key can return R encrypted. A recording of yesterday's exchange contains yesterday's R and is therefore useless today. Freshness, not secrecy, is what defeats replay."
-                  }
             ],
             "sources": [
                   {
@@ -2739,26 +2435,6 @@ const topics = [
                   "Explain the division of labour between the SPD, the SAD, and the SPI.",
                   "Trace the four phases of 802.11 security from capability discovery to encrypted traffic.",
                   "Distinguish stateless filtering, stateful filtering, and application gateways by what each can decide."
-            ],
-            "lessonBlocks": [
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Why a stateless filter is not enough",
-                        "text": "A rule permitting inbound TCP from port 80 to ports above 1023 with the ACK bit set looks safe - it appears to allow only replies to outbound web requests. But nothing stops an attacker crafting a packet with those exact properties when no connection exists. A stateful filter consults its connection table, finds no matching session, and drops it. That is the entire argument for stateful inspection in one example."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "security",
-                        "title": "The IKE example in the slides uses retired algorithms",
-                        "text": "The deck's sample security association specifies 3DES-cbc encryption and HMAC-MD5. Both are retired: three-key TDEA is disallowed for encryption after 2023 (NIST SP 800-131A Rev. 2) and HMAC-MD5 should not be used in new designs (RFC 6151). Beyond the algorithms, IKEv1 itself was deprecated by RFC 9395 in April 2023, which moved RFCs 2407, 2408, and 2409 to Historic. Use IKEv2 (RFC 7296) with AES and SHA-2."
-                  },
-                  {
-                        "kind": "callout",
-                        "tone": "note",
-                        "title": "Why 4G authentication is mutual",
-                        "text": "Only the device and its home HSS know the shared key stored on the SIM. The HSS uses it to build auth_token, so a device that can validate auth_token knows it is talking to its real home network - not a rogue base station. The device then uses the same key to compute res_M, and the MME compares it with the HSS-supplied xres_HSS. Each side proves knowledge of the shared secret without ever transmitting it."
-                  }
             ],
             "sources": [
                   {

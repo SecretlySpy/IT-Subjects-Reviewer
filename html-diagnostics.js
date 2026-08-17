@@ -408,11 +408,14 @@ function checkLessonEnhancements(data) {
   );
   if (!enriched.length) return [];
   const results = [];
+  // lessonBlocks is optional: a topic may carry objectives and sources alone.
+  // When present it must still be non-empty and every block must be renderable.
   const validBlocks = enriched.every(
     (topic) =>
       Array.isArray(topic.objectives) && topic.objectives.length > 0 &&
-      Array.isArray(topic.lessonBlocks) && topic.lessonBlocks.length > 0 &&
-      topic.lessonBlocks.every((block) => {
+      (topic.lessonBlocks === undefined ||
+        (Array.isArray(topic.lessonBlocks) && topic.lessonBlocks.length > 0)) &&
+      (topic.lessonBlocks ?? []).every((block) => {
         if (block.kind === "code") {
           return ["html", "javascript"].includes(block.language) &&
             typeof block.code === "string" && block.code.trim() &&

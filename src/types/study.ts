@@ -11,6 +11,19 @@ export interface VisualAidData {
   areas?: string[];
   sensors?: string[];
   zones?: string[];
+  /** Every field below drives one of the generic network diagrams. */
+  title?: string;
+  description?: string;
+  chain?: Array<{ label: string; sub?: string; kind?: 'edge' | 'core' | 'mark' }>;
+  layers?: Array<{ label: string; sub?: string }>;
+  root?: string;
+  levels?: Array<{ label: string; items: string[] }>;
+  fields?: Array<{ label: string; bits?: string; span?: number }>;
+  graphNodes?: string[];
+  edges?: Array<[string, string, number]>;
+  actors?: string[];
+  messages?: Array<{ from: string; to: string; label: string; hostile?: boolean }>;
+  stations?: Array<{ label: string; hears: string[] }>;
 }
 
 export interface ProfessorMode {

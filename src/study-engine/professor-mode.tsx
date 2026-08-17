@@ -6,6 +6,15 @@ import { ArchitectureExplorer } from '@/components/diagrams/ArchitectureExplorer
 import { MobileTimeline } from '@/components/diagrams/MobileTimeline';
 import { SafeFormLab } from '@/components/diagrams/SafeFormLab';
 import { OspfAreasDiagram, SensorFusionDiagram, ThumbZoneDiagram } from '@/components/diagrams/TopicVisuals';
+import {
+  PathChainDiagram,
+  LayerStackDiagram,
+  TreeHierarchyDiagram,
+  FieldLayoutDiagram,
+  WeightedGraphDiagram,
+  ActorFlowDiagram,
+  RadioRangeDiagram,
+} from '@/components/diagrams/NetworkDiagrams';
 
 interface ProfessorModeRendererProps {
   data: ProfessorMode;
@@ -40,6 +49,20 @@ export const ProfessorModeRenderer: React.FC<ProfessorModeRendererProps> = ({
       if (type === 'android-lifecycle') return <MobileTimeline nodes={visualAidData.nodes} />;
       if (type === 'sensor-fusion') return <SensorFusionDiagram sensors={visualAidData.sensors} />;
       if (type === 'thumb-zone') return <ThumbZoneDiagram zones={visualAidData.zones} />;
+
+      // Generic, data-driven diagrams shared across the Networking 2 syllabus.
+      // Each carries its own title/description so one component serves many topics.
+      const frame = {
+        title: visualAidData.title ?? 'Topic diagram',
+        description: visualAidData.description ?? '',
+      };
+      if (type === 'path-chain') return <PathChainDiagram {...frame} chain={visualAidData.chain} />;
+      if (type === 'layer-stack') return <LayerStackDiagram {...frame} layers={visualAidData.layers} />;
+      if (type === 'tree-hierarchy') return <TreeHierarchyDiagram {...frame} root={visualAidData.root} levels={visualAidData.levels} />;
+      if (type === 'field-layout') return <FieldLayoutDiagram {...frame} fields={visualAidData.fields} />;
+      if (type === 'weighted-graph') return <WeightedGraphDiagram {...frame} graphNodes={visualAidData.graphNodes} edges={visualAidData.edges} />;
+      if (type === 'actor-flow') return <ActorFlowDiagram {...frame} actors={visualAidData.actors} messages={visualAidData.messages} />;
+      if (type === 'radio-range') return <RadioRangeDiagram {...frame} stations={visualAidData.stations} />;
       
       // Fallback
       return (

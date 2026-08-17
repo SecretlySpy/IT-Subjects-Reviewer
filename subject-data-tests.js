@@ -203,6 +203,9 @@ function checkSubject(key, subject) {
     `${key}: every topic supplies an ELI5, a deep dive, and an analogy`
   );
 
+  // Each diagram type maps to the visualAidData field its renderer requires.
+  // A new diagram must be registered here, in NetworkDiagrams.tsx (or
+  // TopicVisuals.tsx), and in the professor-mode dispatcher.
   const diagramFields = {
     "tcp-handshake": "steps",
     "ospf-areas": "areas",
@@ -210,6 +213,13 @@ function checkSubject(key, subject) {
     "android-lifecycle": "nodes",
     "sensor-fusion": "sensors",
     "thumb-zone": "zones",
+    "path-chain": "chain",
+    "layer-stack": "layers",
+    "tree-hierarchy": "levels",
+    "field-layout": "fields",
+    "weighted-graph": "edges",
+    "actor-flow": "messages",
+    "radio-range": "stations",
   };
   const unrenderableAids = topics.filter((topic) => {
     const { visualAidType, visualAidData } = topic.professorMode;
