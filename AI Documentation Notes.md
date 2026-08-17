@@ -44,9 +44,28 @@
 - **They are under `docs/`, not inside `Networking 2/`, on purpose.** `vite.config.ts` copies each reviewer directory into `dist/` recursively, so placing them in the reviewer folder would publish ~330 KB of lecture text to GitHub Pages.
 - **Fidelity caveat**: these were reconstructed from the decks as supplied to the authoring session, not copied from original files on disk. They deliberately preserve the extraction damage (mojibake bullets, shredded tables, `RFC 531`, `625 msec`) because that corruption is what the audit depends on being visible. If the original PDF/PPTX files surface, they should replace these.
 
+## Deployment failure mode — "The reviewer could not start" (diagnosed 2026-08-17)
+- **Symptom**: the published site renders the boot fallback in the root `index.html` instead of the app.
+- **Root cause**: GitHub Pages was publishing the **repository root from a branch**, not the GitHub Actions `dist/` artifact. Confirmed live: `/src/main.tsx`, `/package.json`, and `/vite.config.ts` all returned 200 while `/assets/index-*.js` returned 404. The browser receives uncompiled TypeScript with a non-JavaScript MIME type, refuses to execute the module script, the capture-phase `error` listener fires, and the fallback replaces the boot screen.
+- **This is a repository setting, not a code defect.** The build, `vite.config.ts` base handling, the workflow, and `dist/` were all correct throughout. Fix: **Settings → Pages → Build and deployment → Source: `GitHub Actions`**, then re-run the deploy workflow.
+- **Why the test suite did not catch it**: `spa-smoke-tests.js` re-bundles the app *from source* as a classic script for JSDOM (JSDOM cannot execute `<script type="module">`), and `deployment-diagnostics.js` validates the local `dist/` on disk. Neither observes the deployed site. `deployment-live-check.js` closes that gap.
+- **Related repo defect, fixed**: five `dist/` files were tracked in git despite `dist/` being gitignored, and they referenced asset hashes that were never committed. Under branch publishing they were served as a second, broken copy of the app. Now untracked via `git rm --cached -r dist`.
+
+# Module / File: deployment-live-check.js
+
+## Function: main
+- **Purpose**: Verify what GitHub Pages actually serves, as distinct from what the local build contains.
+- **Inputs**: `process.argv[2]` (optional site URL; defaults to this project's Pages URL).
+- **Outputs**: `void`; sets `process.exitCode = 1` on any failed assertion.
+- **Dependencies**: global `fetch` (Node 18+).
+- **Behavior**: Fetches the entry document with a cache-busting query, asserts it references a compiled `/assets/` bundle and **not** `/src/main.tsx`, probes every referenced asset for a 200, then probes `package.json`, `vite.config.ts`, and `src/main.tsx` — any of which returning 200 proves branch-root publishing. Prints a named diagnosis with the exact setting to change.
+- **Side Effects**: Network requests only; writes nothing.
+- **Security Notes**: Read-only probes of a public URL. The source-exposure check doubles as a disclosure warning — branch publishing exposes the entire repository.
+- **Verification Status**: tested — executed against the live site, correctly identified branch-root publishing.
+
 ## Known remaining work
-- **`Networking 2/NetworkingTwoBeginnerGuide.jsx`** reads `globalThis.reviewerData` and renders topics, but it has no renderer for `objectives` / `lessonBlocks` / `sources`. The corrections are therefore visible in `Networking 2/index.html` and in the React platform, but not in this standalone JSX component. Porting `renderLessonEnhancements` there is the remaining gap.
 - **Two truncated decks** (transport 2.1, network layer 2.2) still lack their later slides. Flagged for the instructor in CONTENT-REVIEW Table 2; not resolvable from this side.
+- **No headless-browser test** exercises the production ESM bundle. JSDOM cannot run module scripts, so the suite verifies app logic from source and artifact integrity on disk, but never boots `dist/` in a real engine. Adding Playwright would close this; `npm run check:live` covers the deployed case in the meantime.
 
 # Module / File: Networking 2/index.html
 

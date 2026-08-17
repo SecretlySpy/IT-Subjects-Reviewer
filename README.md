@@ -113,7 +113,8 @@ IT-Subjects-Reviewer/
 npm install
 npm test      # runs all five QA stages
 npm run build # type-checks, bundles the SPA, and copies the reviewers into dist/
-npm run check:deploy # rejects raw-source or broken GitHub Pages artifacts
+npm run check:deploy # rejects raw-source or broken GitHub Pages artifacts (local dist/)
+npm run check:live   # checks what GitHub Pages is actually serving
 \`\`\`
 
 \`npm test\` runs, in order: repository diagnostics, JSDOM interaction suites for the Systems Integration and Mobile Computing reviewers, content-integrity checks for the React subject datasets, and a runtime smoke test of the React application.
@@ -125,7 +126,8 @@ npm run check:deploy # rejects raw-source or broken GitHub Pages artifacts
 - Designed specifically for quick studying and rapid exam review.
 - The zero-build reviewers need **no Node.js and no internet** — open \`index.html\` and study.
 - \`npm run build\` copies all three standalone reviewers into \`dist/\`, so the GitHub Pages deployment serves both the React platform and the zero-build apps.
-- GitHub Pages must use **Settings → Pages → Source: GitHub Actions**. Publishing from \`main / (root)\` serves uncompiled TSX and cannot run the React platform.
+- ⚠️ **GitHub Pages must use Settings → Pages → Build and deployment → Source: \`GitHub Actions\`.** This is the single most common way to break the deployed site. Publishing from \`main / (root)\` serves the repository as static files, so the browser is handed \`/src/main.tsx\` — uncompiled TypeScript — refuses to execute it, and the page shows *"The reviewer could not start"*. The build, the workflow, and \`dist/\` are all fine in that state; the artifact simply is not being used. Run \`npm run check:live\` to confirm which mode is active — it prints the diagnosis and the exact setting to change.
+- \`dist/\` is generated and **must stay untracked**. Committing it publishes a stale, asset-less copy of the app alongside the real one.
 - Networking 2 cites its primary sources (IETF RFCs, NIST CSRC, IEEE 802 standards, Bluetooth SIG, 3GPP, Wi-Fi Alliance) inside each topic's lesson blocks. Where the lecture slides are wrong or outdated — a mistyped TLS 1.3 RFC number, MD5/SHA-1/3DES taught as current, a Bluetooth slot given in milliseconds — the reviewer shows a correction callout in context. The full audit lives in [`docs/networking2/CONTENT-REVIEW.md`](docs/networking2/CONTENT-REVIEW.md).
 - The Mobile Computing web-form module cites MDN, W3C Web Accessibility Initiative, and OWASP guidance while keeping its lessons and capstone usable offline.
 - More subjects and modules will be continually added using this scalable, decoupled structure.

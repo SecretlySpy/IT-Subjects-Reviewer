@@ -154,6 +154,101 @@ function Flow({ steps }) {
   );
 }
 
+// Tone styling for lesson callouts. Each entry also supplies a text label so the
+// colour bar is never the only signal distinguishing a correction from a note.
+const calloutToneMap = {
+  note: { bar: "border-l-blue-500", chip: "bg-blue-50 text-blue-800", label: "Note" },
+  warning: { bar: "border-l-amber-500", chip: "bg-amber-50 text-amber-900", label: "Correction" },
+  security: { bar: "border-l-rose-500", chip: "bg-rose-50 text-rose-900", label: "Security" },
+};
+
+// Optional rich lesson content: learning objectives, callout/code blocks, and
+// cited sources. Networking 2 uses these to carry corrections where the lecture
+// decks are wrong or outdated, so they must render here as well as in the
+// zero-build reviewer. Topics without the fields render nothing.
+function LessonEnhancements({ topic }) {
+  const objectives = Array.isArray(topic.objectives) ? topic.objectives : [];
+  const blocks = Array.isArray(topic.lessonBlocks) ? topic.lessonBlocks : [];
+  const sources = Array.isArray(topic.sources) ? topic.sources : [];
+
+  if (!objectives.length && !blocks.length && !sources.length) return null;
+
+  return (
+    <div className="mt-5 grid gap-5">
+      {objectives.length > 0 && (
+        <Card>
+          <h3 className="mb-4 text-2xl font-black text-slate-950">Learning objectives</h3>
+          <ul className="grid gap-2">
+            {objectives.map((objective) => (
+              <li key={objective} className="flex gap-3 leading-7 text-slate-700">
+                <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-slate-400" />
+                <span>{objective}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
+      {blocks.map((block, index) => {
+        if (block.kind === "code") {
+          return (
+            <Card key={`${block.title}-${index}`}>
+              <h3 className="mb-3 text-xl font-black text-slate-950">{block.title}</h3>
+              {/* tabIndex makes the overflow region reachable for keyboard scrolling. */}
+              <pre
+                tabIndex={0}
+                aria-label={`${block.title} code example`}
+                className="max-w-full overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm leading-relaxed text-slate-100"
+              >
+                <code className="font-mono">{block.code}</code>
+              </pre>
+              <p className="mt-3 leading-7 text-slate-600">{block.caption}</p>
+            </Card>
+          );
+        }
+
+        if (block.kind !== "callout") return null;
+
+        const tone = calloutToneMap[block.tone] || calloutToneMap.note;
+        return (
+          <div
+            key={`${block.title}-${index}`}
+            className={`rounded-lg border border-slate-200 border-l-4 bg-white p-5 shadow-sm ${tone.bar}`}
+          >
+            <span className={`inline-block rounded-full px-2.5 py-1 text-xs font-black uppercase tracking-wide ${tone.chip}`}>
+              {tone.label}
+            </span>
+            <h3 className="mt-3 text-xl font-black text-slate-950">{block.title}</h3>
+            <p className="mt-2 leading-7 text-slate-700">{block.text}</p>
+          </div>
+        );
+      })}
+
+      {sources.length > 0 && (
+        <Card>
+          <h3 className="mb-4 text-2xl font-black text-slate-950">Sources and further reading</h3>
+          <ul className="grid gap-1">
+            {sources.map((source) => (
+              <li key={source.url}>
+                <a
+                  href={source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${source.publisher}: ${source.title} (opens in a new tab)`}
+                  className="inline-flex min-h-[44px] items-center text-cyan-700 underline underline-offset-4 hover:text-cyan-900"
+                >
+                  {source.publisher}: {source.title}
+                  <span aria-hidden="true" className="ml-1">↗</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 // Full per-topic section: header, core ideas + key terms, then compare + flow.
 // `id={topic.id}` is the in-page anchor that the dashboard cards and nav link to.
 function TopicSection({ topic, index }) {
@@ -201,6 +296,8 @@ function TopicSection({ topic, index }) {
           <Flow steps={topic.flow} />
         </Card>
       </div>
+
+      <LessonEnhancements topic={topic} />
     </section>
   );
 }
