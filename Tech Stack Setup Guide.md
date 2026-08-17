@@ -22,6 +22,7 @@ If you only want to *study*, you need nothing but a browser. If you want to *dev
 | Styling | Tailwind CSS | `^3.4.19` | Utility styling; **must stay on v3, not v4** |
 | CSS pipeline | PostCSS + autoprefixer | `^8.5.22` / `^10.5.4` | Tailwind's build step |
 | Icons | lucide-react | `^1.26.0` | Icon set for the platform |
+| Educational visuals | Native React + semantic HTML/CSS | In-repository | Offline diagrams without a runtime graph dependency |
 | Accessibility | react-focus-lock | `^2.13.7` | Traps focus in the mobile sidebar drawer |
 | Build tool | Vite | `^8.1.5` | Dev server and production bundler |
 | PWA | vite-plugin-pwa (Workbox) | `^1.3.0` | Service worker, manifest, offline precache |
@@ -185,6 +186,7 @@ flowchart LR
 | Mobile standalone topics, form pipeline, scenarios, or tests | `Mobile Computing/data.js` | Mobile `index.html` and the JSX reference component |
 | Mobile SPA lessons, terms, cards, or questions | `src/subjects/mobile/data.ts` | The React SPA |
 | Rich lesson block or source-link rendering | `src/types/study.ts` and `src/study-engine/professor-mode.tsx` | Every SPA subject with optional rich content |
+| SPA diagram layout or visual dispatch | `src/components/diagrams/` and `src/study-engine/professor-mode.tsx` | Every SPA topic visual |
 | Networking 2 content | `Networking 2/data.js`, or `src/subjects/networking2/data.ts` | Same standalone/SPA split |
 | Colours, spacing, typography | `src/design-system/tokens.ts` | The React SPA |
 | Expected content totals in the tests | `html-diagnostics.js` (`expectedCounts`) | `npm test` |
@@ -197,6 +199,25 @@ Node 20  ──✓── minimum; this is what GitHub Actions runs
 Node 22  ──✓── fine
 Node 24  ──✓── recommended for local development
 ```
+
+### 3.5 How a topic visual reaches the screen
+
+Plain-language view: a topic stores a small list of facts, the renderer chooses the matching visual, and a shared frame supplies the title and explanation.
+
+Precise view: `ProfessorMode.visualAidData` is a typed record. `ProfessorModeRenderer` dispatches its `type` to a deterministic React component. `VisualFrame` associates each `figure` with a visible heading and `figcaption`.
+
+```mermaid
+flowchart LR
+    T[Topic data] --> R{Visual type}
+    R -->|table| TB[Accessible table]
+    R -->|registered diagram| DG[Topic diagram]
+    R -->|interactive| LAB[Learning lab]
+    DG --> VF[VisualFrame]
+    VF --> UI[Responsive semantic figure]
+    CHECK[subject-data-tests.js] -. rejects unknown IDs .-> R
+```
+
+Analogy: topic data is a transit destination and the dispatcher sends it to the correct platform. The analogy breaks because dispatch is deterministic rendering, not a queue or asynchronous transport system.
 
 ---
 
@@ -217,6 +238,7 @@ Node 24  ──✓── recommended for local development
 | `Cannot find native binding` mentions Rolldown or Rollup | npm omitted an operating-system-specific optional package | Run `npm install` again from the repository root. Keep `package-lock.json`; do not invent or substitute a similarly named package. |
 | `tsc: Permission denied` even though TypeScript is installed | The generated `node_modules/.bin/tsc` wrapper lost its execute bit | Reinstall dependencies. For diagnosis, `node node_modules/typescript/bin/tsc -b` runs the same compiler entry directly. |
 | Paths with spaces fail in a shell | Folder names contain spaces | Quote them: `cd "Mobile Computing"` |
+| A topic shows “Visual aid unavailable” | Its `visualAidData.type` has no registered renderer or required array | Register the visual in `ProfessorModeRenderer`, validate its field in `subject-data-tests.js`, and run `node subject-data-tests.js` |
 
 ## 5. Why Mobile Content Has Two Data Files
 

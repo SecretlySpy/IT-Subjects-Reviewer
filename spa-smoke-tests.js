@@ -211,6 +211,15 @@ async function main() {
     Boolean(findByText(document, "h2", "Explain Like I'm 5")),
     "professor mode renders the ELI5 panel for the selected topic"
   );
+  assert(
+    Boolean(findByText(document, "h3", "Enterprise information hub-and-spoke")) &&
+      Boolean(findByText(document, "figure", "ESB Hub")),
+    "the EIA topic renders its authored hub-and-spoke visual"
+  );
+  assert(
+    !findByText(document, "span", "Visual aid unavailable"),
+    "the selected topic never falls back to an unavailable visual placeholder"
+  );
 
   // The adaptive quiz must present a question and score an answer.
   findByText(document, "button", "Adaptive Quiz").click();
@@ -273,6 +282,27 @@ async function main() {
     "grading a card advances the session queue"
   );
 
+  // Every authored SPA diagram must resolve to a topic-specific visual.
+  window.location.hash = "#/subject/networking2";
+  await flush(window);
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "TCP three-way handshake")), "the TCP topic renders the complete handshake visual");
+  findByText(document, "button", "Start").click();
+  await flush(window, 1);
+  findByText(document, "button", "Next message").click();
+  await flush(window, 1);
+  findByText(document, "button", "Next message").click();
+  await flush(window, 1);
+  assert(Boolean(findByText(document, "p", "Step 3: ACK")), "the TCP visual reaches the final client ACK");
+
+  findByText(document, "button", "OSPF Routing Protocol").click();
+  await flush(window);
+  assert(
+    Boolean(findByText(document, "h3", "OSPF hierarchical area topology")) &&
+      Boolean(findByText(document, "p", "Area 0: Backbone")),
+    "the OSPF topic renders its backbone and branch-area topology"
+  );
+
   // The Mobile curriculum must render its rich lesson model and safe live capstone.
   window.location.hash = "#/subject/mobile";
   await flush(window);
@@ -287,6 +317,15 @@ async function main() {
       Boolean(findByText(document, "button", "Validation, Accessibility, and Safe DOM Output")),
     "the syllabus lists all three enriched web-form lessons"
   );
+  assert(Boolean(findByText(document, "h3", "Android activity lifecycle")), "the lifecycle topic renders callback order and return paths");
+
+  findByText(document, "button", "Mobile Sensors and Context").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "Sensor fusion pipeline")), "the sensor topic renders inputs, fusion, and context output");
+
+  findByText(document, "button", "Mobile UI/UX constraints").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "One-handed thumb reach map")), "the mobile UX topic renders all three thumb reach zones");
 
   findByText(document, "button", "Validation, Accessibility, and Safe DOM Output").click();
   await flush(window);

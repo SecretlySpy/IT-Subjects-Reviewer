@@ -5,6 +5,7 @@ import { PacketSimulator } from '@/components/diagrams/PacketSimulator';
 import { ArchitectureExplorer } from '@/components/diagrams/ArchitectureExplorer';
 import { MobileTimeline } from '@/components/diagrams/MobileTimeline';
 import { SafeFormLab } from '@/components/diagrams/SafeFormLab';
+import { OspfAreasDiagram, SensorFusionDiagram, ThumbZoneDiagram } from '@/components/diagrams/TopicVisuals';
 
 interface ProfessorModeRendererProps {
   data: ProfessorMode;
@@ -31,34 +32,38 @@ export const ProfessorModeRenderer: React.FC<ProfessorModeRendererProps> = ({
     if (!visualAidType) return null;
 
     if (visualAidType === 'diagram') {
-      const type = (visualAidData as any)?.type;
+      const type = visualAidData.type;
       
-      if (type === 'tcp-handshake') return <PacketSimulator />;
-      if (type === 'eia-hub-spoke') return <ArchitectureExplorer />;
-      if (type === 'android-lifecycle') return <MobileTimeline />;
+      if (type === 'tcp-handshake') return <PacketSimulator steps={visualAidData.steps} />;
+      if (type === 'ospf-areas') return <OspfAreasDiagram areas={visualAidData.areas} />;
+      if (type === 'eia-hub-spoke') return <ArchitectureExplorer nodes={visualAidData.nodes} />;
+      if (type === 'android-lifecycle') return <MobileTimeline nodes={visualAidData.nodes} />;
+      if (type === 'sensor-fusion') return <SensorFusionDiagram sensors={visualAidData.sensors} />;
+      if (type === 'thumb-zone') return <ThumbZoneDiagram zones={visualAidData.zones} />;
       
       // Fallback
       return (
         <div className="flex items-center justify-center p-8 bg-[var(--bg-base)] rounded-lg border border-[var(--border-subtle)] mt-4">
           <div className="text-[var(--text-muted)] flex flex-col items-center gap-2">
             <LayoutPanelTop className="w-8 h-8" />
-            <span>Diagram: {type || 'Static representation'}</span>
+            <span>Visual aid unavailable for this topic.</span>
           </div>
         </div>
       );
     }
     
     if (visualAidType === 'table') {
-      const headers = (visualAidData as any)?.headers || [];
-      const rows = (visualAidData as any)?.rows || [];
+      const headers = visualAidData.headers || [];
+      const rows = visualAidData.rows || [];
       
       return (
-        <div className="mt-4 overflow-x-auto rounded-lg border border-[var(--border-subtle)]">
+        <div className="mt-4 overflow-x-auto rounded-lg border border-[var(--border-subtle)]" tabIndex={0} aria-label="Scrollable topic comparison table">
           <table className="w-full text-left border-collapse">
+            <caption className="sr-only">Comparison of key concepts in this topic</caption>
             <thead className="bg-[var(--bg-elevated)] text-[var(--text-primary)]">
               <tr>
                 {headers.map((h: string, i: number) => (
-                  <th key={i} className="py-2 px-4 border-b border-[var(--border-subtle)]">{h}</th>
+                  <th key={i} scope="col" className="py-2 px-4 border-b border-[var(--border-subtle)]">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -75,7 +80,7 @@ export const ProfessorModeRenderer: React.FC<ProfessorModeRendererProps> = ({
         </div>
       );
     }
-    if (visualAidType === 'interactive' && (visualAidData as any)?.type === 'safe-form-lab') {
+    if (visualAidType === 'interactive' && visualAidData.type === 'safe-form-lab') {
       return <SafeFormLab />;
     }
     return null;

@@ -2,13 +2,23 @@ export type MasteryLevel = "new" | "learning" | "reviewing" | "mastered";
 
 export type SubjectId = "networking2" | "sia1" | "mobile";
 
+export interface VisualAidData {
+  type?: string;
+  headers?: string[];
+  rows?: string[][];
+  steps?: string[];
+  nodes?: string[];
+  areas?: string[];
+  sensors?: string[];
+  zones?: string[];
+}
+
 export interface ProfessorMode {
   eli5: string;               // max ~80 words
   deepDive: string;           // academic, 250–500 words, technical terms defined
   analogy: string;            // real-world, memorable
   visualAidType: "diagram" | "flowchart" | "table" | "interactive" | "svg";
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  visualAidData: Record<string, any>; // structure depends on type
+  visualAidData: VisualAidData;
 }
 
 export interface SourceReference {

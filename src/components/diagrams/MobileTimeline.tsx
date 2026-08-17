@@ -1,85 +1,55 @@
-import { useState } from 'react';
-import { Code, Cpu, Zap } from 'lucide-react';
+import { Activity, ArrowDown, ArrowUp, CirclePause, Eye, EyeOff, Hand, Trash2 } from 'lucide-react';
+import { VisualFrame } from './VisualFrame';
 
-export function MobileTimeline() {
-  const [selected, setSelected] = useState(0);
+interface MobileTimelineProps {
+  nodes?: string[];
+}
 
-  const eras = [
-    {
-      year: 'Native (Swift/Kotlin)',
-      icon: <Cpu size={24} />,
-      color: 'text-rose-400',
-      bg: 'bg-rose-500/20 border-rose-500/50',
-      desc: 'Code compiles directly to machine instructions for the specific OS. UI is rendered by the OS OEM widgets.',
-      pros: ['Maximum Performance', 'Direct API Access'],
-      cons: ['Two separate codebases']
-    },
-    {
-      year: 'React Native (JS Bridge)',
-      icon: <Code size={24} />,
-      color: 'text-blue-400',
-      bg: 'bg-blue-500/20 border-blue-500/50',
-      desc: 'A single JavaScript codebase. The JS thread talks to the Native thread via a JSON bridge to render OEM UI widgets.',
-      pros: ['Single Codebase', 'Native look and feel'],
-      cons: ['Bridge can be a bottleneck']
-    },
-    {
-      year: 'Flutter (Direct Canvas)',
-      icon: <Zap size={24} />,
-      color: 'text-cyan-400',
-      bg: 'bg-cyan-500/20 border-cyan-500/50',
-      desc: 'A single Dart codebase. Bypasses OEM widgets entirely and paints its own UI directly onto the screen using a high-performance graphics engine.',
-      pros: ['Consistent UI everywhere', 'No Bridge overhead'],
-      cons: ['Custom look might feel non-native']
-    }
-  ];
+const lifecycleDetails: Record<string, { description: string; icon: typeof Activity; color: string }> = {
+  onCreate: { description: 'Initialize state and inflate the user interface.', icon: Activity, color: 'border-blue-500/50 bg-blue-500/10 text-blue-200' },
+  onStart: { description: 'The activity becomes visible.', icon: Eye, color: 'border-cyan-500/50 bg-cyan-500/10 text-cyan-200' },
+  onResume: { description: 'The activity enters the foreground and accepts input.', icon: Hand, color: 'border-emerald-500/50 bg-emerald-500/10 text-emerald-200' },
+  onPause: { description: 'The activity loses focus; pause short-lived work.', icon: CirclePause, color: 'border-amber-500/50 bg-amber-500/10 text-amber-200' },
+  onStop: { description: 'The activity is no longer visible.', icon: EyeOff, color: 'border-orange-500/50 bg-orange-500/10 text-orange-200' },
+  onDestroy: { description: 'Final cleanup before this activity instance is removed.', icon: Trash2, color: 'border-rose-500/50 bg-rose-500/10 text-rose-200' },
+};
 
+export function MobileTimeline({ nodes = Object.keys(lifecycleDetails) }: MobileTimelineProps) {
   return (
-    <div className="p-4 bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-xl my-4">
-      <h4 className="text-[var(--text-primary)] font-semibold text-lg mb-4">Mobile Development Evolution</h4>
-      
-      <div className="flex flex-col gap-4">
-        {eras.map((era, idx) => (
-          <div 
-            key={era.year}
-            onClick={() => setSelected(idx)}
-            className={`
-              relative p-4 rounded-lg border cursor-pointer transition-all duration-300 overflow-hidden
-              ${selected === idx ? era.bg : 'bg-[var(--bg-base)] border-[var(--border-subtle)] hover:bg-[var(--bg-hover)]'}
-            `}
-          >
-            <div className="flex items-center gap-4">
-              <div className={`p-2 rounded-full bg-black/20 ${selected === idx ? era.color : 'text-[var(--text-muted)]'}`}>
-                {era.icon}
-              </div>
-              <div className="flex-1">
-                <h5 className={`font-semibold ${selected === idx ? era.color : 'text-[var(--text-secondary)]'}`}>
-                  {era.year}
-                </h5>
-                {selected === idx && (
-                  <div className="animate-in slide-in-from-top-2 fade-in duration-300 mt-2">
-                    <p className="text-[var(--text-primary)] text-sm mb-3 leading-relaxed">{era.desc}</p>
-                    <div className="flex flex-wrap gap-4 text-xs">
-                      <div>
-                        <span className="text-emerald-400 font-semibold block mb-1">Pros:</span>
-                        <ul className="list-disc list-inside text-[var(--text-secondary)]">
-                          {era.pros.map(p => <li key={p}>{p}</li>)}
-                        </ul>
-                      </div>
-                      <div>
-                        <span className="text-rose-400 font-semibold block mb-1">Cons:</span>
-                        <ul className="list-disc list-inside text-[var(--text-secondary)]">
-                          {era.cons.map(c => <li key={c}>{c}</li>)}
-                        </ul>
-                      </div>
-                    </div>
+    <VisualFrame
+      title="Android activity lifecycle"
+      description="The main path moves from creation to foreground use, then through pause and stop before destruction. A paused activity can resume, and a stopped activity can start again instead of being destroyed."
+    >
+      <ol className="mx-auto max-w-xl" aria-label="Android lifecycle callback order">
+        {nodes.map((node, index) => {
+          const detail = lifecycleDetails[node] ?? { description: 'Android invokes this lifecycle callback.', icon: Activity, color: 'border-border-default bg-bg-base text-text-primary' };
+          const Icon = detail.icon;
+          return (
+            <li key={node}>
+              <div className={`rounded-lg border p-3 ${detail.color}`}>
+                <div className="flex items-center gap-3">
+                  <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                  <div>
+                    <p className="font-mono font-semibold">{node}()</p>
+                    <p className="mt-1 text-sm text-text-secondary">{detail.description}</p>
                   </div>
-                )}
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+              {index < nodes.length - 1 && (
+                <div className="flex h-8 items-center justify-center text-text-tertiary" aria-hidden="true"><ArrowDown className="h-5 w-5" /></div>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+      <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+        <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-text-secondary">
+          <ArrowUp className="h-5 w-5 shrink-0 text-emerald-300" aria-hidden="true" /> onPause() can return to onResume().
+        </div>
+        <div className="flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-3 text-text-secondary">
+          <ArrowUp className="h-5 w-5 shrink-0 text-cyan-300" aria-hidden="true" /> onStop() can return through onStart().
+        </div>
       </div>
-    </div>
+    </VisualFrame>
   );
 }

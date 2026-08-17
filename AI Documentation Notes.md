@@ -1733,3 +1733,124 @@ flowchart LR
 - **Tested**: Repository diagnostics, SIA interactions, Mobile interactions, subject-data integrity, SPA runtime behavior, TypeScript project build, and Vite production build.
 - **Reasoned**: WCAG contrast against existing design tokens and layout survival at 200% zoom; no automated visual-regression tool is configured.
 - **Unverified**: Real-device virtual keyboard selection and external source availability while offline; core lessons remain locally available without those links.
+
+# Project Handover — Reviewer Visual Coverage
+_Generated: 2026-08-17 · For: subsequent LLM session_
+
+## 1. Project Overview
+The entire reviewer was audited for instructional visual coverage across both delivery surfaces. The 53 standalone topics already render a comparison table and process flow. The 21 React SPA topics all declared visual data, but OSPF, sensor fusion, and thumb zones rendered placeholders; EIA and Android lifecycle rendered unrelated components; and TCP omitted the final ACK. All six defects are corrected. Current effective coverage is 74 of 74 authored topic records with a meaningful visual.
+
+## 2. System Architecture
+```mermaid
+flowchart LR
+  DATA[Typed subject visualAidData] --> PM[ProfessorModeRenderer]
+  PM --> TABLE[Accessible comparison table]
+  PM --> TCP[TCP sequence]
+  PM --> EIA[EIA hub-and-spoke]
+  PM --> LIFE[Android lifecycle]
+  PM --> OSPF[OSPF area hierarchy]
+  PM --> SENSOR[Sensor fusion]
+  PM --> THUMB[Thumb reach map]
+  PM --> LAB[Safe form lab]
+  FRAME[VisualFrame figure + caption] --> TCP
+  FRAME --> EIA
+  FRAME --> LIFE
+  FRAME --> OSPF
+  FRAME --> SENSOR
+  FRAME --> THUMB
+```
+- **Tech stack**: React 19, TypeScript 7, Tailwind CSS 3, Lucide React, Vite 8, JSDOM, and native semantic HTML.
+- **Decision**: Deterministic React layouts were selected instead of Mermaid. Six small authored datasets do not justify a runtime graph dependency, SVG sanitization, theme synchronization, or offline bundle growth.
+- **Data model**: Ordered arrays preserve pedagogical sequence. Each renderer maps `n` authored items in O(n) time and emits O(n) React elements; current `n` ranges from three to six.
+
+## 3. Core Features & Functional Specifications
+- **Implemented**: Complete TCP SYN → SYN-ACK → ACK interaction with live explanatory status.
+- **Implemented**: OSPF Area 0 backbone, Area Border Router, branch area, Link-State Database, and shortest-path relationships.
+- **Implemented**: Enterprise Service Bus hub linking CRM, ERP, and billing systems.
+- **Implemented**: Android lifecycle forward callbacks plus pause/resume and stop/start recovery paths.
+- **Implemented**: Accelerometer, gyroscope, and magnetometer fusion into stable motion context.
+- **Implemented**: Natural, stretch, and difficult thumb zones with a measured 44×44 target example.
+- **Implemented**: Table captions, scoped headers, and keyboard-scrollable overflow.
+- **Out of scope**: New curriculum topics, arbitrary author-written graph syntax, visual regression image baselines, and changes to the already-covered standalone reviewer visuals.
+
+## 4. File & Module Map
+- `src/types/study.ts`: Typed `VisualAidData` contract.
+- `src/study-engine/professor-mode.tsx`: Complete visual dispatch and accessible table rendering.
+- `src/components/diagrams/VisualFrame.tsx`: Shared figure, heading, description, and surface.
+- `src/components/diagrams/PacketSimulator.tsx`: Interactive TCP handshake sequence.
+- `src/components/diagrams/ArchitectureExplorer.tsx`: EIA hub-and-spoke visual.
+- `src/components/diagrams/MobileTimeline.tsx`: Android lifecycle visual.
+- `src/components/diagrams/TopicVisuals.tsx`: OSPF, sensor-fusion, and thumb-zone visuals.
+- `subject-data-tests.js`: Rejects empty data and unregistered visual identifiers.
+- `spa-smoke-tests.js`: Exercises all six SPA diagrams and TCP completion.
+
+## 5. Function Documentation
+
+# Module / File: src/components/diagrams/VisualFrame.tsx
+## Function: VisualFrame
+- **Purpose**: Give every educational diagram a consistent accessible figure boundary.
+- **Inputs**:
+  - `title` (`string`): Visible visual name.
+  - `description` (`string`): Relationship summary and text alternative.
+  - `children` (`ReactNode`): Diagram content.
+- **Outputs**: React `figure` with linked heading and caption.
+- **Dependencies**: React `useId`.
+- **Behavior**: Generates collision-safe IDs, associates the figure with its heading and caption, and wraps responsive diagram content in the design-system surface.
+- **Side Effects**: None.
+- **DSA Used**: Constant-time composition, O(1) auxiliary space.
+- **Data Analysis Notes**: Shared framing prevents metadata drift across six visual types.
+- **Responsive & Accessibility Notes**: Semantic `figure`/`figcaption`; padding reduces at narrow widths; no relationship relies on color alone.
+- **Security Notes**: React escapes all curriculum strings.
+- **Verification Status**: Type-checked, production-built, JSDOM-tested, and inspected at 375 px and desktop widths.
+
+# Module / File: src/components/diagrams/PacketSimulator.tsx
+## Function: PacketSimulator
+- **Purpose**: Trace all messages in TCP connection establishment.
+- **Inputs**:
+  - `steps` (`string[] | undefined`): Ordered handshake labels; defaults to SYN, SYN-ACK, ACK.
+- **Outputs**: Interactive React figure.
+- **Dependencies**: `VisualFrame`, React `useState`, Lucide icons.
+- **Behavior**: Maps messages to alternating directions, advances one bounded step per activation, announces the current explanation, and supports reset.
+- **Side Effects**: Updates local `activeStep` state.
+- **DSA Used**: Linear message mapping O(n); bounded index updates O(1); O(n) rendered elements.
+- **Data Analysis Notes**: Direction alternates client-to-server, server-to-client, client-to-server for the authored three-message handshake.
+- **Responsive & Accessibility Notes**: Ordered list, explicit endpoint labels, 44-pixel buttons, visible focus, polite live status, and reduced-motion transition override.
+- **Security Notes**: No external input or HTML sink.
+- **Verification Status**: Smoke test reaches `Step 3: ACK`; desktop accessibility snapshot confirms all messages and controls.
+
+# Module / File: src/components/diagrams/TopicVisuals.tsx
+## Function: OspfAreasDiagram, SensorFusionDiagram, ThumbZoneDiagram
+- **Purpose**: Render the three formerly unsupported technical diagrams.
+- **Inputs**:
+  - `areas` (`string[] | undefined`): OSPF backbone and branch areas.
+  - `sensors` (`string[] | undefined`): Sensor inputs to fuse.
+  - `zones` (`string[] | undefined`): Thumb reach categories.
+- **Outputs**: Three static, responsive React figures.
+- **Dependencies**: `VisualFrame` and Lucide React.
+- **Behavior**: Identifies Area 0 as the backbone; funnels sensor readings into one fusion stage and output; reverses authored reach-zone order to place the hardest zone at the phone top and natural zone at the bottom.
+- **Side Effects**: None.
+- **DSA Used**: Linear `find`, `filter`, `map`, and reverse-copy operations; O(n) time and O(n) elements for each small list.
+- **Data Analysis Notes**: Copy-before-reverse preserves immutable subject data.
+- **Responsive & Accessibility Notes**: Single-column collapse below `sm`, visible relationship text, an ARIA-labelled phone map, and a physically verified 44×44 target.
+- **Security Notes**: Repository-authored text is escaped by React.
+- **Verification Status**: Data-contract and SPA smoke suites pass; 375 px browser inspection reports no horizontal overflow.
+
+## 6. Immediate Next Steps
+1. Keep every future SPA diagram identifier registered in both `ProfessorModeRenderer` and `subject-data-tests.js`; acceptance criterion: no unavailable fallback appears and the integrity suite passes.
+2. If arbitrary contributor-authored graphs become common, evaluate a sanitized diagram engine; acceptance criterion: accessible text alternatives, offline rendering, theme support, and bounded bundle impact.
+
+## 7. Open Questions & Blockers
+- No product blockers remain.
+- The generated `node_modules/.bin/tsc` wrapper is not executable in this checkout. Direct Node invocation passes and confirms this is environment state rather than source failure.
+
+## 8. Critical Context
+- The standalone and SPA curricula are intentionally separate datasets. Counting only one surface misses 53 or 21 topics respectively.
+- Tables count as instructional visuals when they encode a technical comparison; decorative icons, progress rings, badges, and analogies do not.
+- `MobileTimeline` retains its filename for minimal import churn, but now correctly renders the Android activity lifecycle rather than framework evolution.
+- Unknown visual identifiers retain a defensive user-facing error state, but tests are expected to prevent that branch from shipping.
+- Mermaid was rejected for this bounded scope because deterministic HTML/CSS diagrams are smaller, easier to make accessible, and work offline without runtime parsing.
+
+## 9. Verification Status
+- **Tested**: 74-topic coverage inventory, visual data contracts, all six diagram render paths, full TCP sequence, TypeScript build, Vite production build, and mobile browser layout.
+- **Reasoned**: Standalone topic tables and flows are meaningful representations based on exhaustive data-record and renderer inspection.
+- **Unverified**: Screenshot pixel-diff baselines and real assistive-technology sessions; semantic accessibility was checked through DOM roles, labels, captions, keyboard controls, and accessibility snapshots.

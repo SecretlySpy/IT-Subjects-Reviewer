@@ -203,20 +203,34 @@ function checkSubject(key, subject) {
     `${key}: every topic supplies an ELI5, a deep dive, and an analogy`
   );
 
+  const diagramFields = {
+    "tcp-handshake": "steps",
+    "ospf-areas": "areas",
+    "eia-hub-spoke": "nodes",
+    "android-lifecycle": "nodes",
+    "sensor-fusion": "sensors",
+    "thumb-zone": "zones",
+  };
   const unrenderableAids = topics.filter((topic) => {
     const { visualAidType, visualAidData } = topic.professorMode;
     if (visualAidType === "table") {
       return (
         !Array.isArray(visualAidData.headers) ||
+        visualAidData.headers.length === 0 ||
         !Array.isArray(visualAidData.rows) ||
+        visualAidData.rows.length === 0 ||
         visualAidData.rows.some((row) => row.length !== visualAidData.headers.length)
       );
     }
-    return false;
+    if (visualAidType === "diagram") {
+      const field = diagramFields[visualAidData.type];
+      return !field || !Array.isArray(visualAidData[field]) || visualAidData[field].length === 0;
+    }
+    return visualAidType !== "interactive" || visualAidData.type !== "safe-form-lab";
   });
   assert(
     unrenderableAids.length === 0,
-    `${key}: every table visual aid has rows matching its header count${
+    `${key}: every topic has a populated visual aid with a registered renderer${
       unrenderableAids.length
         ? ` (bad: ${unrenderableAids.map((topic) => topic.id).join(", ")})`
         : ""
