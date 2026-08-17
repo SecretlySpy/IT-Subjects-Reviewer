@@ -1,247 +1,1194 @@
-import { SubjectMeta, Topic, Flashcard, Question, GlossaryTerm } from '@/types/study';
+import { SubjectMeta, Topic, Flashcard, Question, GlossaryTerm, SourceReference } from '@/types/study';
 import { tokens } from '@/design-system/tokens';
 
-export const subjectMeta: SubjectMeta = {
-  id: 'networking2',
-  title: 'Networking 2: Advanced Routing & Switching',
-  shortTitle: 'Networking 2',
-  description: 'Deep dive into TCP/IP reliability, advanced routing protocols, VLANs, and wide area networks.',
-  accent: tokens.colors.subject.networking2,
-  topicCount: 4,
-  estimatedHours: 12,
-};
+/**
+ * Networking 2 platform content.
+ *
+ * The 15 topics mirror `Networking 2/data.js` unit for unit, so the React
+ * platform and the zero-build reviewer teach the same syllabus. Both are
+ * reconciled against the course lecture decks; see
+ * docs/networking2/CONTENT-REVIEW.md for the audit, including the factual
+ * corrections that appear below as `warning` and `security` lesson callouts.
+ *
+ * Visual aids default to `table`, which needs no renderer registration. The two
+ * `diagram` aids used here (`tcp-handshake`, `ospf-areas`) are already wired in
+ * src/study-engine/professor-mode.tsx and subject-data-tests.js.
+ */
+
+// Shared citations. Reused across topics so a URL is written once.
+const rfc9113: SourceReference = { title: 'RFC 9113: HTTP/2', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc9113/' };
+const rfc9114: SourceReference = { title: 'RFC 9114: HTTP/3', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc9114/' };
+const rfc5321: SourceReference = { title: 'RFC 5321: Simple Mail Transfer Protocol', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc5321/' };
+const rfc8446: SourceReference = { title: 'RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc8446/' };
+const rfc6151: SourceReference = { title: 'RFC 6151: Updated Security Considerations for MD5 and HMAC-MD5', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc6151/' };
+const rfc9395: SourceReference = { title: 'RFC 9395: Deprecation of the Internet Key Exchange Version 1 (IKEv1) Protocol', publisher: 'RFC Editor', url: 'https://www.rfc-editor.org/info/rfc9395/' };
+const rfc7296: SourceReference = { title: 'RFC 7296: Internet Key Exchange Protocol Version 2 (IKEv2)', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc7296/' };
+const nistSha1: SourceReference = { title: 'NIST: Transitioning Away from SHA-1 for All Applications', publisher: 'NIST Computer Security Resource Center', url: 'https://csrc.nist.gov/news/2022/nist-transitioning-away-from-sha-1-for-all-apps' };
+const nist800131a: SourceReference = { title: 'NIST SP 800-131A Rev. 2: Transitioning the Use of Cryptographic Algorithms and Key Lengths', publisher: 'NIST', url: 'https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-131Ar2.pdf' };
+const rootServers: SourceReference = { title: 'Root Server Technical Operations Association', publisher: 'root-servers.org', url: 'https://root-servers.org/' };
+const ieee8023df: SourceReference = { title: 'IEEE 802.3df-2024: Ethernet Amendment 9 (800 Gb/s)', publisher: 'IEEE Standards Association', url: 'https://standards.ieee.org/ieee/802.3df/11107/' };
+const bluetoothBaseband: SourceReference = { title: 'Bluetooth Core Specification: Baseband Specification', publisher: 'Bluetooth SIG', url: 'https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Core-54/out/en/br-edr-controller/baseband-specification.html' };
+const rfc4271: SourceReference = { title: 'RFC 4271: A Border Gateway Protocol 4 (BGP-4)', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc4271/' };
+const rfc792: SourceReference = { title: 'RFC 792: Internet Control Message Protocol', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc792/' };
+const rfc4632: SourceReference = { title: 'RFC 4632: Classless Inter-domain Routing (CIDR)', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc4632/' };
+const rfc3031: SourceReference = { title: 'RFC 3031: Multiprotocol Label Switching Architecture', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc3031/' };
+const rfc5681: SourceReference = { title: 'RFC 5681: TCP Congestion Control', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc5681/' };
+const rfc6241: SourceReference = { title: 'RFC 6241: Network Configuration Protocol (NETCONF)', publisher: 'IETF', url: 'https://datatracker.ietf.org/doc/rfc6241/' };
+const gpp3: SourceReference = { title: '3GPP Specifications and Technologies', publisher: '3GPP', url: 'https://www.3gpp.org/specifications-technologies' };
 
 export const topics: Topic[] = [
   {
-    id: 'networking2-tcp-reliability',
+    id: 'networking2-internet-overview',
     subjectId: 'networking2',
-    title: 'TCP Reliability Mechanisms',
+    title: 'Computer Networks and the Internet',
     order: 1,
+    estimatedMinutes: 50,
+    professorMode: {
+      eli5: 'The Internet is not one machine. It is thousands of separate networks that agreed to pass each other’s mail. Your data is cut into small chunks, each chunk is passed hand to hand between routers, and the chunks are reassembled at the far end.',
+      deepDive: 'The Internet is a network of networks: end systems (hosts) at the edge run applications, packet switches (routers and link-layer switches) forward chunks of data called packets, and communication links carry bits between them. Access networks connect hosts to the edge of the core — hybrid fiber coax (HFC) shares capacity among the homes on a segment, while DSL runs a dedicated pair to a DSLAM at the central office. Packet switching shares links on demand, which suits bursty traffic far better than circuit switching’s advance reservation. The cost of sharing is delay and loss. Nodal delay has exactly four components: processing (checking errors and looking up the output link), queueing (waiting for the output link, the only load-dependent component), transmission (L/R, pushing L bits onto a link of rate R), and propagation (d/s, the time for one bit to traverse the physical distance). Loss occurs when a packet arrives at a router whose output buffer is already full. Throughput is bounded by the bottleneck link, usually the access link rather than the backbone. Structurally, access ISPs connect to regional ISPs, which connect to tier-1 ISPs, with Internet exchange points and peering links providing shortcuts; content providers run private backbones to sit close to users. Layering — application, transport, network, link, physical — makes this tractable by letting each layer change independently.',
+      analogy: 'Postal mail with a twist: instead of shipping one enormous crate, you send many numbered envelopes that travel independently and are reassembled on arrival. The analogy breaks down at queueing — a post office never drops your letter because its sorting table is full, but a router absolutely will drop a packet when its buffer is.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Delay component', 'Formula or driver', 'Depends on'],
+        rows: [
+          ['Processing', 'Header check + table lookup', 'Router hardware; roughly constant'],
+          ['Queueing', 'Time waiting for the output link', 'Traffic load — the only variable one'],
+          ['Transmission', 'L / R', 'Packet length and link rate'],
+          ['Propagation', 'd / s', 'Distance and medium only'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Name the four components of nodal delay and state what each depends on.',
+      'Compute transmission delay as L/R and total store-and-forward delay across N hops.',
+      'Explain why residential access is asymmetric and where capacity is shared.',
+      'Trace how access ISPs, regional ISPs, IXPs, and tier-1 ISPs interconnect.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Worked example: which delay dominates?',
+        text: 'A 10,000-bit packet crosses a 100 Mb/s link that is 1,000 km long. Transmission delay is L/R = 10,000 / 100,000,000 = 0.1 ms. Propagation delay is d/s = 1,000,000 m / (2 x 10^8 m/s) = 5 ms. Propagation dominates by fifty to one, which is why upgrading a long-haul link from 100 Mb/s to 1 Gb/s barely moves the round-trip time.',
+      },
+      {
+        kind: 'list',
+        title: 'Store-and-forward, stated precisely',
+        items: [
+          'A router must receive the entire packet before it may begin forwarding it.',
+          'So one L-bit packet across N links of rate R costs N x L/R, not L/R.',
+          'With L = 10 Kbits and R = 100 Mb/s, one hop is 0.1 ms and two hops are 0.2 ms.',
+        ],
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'Access rates and statistics in the lecture slides are dated',
+        text: 'The decks quote HFC at 40 Mbps–1.2 Gbps downstream and DSL at 24–52 Mbps, both pre-DOCSIS-4.0 and pre-fibre-to-the-home. They also state roughly 200 root servers in the US; the root server system in fact comprises 13 identities run by 12 organisations, deployed as around two thousand anycast instances worldwide. The durable exam points are the asymmetry and the shared-versus-dedicated distinction, not the numbers.',
+      },
+    ],
+    sources: [rootServers, rfc4632],
+    relatedTermIds: ['term-packet-switching', 'term-transmission-delay', 'term-propagation-delay', 'term-throughput', 'term-ixp'],
+    tags: ['internet', 'delay', 'access-networks', 'layering'],
+  },
+  {
+    id: 'networking2-application-layer',
+    subjectId: 'networking2',
+    title: 'Application Layer Protocols and Services',
+    order: 2,
+    estimatedMinutes: 55,
+    professorMode: {
+      eli5: 'Applications talk to each other through doors called sockets. HTTP fetches web objects, SMTP moves mail, and DNS turns names people can remember into addresses machines can route to.',
+      deepDive: 'Application protocols define message types, syntax, semantics, and timing rules. HTTP is stateless: the server keeps nothing about past requests, and cookies exist to reintroduce state. Non-persistent HTTP costs about 2 RTT per object — one round trip to open the TCP connection and one for the request plus first response bytes — while persistent HTTP reuses the connection and reduces this to roughly 1 RTT per object. HTTP/2 keeps HTTP/1.1 semantics but splits objects into frames and interleaves them, so a small object no longer waits behind a large one (head-of-line blocking). HTTP/2 still rides one TCP connection, so a lost segment stalls every stream; HTTP/3 moves to QUIC over UDP to give each stream independent loss recovery. DNS is a distributed hierarchy of root, top-level domain, and authoritative servers, plus a local server that is not part of the hierarchy but caches results and acts as a proxy. An iterative query returns a referral; a recursive query makes the contacted server do the work. Resource records come in types: A maps a name to an address, CNAME maps an alias to a canonical name, NS names an authoritative server, MX names a mail server. Peer-to-peer distribution (BitTorrent) is self-scaling because each new peer contributes upload capacity as well as demand. Video uses DASH, where the client measures bandwidth and picks a per-chunk encoding rate from a manifest, and CDNs place content near users by entering deep into access networks or bringing content home to nearby clusters.',
+      analogy: 'DNS is a chain of receptionists. You ask the building receptionist (local server), who either remembers the answer or points you to the floor receptionist, then the department one. The analogy breaks at caching: a receptionist who remembers a stale answer will confidently give you a wrong room number until their memory expires.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Record type', 'Name is', 'Value is'],
+        rows: [
+          ['A', 'A hostname', 'An IP address'],
+          ['CNAME', 'An alias', 'The real, canonical hostname'],
+          ['NS', 'A domain', 'Hostname of an authoritative server'],
+          ['MX', 'A domain', 'Hostname of a mail server'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Compute page response time for non-persistent and persistent HTTP in units of RTT.',
+      'Explain head-of-line blocking and how HTTP/2 and HTTP/3 each attack it.',
+      'Trace a DNS lookup in both iterative and recursive form.',
+      'Describe how DASH and CDN placement make video streaming scale.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Worked example: why persistent HTTP wins',
+        text: 'A page has a base HTML file plus 8 referenced objects and RTT is 100 ms. Serial non-persistent HTTP costs 9 objects x 2 RTT = 1.8 s before any transmission time. Persistent HTTP with pipelining costs 2 RTT for the base file and roughly 1 RTT for all 8 referenced objects — about 0.3 s. The entire saving is connection setup, which is why browsers opened parallel connections long before HTTP/2 existed.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'The lecture slides cite superseded HTTP and e-mail RFCs',
+        text: 'The decks cite HTTP/2 as RFC 7540 (2015); RFC 9113 obsoleted it in June 2022, and HTTP/1.1 was re-specified as RFC 9110–9112. HTTP/3 is RFC 9114 over QUIC (RFC 9000). One slide also reads "SMTP … defined in RFC 531"; SMTP is RFC 5321, and the same deck states this correctly two slides earlier, so 531 is text-extraction damage. RFC 822 for message format was superseded by RFC 5322.',
+      },
+      {
+        kind: 'callout',
+        tone: 'security',
+        title: 'Why DNS is attractive to attackers',
+        text: 'DNS runs over UDP with no authentication by default, so a forged reply arriving before the genuine one is accepted and cached — cache poisoning. The same property enables amplification, where a small spoofed query produces a large reply aimed at a victim. DNSSEC adds origin authentication and integrity to records; it deliberately does not add confidentiality.',
+      },
+    ],
+    sources: [rfc9113, rfc9114, rfc5321],
+    relatedTermIds: ['term-http-persistent', 'term-hol-blocking', 'term-dns-hierarchy', 'term-dash', 'term-cdn'],
+    tags: ['application-layer', 'http', 'dns', 'cdn'],
+  },
+  {
+    id: 'networking2-transport-fundamentals',
+    subjectId: 'networking2',
+    title: 'Transport Layer Fundamentals',
+    order: 3,
     estimatedMinutes: 45,
     professorMode: {
-      eli5: 'TCP is like sending a registered letter. If the post office loses it, the sender knows and sends another copy until they get a signature proving it arrived.',
-      deepDive: 'Transmission Control Protocol (TCP) ensures reliable delivery of byte streams over an unreliable network (IP). It achieves this via sequence numbers, acknowledgments (ACKs), and timers. When a sender transmits a segment, it starts a retransmission timer. If an ACK isn\'t received before the timer expires, TCP retransmits the segment. TCP also uses flow control (sliding windows) to prevent receiver buffer overflow, and congestion control algorithms (like slow start and congestion avoidance) to prevent overwhelming the network path.',
-      analogy: 'Imagine a factory shipping numbered boxes to a warehouse. The warehouse manager calls back to confirm receipt of box 1, then box 2. If the factory doesn\'t get a call for box 3 after a while, they send box 3 again.',
-      visualAidType: 'diagram',
-      visualAidData: { 
-        type: 'tcp-handshake',
-        steps: ['SYN', 'SYN-ACK', 'ACK'] 
-      }
+      eli5: 'The network layer gets data to the right computer. The transport layer gets it to the right program on that computer, using port numbers as apartment numbers within the building.',
+      deepDive: 'The transport layer provides logical communication between processes, while the network layer provides it between hosts — that one sentence separates the two cleanly. The sender breaks application messages into segments, adds a header, and passes them to IP; the receiver reassembles and demultiplexes upward through a socket. UDP demultiplexes on the destination port number alone, so two datagrams from different senders arriving at the same port reach the same socket. TCP demultiplexes on the full four-tuple of source IP, source port, destination IP, and destination port, which is why one server port can hold thousands of simultaneous connections on separate sockets. UDP is a no-frills extension of best-effort IP: an 8-byte header of source port, destination port, length, and checksum, with no connection setup, no reliability, no ordering guarantee, and no congestion control. That is exactly why DNS, SNMP, streaming media, and HTTP/3 choose it — no handshake delay and no throttling. The checksum is computed by summing the segment’s 16-bit words in one’s complement arithmetic, adding the wraparound carry, and storing the complement. It is deliberately weak: compensating bit flips in different words leave the sum unchanged, so a matching checksum does not prove an error-free segment.',
+      analogy: 'A mailroom in an office building. The street address gets the mail to the building (network layer); the room number gets it to the right person (transport layer). The analogy breaks at TCP demultiplexing, where the same room number can serve thousands of separate conversations distinguished by who sent them.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Property', 'TCP', 'UDP'],
+        rows: [
+          ['Demultiplexing key', 'Four-tuple', 'Destination port only'],
+          ['Header size', '20 bytes minimum', '8 bytes'],
+          ['Connection setup', 'Three-way handshake', 'None'],
+          ['Sending rate', 'Throttled by congestion control', 'As fast as the application asks'],
+          ['On error detected', 'Checksum, then retransmit', 'Checksum, then discard'],
+        ],
+      },
     },
-    relatedTermIds: ['term-tcp', 'term-ack', 'term-sliding-window'],
-    tags: ['transport-layer', 'tcp', 'reliability']
+    learningObjectives: [
+      'State which header fields UDP and TCP each use to choose a socket.',
+      'Compute a 16-bit one’s complement checksum including the wraparound carry.',
+      'Explain why a matching checksum does not guarantee an error-free segment.',
+      'Justify choosing UDP from an application’s delay and loss requirements.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Demultiplexing, stated as a rule',
+        text: 'Three segments arrive at host B on port 80. Under UDP they all reach one socket. Under TCP they reach three different sockets if they came from three different (source IP, source port) pairs. This is precisely why a web server serves many clients on a single well-known port.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'The Internet checksum is weak protection',
+        text: 'Take two 16-bit words, flip a 0 to 1 in one and a 1 to 0 in the matching position of the other, and the one’s complement sum is unchanged — the checksum still matches and the error passes undetected. This is why link layers add CRC, which catches far more error patterns, and why the checksum is a cheap sanity check rather than a guarantee.',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Source coverage gap',
+        text: 'The supplied transport deck ends at the checksum slide even though its own roadmap promises reliable data transfer, TCP, and congestion control. That material appears in the next topic and is standard textbook content, but it is not backed by the supplied slides. See docs/networking2/CONTENT-REVIEW.md, Table 2.',
+      },
+    ],
+    sources: [rfc9114, rfc5681],
+    relatedTermIds: ['term-four-tuple', 'term-internet-checksum', 'term-udp', 'term-logical-communication'],
+    tags: ['transport-layer', 'udp', 'multiplexing'],
+  },
+  {
+    id: 'networking2-tcp-reliability',
+    subjectId: 'networking2',
+    title: 'Reliable Data Transfer and TCP Control',
+    order: 4,
+    estimatedMinutes: 60,
+    professorMode: {
+      eli5: 'TCP is like sending a registered letter. If the post office loses it, the sender finds out and sends another copy until they get a signature proving it arrived — and if the roads look congested, they slow down how many letters they send at once.',
+      deepDive: 'Reliable data transfer is built from four mechanisms: checksums detect corruption, acknowledgments report success, timers detect silence, and retransmission repairs gaps. Stop-and-wait wastes a fast, long link because the sender idles for a full round trip per packet; utilisation is (L/R)/(RTT + L/R). Pipelining fixes this, and the window needed to fill a link is the bandwidth-delay product. Go-Back-N uses cumulative ACKs and one timer, so the receiver buffers nothing out of order but one loss forces the whole window to be resent. Selective Repeat acknowledges individually and buffers out-of-order arrivals, so only the lost packet is resent, at the cost of per-packet timers and receiver memory. TCP is a hybrid: cumulative ACKs like Go-Back-N, single-segment retransmission like Selective Repeat. Its timeout is EstimatedRTT + 4 x DevRTT, so a jittery path gets a longer timer. Fast retransmit does not wait for that timer: three duplicate ACKs mean later segments arrived and one is genuinely missing. The sending rate is the minimum of the congestion window and the receive window — congestion control protects the network, flow control protects the receiver. Slow start doubles the window each round trip until ssthresh, then congestion avoidance adds roughly one MSS per round trip. AIMD is what produces fairness: additive increase adds equally to all flows, while multiplicative decrease costs a larger flow more, so competing flows converge toward an equal share.',
+      analogy: 'A factory shipping numbered boxes to a warehouse. The manager calls back to confirm box 1, then box 2. If the factory hears three repeated confirmations for box 1 while boxes 3, 4, and 5 have already shipped, it knows box 2 specifically went missing and resends just that one.',
+      visualAidType: 'diagram',
+      visualAidData: {
+        type: 'tcp-handshake',
+        steps: ['SYN', 'SYN-ACK', 'ACK'],
+      },
+    },
+    learningObjectives: [
+      'Contrast Go-Back-N and Selective Repeat by what the receiver buffers and the sender resends.',
+      'Compute a TCP timeout interval from EstimatedRTT and DevRTT.',
+      'Trace the congestion window through slow start, congestion avoidance, fast retransmit, and timeout.',
+      'Explain why AIMD drives competing flows toward a fair share.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Worked example: why three duplicate ACKs',
+        text: 'A sender transmits segments 1 through 5 and segment 2 is lost. The receiver ACKs 1, then on receiving 3, 4, and 5 it re-sends the ACK for 1 each time — a cumulative ACK can only report the last in-order byte. Three duplicates are evidence that 3, 4, and 5 arrived and only 2 is missing, so the sender resends segment 2 immediately. One duplicate could be simple reordering; three is a strong signal.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'This topic has no lecture-deck source',
+        text: 'The supplied transport deck stops at the checksum slide. Everything here is standard Kurose and Ross chapter 3 material and is exam-relevant, but it could not be cross-checked against the slides. If the instructor holds the remaining slides they should be added. See docs/networking2/CONTENT-REVIEW.md, Table 2.',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Beyond the lecture deck: modern congestion control',
+        text: 'Reno is the teaching model. Most Linux servers today default to CUBIC, which grows the window as a cubic function of time since the last loss and so recovers faster on high bandwidth-delay-product paths. BBR takes a different approach again, modelling bottleneck bandwidth and round-trip propagation time rather than treating loss as the congestion signal.',
+      },
+    ],
+    sources: [rfc5681],
+    relatedTermIds: ['term-go-back-n', 'term-selective-repeat', 'term-aimd', 'term-triple-dup-ack', 'term-bdp'],
+    tags: ['transport-layer', 'tcp', 'reliability', 'congestion-control'],
+  },
+  {
+    id: 'networking2-network-data-plane',
+    subjectId: 'networking2',
+    title: 'Network Layer Data Plane',
+    order: 5,
+    estimatedMinutes: 55,
+    professorMode: {
+      eli5: 'A router does one job billions of times a second: look at where a packet is going, and move it to the right outgoing wire. Everything else — working out what the right wire is — happens separately and much more slowly.',
+      deepDive: 'Forwarding is a local, per-packet action measured in nanoseconds and implemented in hardware; routing is a network-wide computation measured in milliseconds and implemented in software. Input port lookup must complete at line speed or the input queue grows without bound, which is why the forwarding table is replicated into each input port for decentralised switching. Lookup uses longest prefix matching: the most specific matching entry wins, never the first one listed. Switching fabrics come in three families — via memory (limited by memory bandwidth, two bus crossings per datagram), via a shared bus (one transfer at a time, limited by bus bandwidth), and via an interconnection network such as a crossbar or multistage switch (parallel, and therefore scalable, with multiple planes reaching hundreds of Tbps). Input queueing suffers head-of-line blocking: a packet at the front waiting for a busy output port blocks packets behind it whose output ports are free. Output queueing is needed whenever the fabric delivers faster than the outgoing link transmits, which is the normal case when several inputs target one output; overflow there is where loss occurs. Buffer management chooses the drop policy and the scheduling discipline chooses which queued packet transmits next — the latter is precisely what network-neutrality debates concern. Above all this, IP offers only best-effort service, promising nothing about delay, jitter, loss, or bandwidth.',
+      analogy: 'A mail sorting hub. Longest prefix matching is like preferring the label "Quezon City, Barangay Holy Spirit" over the label "Metro Manila" — the more specific instruction wins. The analogy breaks at head-of-line blocking, where one stuck parcel physically prevents the sorters from reaching parcels behind it that could go out immediately.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Switching fabric', 'How it works', 'What limits it'],
+        rows: [
+          ['Via memory', 'CPU copies packet through system memory', 'Memory bandwidth; two bus crossings per datagram'],
+          ['Via bus', 'Shared bus moves packet input to output', 'Bus bandwidth; one transfer at a time'],
+          ['Crossbar', 'Dedicated crosspoint per input-output pair', 'Scales — parallel non-conflicting transfers'],
+          ['Multistage', 'Fixed-length cells through stages of small switches', 'Scales further via multiple parallel planes'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Apply longest prefix matching to select an outgoing interface.',
+      'Compare the three switching fabric families by what limits each one.',
+      'Explain head-of-line blocking and why output queueing avoids it.',
+      'Identify where inside a router queueing delay and loss actually occur.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Worked example: longest prefix matching',
+        text: 'A table holds 11001000 00010111 00010*** ******** on interface 0, 11001000 00010111 00011000 ******** on interface 1, and 11001000 00010111 00011*** ******** on interface 2. Address 11001000 00010111 00011000 10101010 matches both interface 1 (a 24-bit prefix) and interface 2 (a 21-bit prefix). The longer prefix wins, so it leaves on interface 1. Compare prefix length, never table order.',
+      },
+      {
+        kind: 'list',
+        title: 'Head-of-line blocking, concretely',
+        items: [
+          'Two input ports each hold a packet destined for the same output port.',
+          'Behind one of them sits a packet destined for a completely idle output port.',
+          'Only one of the two contending packets can be switched, so the other waits.',
+          'The packet behind it waits too — despite its own output port being free.',
+        ],
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Beyond the lecture deck: VLSM and address planning',
+        text: 'Variable Length Subnet Masking appears in no supplied deck but is standard networking material and is retained here. Sort required subnets by size descending and allocate the largest block first: for 192.168.1.0/24 serving 60 hosts, 25 hosts, and two point-to-point links, the 60-host subnet takes 192.168.1.0/26 (64 addresses) and the 25-host subnet then starts at 192.168.1.64/27 (32 addresses). A /30 gives 2 usable hosts, which is exactly a router-to-router link.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'Source coverage gap for IP addressing',
+        text: 'The supplied network-layer deck ends at output port queueing, although its roadmap promises the IP datagram format, addressing, NAT, IPv6, generalized forwarding with OpenFlow, and middleboxes. The IPv4/IPv6, CIDR, DHCP, NAT, and fragmentation material here is standard chapter 4 content but is not backed by the supplied slides.',
+      },
+    ],
+    sources: [rfc4632, rfc792],
+    relatedTermIds: ['term-longest-prefix', 'term-hol-input-queue', 'term-crossbar', 'term-best-effort', 'term-vlsm'],
+    tags: ['network-layer', 'forwarding', 'router-architecture', 'subnetting'],
+  },
+  {
+    id: 'networking2-routing-algorithms',
+    subjectId: 'networking2',
+    title: 'Routing Algorithms and Intra-AS Routing',
+    order: 6,
+    estimatedMinutes: 55,
+    professorMode: {
+      eli5: 'There are two ways for routers to agree on good paths. Either everyone gets a copy of the whole map and works it out alone, or nobody has the map and everyone shouts their best guesses to their neighbours until the guesses stop changing.',
+      deepDive: 'Routing algorithms sit on two independent axes: global versus decentralized information, and static versus dynamic responsiveness. Link-state algorithms are global — every router floods its own link costs so all of them build an identical topology map, then each runs Dijkstra’s algorithm independently. Dijkstra costs O(n squared) naively because each of n iterations scans all remaining nodes, reducible to O(n log n) with a priority queue; message complexity is O(n squared) because each of n routers floods across O(n) links. Distance-vector algorithms are decentralized and rest entirely on the Bellman-Ford equation: Dx(y) = min over neighbours v of { c(x,v) + Dv(y) }, where the neighbour achieving the minimum becomes the next hop. The algorithm is iterative, asynchronous, distributed, and self-stopping — a router recomputes only on a local cost change or a neighbour update, and notifies neighbours only when its own vector changes. Information diffuses one hop per round, so good news travels fast but bad news travels slow: a cost increase can trigger count-to-infinity, where two routers raise their estimates through each other one step at a time. The two families also fail differently. A faulty link-state router misreports its own link costs; a faulty distance-vector router can claim cheap paths to everywhere and black-hole traffic, and that error propagates through every table that trusts it.',
+      analogy: 'Link-state is everyone having the same road atlas. Distance-vector is asking your neighbours "how far to Cebu?" and adding your distance to them. The analogy breaks at count-to-infinity: your neighbour may be quoting a distance whose route runs back through your own house, and neither of you can see that.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Dimension', 'Link-state', 'Distance-vector'],
+        rows: [
+          ['Information', 'Complete topology, flooded', 'Neighbour estimates only'],
+          ['Algorithm', 'Dijkstra', 'Bellman-Ford'],
+          ['Messages', 'O(n squared) network-wide', 'Between neighbours, unpredictable rounds'],
+          ['Failure mode', 'Misreports its own link costs', 'Can black-hole traffic network-wide'],
+          ['Pathology', 'Oscillation with load-dependent costs', 'Count-to-infinity'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Classify a routing algorithm by information scope and responsiveness.',
+      'Run Dijkstra by hand and state its time and message complexity.',
+      'Apply the Bellman-Ford equation to compute a distance vector entry and its next hop.',
+      'Explain count-to-infinity and why the two families fail differently.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Worked example: the Bellman-Ford equation',
+        text: 'Node u has neighbours v, x, w with link costs 2, 1, and 5, which advertise costs to z of 5, 3, and 3. Then Du(z) = min{2+5, 1+3, 5+3} = min{7, 4, 8} = 4. The minimum is achieved via x, so x becomes u’s next hop toward z. The next hop falls out of the same computation as the cost — you never compute it separately.',
+      },
+      {
+        kind: 'list',
+        title: 'Count-to-infinity, step by step',
+        items: [
+          'x-y costs 4, y-z costs 1, x-z costs 50. The x-y link jumps to 60.',
+          'y sees 60 direct but z advertises 5, so y computes 6 via z — not knowing z routes through y.',
+          'y tells z 6, so z computes 7. y then computes 8, z computes 9, and so on.',
+          'Each router reasons correctly from information that is already stale.',
+        ],
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Beyond the lecture deck: poisoned reverse',
+        text: 'The slides mention poisoned reverse only as "see text for solutions". The idea: if y routes to x through z, y advertises to z that its distance to x is infinity, so z never routes back through y. It fixes two-node loops but not loops involving three or more routers.',
+      },
+    ],
+    sources: [rfc4271],
+    relatedTermIds: ['term-bellman-ford', 'term-dijkstra', 'term-count-to-infinity', 'term-black-holing'],
+    tags: ['network-layer', 'routing', 'ospf', 'control-plane'],
   },
   {
     id: 'networking2-ospf',
     subjectId: 'networking2',
     title: 'OSPF Routing Protocol',
-    order: 2,
+    order: 7,
     estimatedMinutes: 60,
     professorMode: {
-      eli5: 'OSPF is like a group of mapmakers sharing their local drawings so everyone can build a complete, identical map of the whole country and find the shortest path anywhere.',
-      deepDive: 'Open Shortest Path First (OSPF) is a link-state routing protocol used within an Autonomous System (IGP). Routers exchange Link-State Advertisements (LSAs) to build an identical Link-State Database (LSDB). It then runs the Dijkstra Shortest Path First (SPF) algorithm to calculate the best route to all known destinations. OSPF uses areas (with Area 0 as the backbone) to create a hierarchical structure, reducing routing table sizes and limiting the impact of topology changes.',
-      analogy: 'Think of GPS navigation. Every router has the full map (LSDB) and independently calculates the fastest route based on road speed limits (cost metric) to reach the destination.',
+      eli5: 'OSPF is like a group of mapmakers sharing their local drawings so everyone can build a complete, identical map and find the shortest path anywhere. BGP is the different problem of agreeing routes between companies that do not trust each other and have contracts to honour.',
+      deepDive: 'Open Shortest Path First is a link-state interior gateway protocol. Routers flood link-state advertisements directly over IP — not over TCP or UDP — to every other router in the area, build an identical link-state database, and run Dijkstra to compute the forwarding table. All OSPF messages can be authenticated, which matters because every router acts on what is flooded. Hierarchical OSPF has two levels, local areas plus a backbone (area 0), with three router roles: area border routers summarise their area into the backbone, backbone routers run OSPF limited to area 0, and boundary routers connect to other autonomous systems. Between autonomous systems, BGP takes over. BGP is a path-vector protocol running over a semi-permanent TCP connection, advertising a prefix plus attributes — most importantly AS-PATH, the list of ASes an advertisement has crossed, which provides loop detection, and NEXT-HOP, the specific internal router leading toward the next AS. There are exactly four message types: OPEN establishes and authenticates, UPDATE advertises or withdraws, KEEPALIVE holds the session up and acknowledges OPEN, and NOTIFICATION reports an error and closes. Route selection follows a fixed order: highest local preference (policy), then shortest AS-PATH, then closest NEXT-HOP (hot potato routing), then further tiebreakers. Policy outranks distance because between ASes the commercial relationship matters more than the path length.',
+      analogy: 'GPS navigation within one company’s road network: every router has the full map and independently computes the fastest route using road speed limits as costs. Between companies, it is closer to freight contracts — you may route a shipment the longer way because that is who you have an agreement with.',
       visualAidType: 'diagram',
       visualAidData: {
         type: 'ospf-areas',
-        areas: ['Area 0', 'Area 1', 'Area 2']
-      }
+        areas: ['Area 0', 'Area 1', 'Area 2'],
+      },
     },
-    relatedTermIds: ['term-ospf', 'term-lsa', 'term-dijkstra'],
-    tags: ['routing', 'ospf', 'network-layer']
+    learningObjectives: [
+      'Explain why policy rather than shortest path governs inter-AS routing.',
+      'Apply the BGP route-selection order to competing advertisements.',
+      'Name the four BGP message types and what each does.',
+      'Reconstruct how traceroute uses ICMP TTL-expired and port-unreachable messages.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Worked example: hot potato routing',
+        text: 'Router 2d learns via iBGP that it can reach X through gateway 2a or 2c. The intra-domain OSPF cost to 2a is 112 and to 2c is 263. Hot potato picks 2a purely because it is cheaper to reach internally — even though the path through 2a crosses more autonomous systems afterwards. The AS is minimising its own carrying cost and pushing traffic out of its network as fast as possible.',
+      },
+      {
+        kind: 'list',
+        title: 'Traceroute, built entirely from ICMP',
+        items: [
+          'Send datagrams with TTL = 1, then 2, then 3, and so on.',
+          'The nth router discards the datagram and returns ICMP type 11 code 0, TTL expired.',
+          'Each reply reveals that router’s address and the round-trip time.',
+          'The destination returns type 3 code 3, port unreachable — the stopping condition.',
+        ],
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Beyond the lecture deck: MED and route aggregation',
+        text: 'MED (Multi-Exit Discriminator) lets an AS hint which of several entry points a neighbour should prefer. Route aggregation combines several specific prefixes into one shorter advertisement, which is the main reason the global routing table has not grown even faster than it has. Neither appears in the supplied slides.',
+      },
+    ],
+    sources: [rfc4271, rfc792],
+    relatedTermIds: ['term-ospf', 'term-lsa', 'term-as-path', 'term-hot-potato', 'term-icmp'],
+    tags: ['routing', 'ospf', 'bgp', 'network-layer', 'sdn'],
   },
   {
-    id: 'networking2-vlans',
+    id: 'networking2-network-management',
     subjectId: 'networking2',
-    title: 'VLANs and Trunking',
-    order: 3,
-    estimatedMinutes: 40,
+    title: 'Network Management, SDN, SNMP, NETCONF, and YANG',
+    order: 8,
+    estimatedMinutes: 45,
     professorMode: {
-      eli5: 'VLANs act like invisible walls inside a single physical switch, creating separate mini-switches. Trunking is a special cable that carries traffic for all these mini-switches between buildings using color-coded tags.',
-      deepDive: 'A Virtual Local Area Network (VLAN) logically segments a broadcast domain at Layer 2. Devices in different VLANs cannot communicate without a Layer 3 device (router/L3 switch). IEEE 802.1Q trunking allows multiple VLANs to traverse a single physical link by inserting a 4-byte tag into the Ethernet frame header containing the VLAN ID (VID). The Native VLAN remains untagged on a trunk.',
-      analogy: 'Imagine a high-rise office building sharing one elevator shaft (the trunk). Employees wear different colored badges (VLAN tags) so the elevator drops them only on the floors belonging to their department.',
+      eli5: 'Running a network of thousands of devices by typing at each one does not scale. SNMP lets you read and set individual values remotely. NETCONF lets you change forty devices as a single all-or-nothing operation.',
+      deepDive: 'A management system has a managing server, managed devices each running an agent that holds state, and a protocol between them. Operators have three approaches in increasing order of abstraction: the CLI, typed or scripted per device; SNMP, which reads and writes individual managed objects in a Management Information Base addressed by object identifiers; and NETCONF with YANG, which is network-wide and model-driven. SNMP conveys information two ways — request-response, where the manager asks and the agent answers, and trap mode, where the agent reports an exceptional event unprompted. Its message types are GetRequest, GetNextRequest (walk a list), GetBulkRequest (retrieve a block, which is what makes large MIB retrievals practical), SetRequest, Response, and Trap. NETCONF uses XML-encoded remote procedure calls over a secure, reliable transport such as TLS. Its operations include get-config, get (configuration plus operational state), edit-config, lock and unlock, and create-subscription. Its real advantage over SNMP is transactional: datastore locking and atomic commit mean a change across many devices either fully applies or does not, rather than half-succeeding. YANG is not a protocol — it is the data modelling language defining the structure, syntax, and semantics of that data, and it can express constraints a valid configuration must satisfy. An SDN controller sits between network-control applications above (northbound, often RESTful) and switches below (southbound, often OpenFlow), maintaining network-wide state as a distributed database.',
+      analogy: 'SNMP is asking a warehouse clerk to read you one number off one shelf. NETCONF is handing forty warehouses a single instruction with the rule that if any one of them cannot comply, none of them change anything. The analogy breaks on operational state — a warehouse can accept your instruction and still fail to achieve it.',
       visualAidType: 'table',
       visualAidData: {
-        headers: ['Concept', 'Layer', 'Standard'],
+        headers: ['SNMP message', 'Direction', 'Purpose'],
         rows: [
-          ['VLAN', 'Layer 2', '802.1Q'],
-          ['Trunking', 'Layer 2', '802.1Q']
-        ]
-      }
+          ['GetRequest', 'Manager to agent', 'Read one managed object'],
+          ['GetNextRequest', 'Manager to agent', 'Walk to the next item in a list'],
+          ['GetBulkRequest', 'Manager to agent', 'Retrieve a whole block at once'],
+          ['SetRequest', 'Manager to agent', 'Write a value into a MIB object'],
+          ['Response', 'Agent to manager', 'Return a value or request outcome'],
+          ['Trap', 'Agent to manager', 'Report an exceptional event unprompted'],
+        ],
+      },
     },
-    relatedTermIds: ['term-vlan', 'term-8021q', 'term-trunk'],
-    tags: ['switching', 'vlan', 'data-link']
+    learningObjectives: [
+      'Distinguish the CLI, SNMP/MIB, and NETCONF/YANG approaches by scope and abstraction.',
+      'Match each SNMP message type to the management task it performs.',
+      'Name the core NETCONF operations and explain why locking and atomic commit matter.',
+      'Explain the division of labour between NETCONF and YANG.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Why NETCONF exists when SNMP already did',
+        text: 'SNMP is excellent at reading one variable from one device. It has no notion of "apply this change to forty routers, and if any refuses, undo it everywhere". NETCONF adds datastores, locking, and atomic commit precisely so a network-wide change is one transaction rather than forty independent edits that can half-succeed.',
+      },
+      {
+        kind: 'callout',
+        tone: 'security',
+        title: 'SNMP versions matter for security',
+        text: 'The management model in the slides is version-neutral, but SNMPv1 and SNMPv2c authenticate with a plaintext community string that travels in the clear — effectively a shared password anyone on the path can read. SNMPv3 adds authentication and encryption; NETCONF sidesteps the issue by requiring a secure transport. The decks do not raise this.',
+      },
+    ],
+    sources: [rfc6241],
+    relatedTermIds: ['term-mib', 'term-snmp-trap', 'term-netconf', 'term-yang', 'term-northbound-api'],
+    tags: ['management', 'snmp', 'netconf', 'sdn'],
   },
   {
-    id: 'networking2-subnetting',
+    id: 'networking2-datalink-control',
     subjectId: 'networking2',
-    title: 'Advanced IPv4 Subnetting (VLSM)',
-    order: 4,
-    estimatedMinutes: 90,
+    title: 'Data Link Layer Control, Packetizing, and Error Detection',
+    order: 9,
+    estimatedMinutes: 50,
     professorMode: {
-      eli5: 'VLSM is like slicing a pizza into different sized pieces based on how hungry each person is, rather than cutting all pieces exactly the same size, which wastes food.',
-      deepDive: 'Variable Length Subnet Masking (VLSM) allows network administrators to divide an IP address space into subnets of different sizes, optimizing IP allocation. Instead of using a fixed subnet mask for all subnets (classful routing), VLSM allows routing protocols (like OSPF or EIGRP) to carry subnet mask information. To design a VLSM network, you sort the required subnets by size descending, then allocate the largest block first from the available address space.',
-      analogy: 'Think of assigning office spaces in a building. The marketing team of 50 gets a large hall (/26), while the IT team of 2 gets a small closet (/30). VLSM prevents wasting a 50-person hall on a 2-person team.',
+      eli5: 'The link layer moves a frame across one hop. Because wires and radio corrupt bits, it adds extra check bits so the receiver can tell whether what arrived is what was sent — and when many devices share one wire, it needs rules about who may talk when.',
+      deepDive: 'The data link layer carries a frame from one node to the physically adjacent node, handling framing, addressing, flow control, error control, and media access control. Data is packetized because one host sending a huge block monopolises the medium, and because retransmitting a large unit after an error costs far more than retransmitting a small one. Error detection works by adding redundancy. A single-bit error flips one bit; a burst error flips two or more, measured from the first corrupted bit to the last, and they need not be consecutive. Simple parity detects any odd number of flips and misses any even number, which is exactly why it is weak against bursts. Two-dimensional parity can both detect and correct a single-bit error, because the failing row and column intersect at the guilty bit. CRC treats the data as a binary number, divides by an agreed generator polynomial in modulo-2 arithmetic, and sends the remainder; the receiver divides again and expects zero. It detects all burst errors shorter than r+1 bits and is used in Ethernet and 802.11. Multiple access protocols fall into three families: channel partitioning (FDMA by frequency, TDMA by time, CDMA by orthogonal code), random access (ALOHA, slotted ALOHA, CSMA, CSMA/CD, CSMA/CA), and taking turns (polling with a primary station, and token passing). Channel partitioning is efficient and fair at high load but wasteful at low load; random access is the reverse; taking-turns protocols seek both.',
+      analogy: 'A conversation in a crowded room. Polling is a chairperson calling on each person in turn. Token passing is a talking stick. CSMA is everyone listening before speaking — and still occasionally starting at the same moment, because sound takes time to travel.',
       visualAidType: 'table',
       visualAidData: {
-        headers: ['CIDR', 'Usable Hosts', 'Subnet Mask'],
+        headers: ['Family', 'Examples', 'Best when'],
         rows: [
-          ['/24', '254', '255.255.255.0'],
-          ['/26', '62', '255.255.255.192'],
-          ['/30', '2', '255.255.255.252']
-        ]
-      }
+          ['Channel partitioning', 'FDMA, TDMA, CDMA', 'High load — fair, no collision overhead'],
+          ['Random access', 'ALOHA, CSMA/CD, CSMA/CA', 'Low load — one node can use the whole channel'],
+          ['Taking turns', 'Polling, token passing', 'Seeking both, at the cost of coordination'],
+        ],
+      },
     },
-    relatedTermIds: ['term-vlsm', 'term-cidr', 'term-subnet'],
-    tags: ['ip', 'subnetting', 'network-layer']
-  }
+    learningObjectives: [
+      'Classify a multiple access protocol as channel partitioning, random access, or taking turns.',
+      'Compute a parity bit and locate a single-bit error using two-dimensional parity.',
+      'Explain why CRC detects burst errors that parity misses.',
+      'Contrast FDMA, TDMA, and CDMA by what resource each divides.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Worked example: even parity and its limit',
+        text: 'The data unit 1010100 contains three 1s. For even parity the sender appends a 1, making 10101001 with four 1s. If one bit flips in transit the count becomes odd and the frame is rejected. But if two bits flip, the count returns to even and the error passes undetected. That single sentence is the whole limitation of parity.',
+      },
+      {
+        kind: 'list',
+        title: 'CRC in one line',
+        items: [
+          'Choose r CRC bits R so that <D,R> = D x 2^r XOR R is exactly divisible by generator G in modulo-2 arithmetic.',
+          'The receiver divides the received value by G and expects remainder zero.',
+          'Any non-zero remainder means an error occurred.',
+          'All burst errors shorter than r+1 bits are guaranteed to be detected.',
+        ],
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Why load determines the right protocol',
+        text: 'At low load, random access wins: one active node gets the entire channel, whereas TDMA would give it 1/N of the capacity and leave the other slots empty. At high load, channel partitioning wins: it shares fairly with no collision overhead, whereas random access spends more and more time colliding.',
+      },
+    ],
+    sources: [ieee8023df],
+    relatedTermIds: ['term-crc', 'term-parity', 'term-fdma-tdma-cdma', 'term-token-passing', 'term-csma'],
+    tags: ['link-layer', 'error-detection', 'multiple-access'],
+  },
+  {
+    id: 'networking2-lans-ethernet',
+    subjectId: 'networking2',
+    title: 'LANs, Ethernet, ARP, Switches, and VLANs',
+    order: 10,
+    estimatedMinutes: 55,
+    professorMode: {
+      eli5: 'Inside a local network, devices find each other by hardware address, not IP address. ARP is the shout of "who has this IP?" and switches learn where everyone is simply by listening to who speaks from which port.',
+      deepDive: 'A MAC address is 48 bits, allocated through IEEE and burned into the network interface card; an IP address is 32 bits and belongs to the subnet. The portability difference is the point: a MAC address travels with the interface like an identity number, while an IP address describes where you currently are like a postal address. ARP resolves a next-hop IP address to a local MAC address, caching the result with a TTL of roughly 20 minutes. When a host sends off-subnet, the frame’s destination MAC is the router’s interface, not the final destination — the IP destination stays constant end to end while MAC addresses are rewritten at every hop. Ethernet is connectionless and unreliable: no handshake, and the receiving NIC sends no acknowledgment, so recovery is left to a higher layer such as TCP. Its MAC protocol is unslotted CSMA/CD with binary exponential backoff, where the random waiting range doubles after each successive collision. A switch is an active, transparent, store-and-forward device that self-learns: when a frame arrives it records the source MAC against the incoming port, and on a table miss it floods out every other port. Each switch port is its own collision domain running full duplex, which is why modern switched LANs have no collisions and CSMA/CD is effectively historical on wired links. VLANs solve two problems at once: they stop layer-2 broadcast traffic crossing the whole LAN, and they let a user who physically moves stay logically attached to their original group. IEEE 802.1Q adds a 4-byte tag carrying the VLAN ID so a trunk link can carry many VLANs, with the native VLAN travelling untagged; traffic between VLANs still requires routing.',
+      analogy: 'A high-rise sharing one elevator shaft (the trunk). Employees wear coloured badges (VLAN tags) so the elevator drops them only on their department’s floors. The analogy breaks at the native VLAN, which rides the same elevator with no badge at all.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Aspect', 'Switch', 'Router'],
+        rows: [
+          ['Layer inspected', 'Link layer headers', 'Network layer headers'],
+          ['Table built by', 'Flooding and self-learning', 'Routing algorithms'],
+          ['Addresses used', 'MAC addresses', 'IP addresses'],
+          ['Configuration', 'Plug-and-play, transparent', 'Explicitly configured, visible as a next hop'],
+          ['Bounds', 'A collision domain per port', 'A broadcast domain'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Trace which MAC and IP addresses change at each hop across a router.',
+      'Explain how a switch self-learns and what it does on a table miss.',
+      'Describe what 802.1Q tagging adds and why the native VLAN is untagged.',
+      'Separate collision domains from broadcast domains and say which device bounds each.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Worked example: addressing across a router',
+        text: 'Host A (111.111.111.111, MAC 74-29-9C-E8-FF-55) sends to host B (222.222.222.222) through router R. On the first link the frame carries destination MAC E6-E9-00-17-BB-4B — R’s near-side interface, not B. The IP header says A to B the whole way. R strips the frame and builds a new one with source MAC 1A-23-F9-CD-06-9B and destination MAC 49-BD-D2-C7-56-2A (B). MAC addresses are rewritten every hop; IP addresses are not.',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'What a switch does when it does not know',
+        text: 'If the destination MAC is not in the table, the switch floods the frame out every port except the one it arrived on. The real destination replies, and that reply teaches the switch where it lives. A switch’s table is built entirely from source addresses it has overheard — it never asks.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'The Ethernet speed range in the slides is out of date',
+        text: 'The deck says Ethernet "kept up with the speed race: 10 Mbps to 400 Gbps". IEEE Std 802.3df-2024, approved February 2024, defines 800 Gb/s operation. The teaching point — that Ethernet has absorbed every speed generation while keeping one MAC protocol and frame format — is unchanged.',
+      },
+    ],
+    sources: [ieee8023df],
+    relatedTermIds: ['term-mac-address', 'term-arp', 'term-self-learning', 'term-vlan', 'term-8021q'],
+    tags: ['link-layer', 'ethernet', 'switching', 'vlan', 'arp'],
+  },
+  {
+    id: 'networking2-link-virtualization',
+    subjectId: 'networking2',
+    title: 'Link Virtualization, MPLS, and Data Center Networks',
+    order: 11,
+    estimatedMinutes: 50,
+    professorMode: {
+      eli5: 'MPLS puts a short numbered tag on each packet so routers can forward by looking up one small number instead of searching for the best-matching address prefix. Data centres then build enormous networks out of many identical switches with lots of parallel paths.',
+      deepDive: 'MPLS forwards using a fixed-length label rather than longest prefix matching, which makes lookup cheaper. The MPLS header sits between the link-layer header and the IP header and carries a label, experimental/traffic-class bits, a bottom-of-stack bit, and its own TTL. Crucially the IP datagram keeps its IP addresses — MPLS routers simply choose not to inspect them, which is what lets the egress hand the datagram straight back to ordinary IP routing. The flexibility that follows is real: two flows heading to the same destination can take different paths based on source address or other fields, which destination-based IP forwarding cannot express. Fast reroute works because backup label-switched paths are precomputed, so recovery does not wait for routing reconvergence. Signalling requires OSPF and IS-IS to be extended to flood link bandwidth and reservation information, with RSVP-TE installing forwarding state along the chosen path. Data centre networks are hierarchical: border routers face outward, then tier-1 switches, tier-2 switches, top-of-rack switches (one per rack), and racks of 20 to 40 server blades. Rich interconnection provides both throughput and redundancy, and an application-layer load balancer distributes external requests across servers while hiding internal structure. Datacentre-specific protocol work includes RoCE for RDMA over Ethernet and ECN-based congestion control such as DCTCP and DCQCN, which react to explicit marks rather than to loss so queues and latency stay low.',
+      analogy: 'A coat-check ticket. The attendant does not re-read your name and search the whole rack — they match one number. The analogy breaks because your coat keeps no address of its own, whereas an MPLS-labelled datagram still carries its full IP header underneath.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Concept', 'IP forwarding', 'MPLS forwarding'],
+        rows: [
+          ['Lookup', 'Longest prefix match on destination', 'Exact match on a fixed-length label'],
+          ['Path selection', 'Destination address alone', 'Can use source and other fields'],
+          ['Failure recovery', 'Wait for routing reconvergence', 'Precomputed backup paths, fast reroute'],
+          ['IP header', 'Read at every hop', 'Present but not inspected'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Explain how label swapping differs from longest prefix matching and why it enables traffic engineering.',
+      'Describe the tiered structure of a datacentre network and why multipath is designed in.',
+      'Name the protocols involved, in order, when a laptop joins a network and loads a web page.',
+      'Identify why datacentres use ECN-based rather than loss-based congestion control.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'list',
+        title: 'A day in the life of a web request',
+        items: [
+          'DHCP: request broadcast inside UDP inside IP inside an Ethernet frame to FF-FF-FF-FF-FF-FF; the ACK returns the IP address, first-hop router, and DNS server.',
+          'ARP: to send off-subnet the laptop needs the router’s MAC, so it broadcasts an ARP query and receives a reply.',
+          'DNS: a query travels to the DNS server and returns the web server’s IP address.',
+          'TCP: SYN, SYNACK, ACK establish the connection to that server.',
+          'HTTP: the GET is sent and the page returns. Every layer in the course appears once, in order.',
+        ],
+      },
+      {
+        kind: 'paragraph',
+        title: 'Why the datagram keeps its IP address under MPLS',
+        text: 'It would be simpler to strip the IP header and rebuild it at the far end, but then the MPLS domain could not hand a packet back to plain IP routing partway through, and any failure would strand the traffic. Keeping the IP header means MPLS is an optimisation layered over IP, not a replacement for it.',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Terminology: leaf-spine versus tier-1/tier-2',
+        text: 'Industry commonly says leaf-spine; the lecture deck describes the same idea as a border router / tier-1 / tier-2 / top-of-rack hierarchy and cites Facebook’s F16 topology. They describe the same design goal — many equal-cost paths between any two racks — so expect either vocabulary in an exam question.',
+      },
+    ],
+    sources: [rfc3031],
+    relatedTermIds: ['term-mpls-label', 'term-rsvp-te', 'term-tor-switch', 'term-ecn', 'term-day-in-life'],
+    tags: ['link-layer', 'mpls', 'datacenter', 'synthesis'],
+  },
+  {
+    id: 'networking2-wireless',
+    subjectId: 'networking2',
+    title: 'Wireless Networks and Wi-Fi',
+    order: 12,
+    estimatedMinutes: 50,
+    professorMode: {
+      eli5: 'Radio is a shared, unreliable medium. Wi-Fi cannot hear a collision while it is transmitting, so instead of detecting collisions it tries hard to avoid them and acknowledges every single frame.',
+      deepDive: 'Wireless and mobility are different problems: wireless concerns communicating over a radio link, mobility concerns changing point of attachment. Three physical effects make radio harder than wire — path loss as the signal attenuates through matter, interference from other devices sharing the band, and multipath propagation where reflections arrive at slightly different times. Higher signal-to-noise ratio means lower bit error rate for a given physical layer, and rate adaptation applies that trade-off dynamically: as a device moves away and SNR falls, the link steps down from a dense modulation such as QAM256 to a robust one such as BPSK. Collision detection is impractical because the transmitting radio’s own signal swamps the far weaker received signal, and because hidden terminals mean some collisions occur where the sender cannot observe them at all. In the hidden terminal problem, A and C can each hear B but not each other, so their transmissions collide at B. RTS/CTS mitigates this: the sender’s short RTS may still collide, but the access point’s CTS is heard by everyone in range and tells all other stations to defer. A Basic Service Set is the cell — hosts plus an access point in infrastructure mode, hosts only in ad hoc mode. A host discovers access points by passive scanning (listening for beacon frames) or active scanning (broadcasting a probe request and collecting probe responses), then sends an association request and receives an association response, after which it typically authenticates and runs DHCP. Power management is beacon-driven: a device announces it will sleep, the AP buffers its frames, and the beacon lists which devices have traffic waiting.',
+      analogy: 'Trying to hear a whisper across a room while you yourself are shouting. That is why a wireless card cannot detect a remote collision underneath its own transmission — and the hidden terminal case is worse still, because the collision happens somewhere you cannot hear at all.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Mechanism', 'Wired Ethernet', '802.11 Wi-Fi'],
+        rows: [
+          ['Access method', 'CSMA/CD', 'CSMA/CA'],
+          ['Collision handling', 'Detect and abort mid-frame', 'Avoid; optionally reserve with RTS/CTS'],
+          ['Per-frame ACK', 'None', 'Every frame acknowledged'],
+          ['Why the difference', 'Can hear remote signal while sending', 'Own signal swamps it; hidden terminals exist'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Explain why 802.11 avoids collisions rather than detecting them.',
+      'Trace passive and active scanning through to a completed association.',
+      'Relate SNR, BER, and modulation choice through rate adaptation.',
+      'Describe the hidden terminal problem and how RTS/CTS addresses it.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Why wireless cannot detect collisions',
+        text: 'A radio transmitting at full power hears its own signal enormously more strongly than any distant station’s. Even with perfect hardware, hidden terminals mean the collision happens at the receiver, where the sender cannot observe it. Hence avoidance plus per-frame acknowledgement rather than detection.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'Two errors in the wireless slides',
+        text: 'First, the deck reads "TDM, 625 msec sec. slot" for Bluetooth; the Bluetooth baseband specification defines a 625 microsecond slot, giving 1,600 hops per second across 79 channels — at 625 ms the deck’s own 3 Mbps figure is impossible. Second, the 802.11 generation table stops at 802.11ax marked "2020 (exp.)"; 802.11ax was published in 2021, and the table omits Wi-Fi 6E (6 GHz) and Wi-Fi 7 (IEEE 802.11be), approved by the IEEE in September 2024 with 320 MHz channels.',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'CDMA in one sentence',
+        text: 'Every station transmits over the entire band at the same time, separated by its own chipping sequence. Encoding is the inner product of data with the code; decoding is the summed inner product with the same code. Because the codes are orthogonal, other senders sum to approximately zero — which is why CDMA is neither frequency nor time division.',
+      },
+    ],
+    sources: [bluetoothBaseband],
+    relatedTermIds: ['term-csma-ca', 'term-hidden-terminal', 'term-rts-cts', 'term-bss', 'term-rate-adaptation'],
+    tags: ['wireless', '802.11', 'csma-ca', 'bluetooth'],
+  },
+  {
+    id: 'networking2-mobile-networks',
+    subjectId: 'networking2',
+    title: 'Mobile Networks, 4G/5G, Roaming, and Handoff',
+    order: 13,
+    estimatedMinutes: 50,
+    professorMode: {
+      eli5: 'Your phone keeps one identity (on the SIM) no matter which country it is in. The network solves "where is this phone now?" by having a home network that always knows, and by wrapping your data in an outer envelope addressed to wherever you currently are.',
+      deepDive: 'The 4G LTE architecture has five elements worth memorising: User Equipment, the base station (eNode-B), the Mobility Management Entity, the Serving Gateway, and the PDN Gateway, with the Home Subscriber Server holding subscriber identity in the home network. MME and HSS sit on the control plane while S-GW and P-GW sit on the data path — the same separation seen in SDN. The P-GW is the gateway to the outside world and typically provides NAT. Identity comes from the SIM, which stores a 64-bit International Mobile Subscriber Identity identifying both the subscriber and their home network, which is what makes roaming agreements possible. LTE adds link-layer protocols above the physical layer: PDCP for header compression and encryption, RLC for fragmentation and reliable transfer, and MAC for requesting radio slots, with OFDM on the radio itself. Mobility inside the core is implemented with tunnels: the datagram is encapsulated in GTP inside UDP, and only the tunnel endpoints change when the user moves, so the inner datagram is untouched and ongoing TCP connections survive. Registration keeps the home network’s answer current. Indirect routing sends traffic through the home network first, which is transparent to the correspondent but produces triangle routing; direct routing has the correspondent ask the home HSS for the current address and send straight there, which is efficient but not transparent and complicates a further move. 5G targets roughly ten times the peak rate, a tenth of the latency, and a hundred times the capacity, using FR1 below 6 GHz and FR2 in millimetre wave — the latter requiring pico-cells 10 to 100 metres across.',
+      analogy: 'Mail forwarding. Your permanent address always knows where to send things on to, so correspondents need not be told you moved. The analogy breaks at triangle routing: a letter from your next-door neighbour still travels to your old city first before coming back.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Element', 'Plane', 'Role'],
+        rows: [
+          ['eNode-B', 'Both', 'Base station; manages radio resources in its cell'],
+          ['MME', 'Control', 'Authentication, mobility state, tunnel setup'],
+          ['HSS', 'Control', 'Home subscriber identity and services; ultimate authenticator'],
+          ['S-GW', 'Data', 'Anchors and re-tunnels traffic within the core'],
+          ['P-GW', 'Data', 'Gateway to the Internet; typically provides NAT'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Name each 4G LTE element and place it on the control or data plane.',
+      'Explain how registration lets a home network answer where a subscriber is.',
+      'Compare indirect and direct routing by transparency and path efficiency.',
+      'State what 5G NR changes and what it costs in deployment density.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Why tunnelling solves mobility',
+        text: 'A datagram addressed to the mobile’s permanent IP address cannot be routed to a visited network, because routing follows the address prefix and that prefix belongs to the home network. Tunnelling wraps the datagram inside a new one addressed to the visited network. Nothing about the inner datagram changes, so ongoing TCP connections do not notice the move — only the outer wrapper is rewritten.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'Mobile IP is a teaching model, not current practice',
+        text: 'Home agent and foreign agent come from Mobile IP. The lecture deck lists Mobile IP in its outline but never delivers those slides, and one slide states such architectures "exist (mobile IP) for 4G-like mobility, but not used". Treat them as the conceptual model that explains indirection; production mobility uses the 4G/5G core tunnelling described above.',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Triangle routing, concretely',
+        text: 'A correspondent in the same city as a roaming mobile still sends via the mobile’s home network under indirect routing. The inefficiency is not distance in the abstract — it is that the path is forced through a fixed anchor regardless of where the two endpoints actually are.',
+      },
+    ],
+    sources: [gpp3],
+    relatedTermIds: ['term-imsi', 'term-gtp', 'term-indirect-routing', 'term-triangle-routing', 'term-5g-nr'],
+    tags: ['wireless', 'mobility', '4g', '5g', 'roaming'],
+  },
+  {
+    id: 'networking2-security-crypto',
+    subjectId: 'networking2',
+    title: 'Security Basics, Cryptography, Authentication, and TLS',
+    order: 14,
+    estimatedMinutes: 60,
+    professorMode: {
+      eli5: 'Four goals: keep it secret, know who you are talking to, know it was not altered, and keep the service reachable. Symmetric keys are fast but need to be shared first; public keys solve that sharing problem but are far slower, so real systems use both.',
+      deepDive: 'The core security goals are confidentiality, authentication, message integrity, and access and availability. The Internet was designed for mutually trusting users on a transparent network, which is why protections were retrofitted at every layer. Attacks are classified by what the adversary sees: cipher-text only, known-plaintext, and chosen-plaintext, each assumption stronger than the last. A monoalphabetic substitution cipher falls to statistical frequency analysis because letter frequencies survive the substitution; a polyalphabetic cipher cycles alphabets to blunt that. AES processes 128-bit blocks with 128, 192, or 256-bit keys and replaced DES because DES’s 56-bit key fell to brute force. Public-key cryptography solved what symmetric cryptography could not: agreeing on a key with someone never met. RSA rests on the difficulty of factoring the product of two large primes, and its useful extra property is symmetry — applying the private key then the public key gives the same result as the reverse, which is what makes digital signatures work. Because exponentiation is slow, real systems use public-key crypto only to establish a symmetric session key. A digital signature is a private-key operation over a message digest, giving integrity, authentication, and non-repudiation. The authentication ladder ap1.0 to ap5.0 shows how each naive version fails — claiming an identity, adding a spoofable source IP, adding a replayable password, encrypting that password (still replayable), and finally using a nonce for freshness. Even ap5.0 falls to a man-in-the-middle who substitutes their own public key, which is exactly the gap certificate authorities close. TLS combines all three techniques: symmetric encryption for confidentiality, cryptographic hashing for integrity, public-key cryptography for authentication.',
+      analogy: 'A nonce is a challenge question whose answer changes daily. Recording yesterday’s correct answer does you no good today. The analogy breaks at the man-in-the-middle: if someone else hands you the challenge and relays your answer, freshness alone does not save you — you need to know whose challenge it really was.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Protocol step', 'What it adds', 'How it still fails'],
+        rows: [
+          ['ap1.0', 'Claim an identity', 'Anyone can claim it'],
+          ['ap2.0', 'Include a source IP address', 'The address can be spoofed'],
+          ['ap3.0', 'Send a secret password', 'Recorded and replayed'],
+          ['ap3.1', 'Encrypt the password', 'Still replayed — no freshness'],
+          ['ap4.0', 'Nonce with a shared key', 'Requires a pre-shared symmetric key'],
+          ['ap5.0', 'Nonce with public keys', 'Man-in-the-middle substitutes their key'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Match each security goal to the mechanism that delivers it.',
+      'Explain why each step of the ap1.0 to ap5.0 ladder fails and what the next adds.',
+      'Describe how a certificate authority closes the man-in-the-middle gap.',
+      'Justify using public-key crypto only to establish a symmetric session key.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Why the nonce in ap4.0 is necessary',
+        text: 'In ap3.0 Trudy records Alice’s packet and replays it later; encrypting the password changes nothing, because Trudy replays the encrypted version just as happily. A nonce is a number used once: Bob sends a fresh R, and only someone holding the key can return R encrypted. A recording of yesterday’s exchange contains yesterday’s R and is useless today. Freshness, not secrecy, defeats replay.',
+      },
+      {
+        kind: 'callout',
+        tone: 'security',
+        title: 'MD5 and SHA-1 are taught here as history, not recommendations',
+        text: 'The decks present MD5 (128-bit) and SHA-1 (160-bit) as current choices. RFC 6151 states MD5 is no longer acceptable where collision resistance is required — collisions can be found in seconds. NIST is transitioning away from SHA-1 for all applications by 31 December 2030. Use SHA-2 (FIPS 180-4) or SHA-3 (FIPS 202), and HMAC-SHA256 rather than HMAC-MD5.',
+      },
+      {
+        kind: 'callout',
+        tone: 'security',
+        title: '3DES is no longer the answer to DES being weak',
+        text: 'The deck offers "3DES: encrypt 3 times with 3 different keys" as the way to harden DES. NIST SP 800-131A Rev. 2 deprecated three-key TDEA through 2023 and disallows it for encryption after 31 December 2023, permitting decryption only for legacy data. The correct modern answer is AES, which the deck’s very next slide introduces.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'The TLS 1.3 RFC number in the slides is wrong',
+        text: 'The deck cites "TLS 1.3: RFC 8846 [2018]". TLS 1.3 is RFC 8446, published August 2018; RFC 8846 is unrelated. The deck is correct that SSL was deprecated in 2015 (RFC 7568); note also that TLS 1.0 and 1.1 were deprecated by RFC 8996 in 2021, leaving TLS 1.2 and 1.3 as the live versions.',
+      },
+    ],
+    sources: [rfc8446, rfc6151, nistSha1, nist800131a],
+    relatedTermIds: ['term-symmetric-key', 'term-public-key', 'term-digital-signature', 'term-certificate-authority', 'term-nonce'],
+    tags: ['security', 'cryptography', 'authentication', 'tls'],
+  },
+  {
+    id: 'networking2-network-security',
+    subjectId: 'networking2',
+    title: 'Network Layer Security, IPsec, Firewalls, and IDS',
+    order: 15,
+    estimatedMinutes: 55,
+    professorMode: {
+      eli5: 'IPsec protects traffic below the transport layer, so every application gets protection without being rewritten. Firewalls decide which packets may cross a boundary, and intrusion detection systems look inside packets for signs of attack.',
+      deepDive: 'IPsec provides datagram-level encryption, authentication, and integrity for both user and control traffic. In transport mode only the payload is protected; in tunnel mode the entire original datagram is encrypted and encapsulated in a new one with a new IP header, which is what hides internal addressing in a gateway-to-gateway VPN. Two protocols exist: Authentication Header provides source authentication and data integrity but not confidentiality, while Encapsulation Security Protocol provides all three and is far more widely used. IP is connectionless but IPsec is connection-oriented — a security association must be established before data flows, and it is directional, so bidirectional traffic needs two. The Security Policy Database answers "what to do" (does this datagram need IPsec) while the Security Association Database answers "how to do it" (which keys and algorithms), indexed by the 32-bit Security Parameter Index carried in each datagram. Manual keying does not scale, so IKE establishes SAs automatically, authenticating with either a pre-shared key or a public key infrastructure. Wireless security runs in four phases: discovery of security capabilities, mutual authentication with session key derivation, distribution of the shared key to the access point, then encrypted communication; EAP defines the device-to-server conversation, carried over EAPoL on the wireless link and RADIUS across the wired network. In 4G, the HSS derives an auth_token proving the network to the device and an expected response xres that the device must match, proving the device to the network. Firewalls come in three kinds: stateless packet filters judging each packet alone, stateful filters tracking connection setup and teardown, and application gateways filtering on application data.',
+      analogy: 'A stateless filter is a doorman checking only what is written on each visitor’s badge. A stateful filter also remembers who was invited in and when. The analogy breaks at the application gateway, which additionally reads the letter the visitor is carrying — powerful, but it needs a different specialist per language.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Firewall type', 'Decides on', 'Weakness'],
+        rows: [
+          ['Stateless packet filter', 'Header fields of each packet alone', 'Admits packets belonging to no live connection'],
+          ['Stateful packet filter', 'Headers plus connection state table', 'Still blind to payload contents'],
+          ['Application gateway', 'Application-layer data', 'One gateway per application; clients must know it'],
+          ['IDS', 'Payload contents, correlated across sessions', 'Detects rather than blocks; tuning burden'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Choose transport or tunnel mode, and AH or ESP, for a given requirement.',
+      'Explain the division of labour between the SPD, the SAD, and the SPI.',
+      'Trace the four phases of 802.11 security from capability discovery to encrypted traffic.',
+      'Distinguish stateless filtering, stateful filtering, and application gateways.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'paragraph',
+        title: 'Why a stateless filter is not enough',
+        text: 'A rule permitting inbound TCP from port 80 to ports above 1023 with the ACK bit set looks safe — it appears to allow only replies to outbound web requests. But nothing stops an attacker crafting a packet with exactly those properties when no connection exists. A stateful filter consults its connection table, finds no matching session, and drops it. That is the entire argument for stateful inspection.',
+      },
+      {
+        kind: 'callout',
+        tone: 'security',
+        title: 'The IKE example in the slides uses retired algorithms',
+        text: 'The deck’s sample security association specifies 3DES-cbc encryption and HMAC-MD5. Both are retired: three-key TDEA is disallowed for encryption after 2023 (NIST SP 800-131A Rev. 2) and HMAC-MD5 should not be used in new designs (RFC 6151). Beyond the algorithms, IKEv1 itself was deprecated by RFC 9395 in April 2023, which moved RFCs 2407, 2408, and 2409 to Historic. Use IKEv2 (RFC 7296) with AES and SHA-2.',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Why 4G authentication is mutual',
+        text: 'Only the device and its home HSS know the shared key on the SIM. The HSS uses it to build auth_token, so a device that validates auth_token knows it is talking to its real home network — not a rogue base station. The device then computes res_M, and the MME compares it with the HSS-supplied xres_HSS. Each side proves knowledge of the shared secret without ever transmitting it.',
+      },
+    ],
+    sources: [rfc9395, rfc7296, nist800131a],
+    relatedTermIds: ['term-ipsec-tunnel', 'term-spi', 'term-stateful-filter', 'term-eap', 'term-ids'],
+    tags: ['security', 'ipsec', 'firewall', 'ids', 'wireless-security'],
+  },
 ];
 
+export const subjectMeta: SubjectMeta = {
+  id: 'networking2',
+  title: 'Networking 2: Internet Architecture, Routing, and Security',
+  shortTitle: 'Networking 2',
+  description:
+    'The full 15-unit syllabus: Internet structure and performance, application and transport protocols, the network layer and routing, LANs and link virtualization, wireless and mobile networks, and network security.',
+  accent: tokens.colors.subject.networking2,
+  // Derived rather than hardcoded, matching the sia1 and mobile datasets, so the
+  // advertised counts can never drift from the content that actually exists.
+  topicCount: topics.length,
+  estimatedHours: Math.round(
+    topics.reduce((total, topic) => total + topic.estimatedMinutes, 0) / 60
+  ),
+};
+
 export const glossary: GlossaryTerm[] = [
-  { id: 'term-tcp', term: 'TCP', definition: 'Transmission Control Protocol. A connection-oriented, reliable transport layer protocol.', topicIds: ['networking2-tcp-reliability'] },
-  { id: 'term-ack', term: 'Acknowledgment (ACK)', definition: 'A message confirming receipt of data.', topicIds: ['networking2-tcp-reliability'] },
-  { id: 'term-sliding-window', term: 'Sliding Window', definition: 'A mechanism in TCP for flow control, dictating how much unacknowledged data can be in transit.', topicIds: ['networking2-tcp-reliability'] },
-  { id: 'term-ospf', term: 'OSPF', definition: 'Open Shortest Path First. An interior gateway routing protocol that uses link-state logic.', topicIds: ['networking2-ospf'] },
-  { id: 'term-lsa', term: 'LSA', definition: 'Link-State Advertisement. Packets used by OSPF to share routing topology.', topicIds: ['networking2-ospf'] },
-  { id: 'term-dijkstra', term: 'Dijkstra\'s Algorithm', definition: 'The algorithm used by link-state protocols to find the shortest path.', topicIds: ['networking2-ospf'] },
-  { id: 'term-vlan', term: 'VLAN', definition: 'Virtual Local Area Network. Logically separates broadcast domains on a switch.', topicIds: ['networking2-vlans'] },
-  { id: 'term-8021q', term: 'IEEE 802.1Q', definition: 'The standard for VLAN tagging on trunk links.', topicIds: ['networking2-vlans'] },
-  { id: 'term-trunk', term: 'Trunk Port', definition: 'A switch port configured to carry traffic for multiple VLANs.', topicIds: ['networking2-vlans'] },
-  { id: 'term-vlsm', term: 'VLSM', definition: 'Variable Length Subnet Masking. Allocating IP subnets of different sizes.', topicIds: ['networking2-subnetting'] },
-  { id: 'term-cidr', term: 'CIDR', definition: 'Classless Inter-Domain Routing. Representing IP networks with a slash (e.g., /24).', topicIds: ['networking2-subnetting'] },
-  { id: 'term-subnet', term: 'Subnet Mask', definition: 'A 32-bit number distinguishing the network and host portions of an IP address.', topicIds: ['networking2-subnetting'] }
+  { id: 'term-packet-switching', term: 'Packet Switching', definition: 'Sharing links on demand by forwarding chunks of data, rather than reserving end-to-end resources in advance.', topicIds: ['networking2-internet-overview'] },
+  { id: 'term-transmission-delay', term: 'Transmission Delay', definition: 'Time to push all of a packet’s bits onto a link, equal to L/R. Depends on packet length and link rate.', topicIds: ['networking2-internet-overview'] },
+  { id: 'term-propagation-delay', term: 'Propagation Delay', definition: 'Time for one bit to travel the length of a link, equal to d/s. Depends on distance and medium only, never on packet size.', topicIds: ['networking2-internet-overview'] },
+  { id: 'term-throughput', term: 'Throughput', definition: 'The rate at which bits are actually delivered end to end, bounded by the bottleneck link — as distinct from bandwidth, which is the ceiling.', topicIds: ['networking2-internet-overview'] },
+  { id: 'term-ixp', term: 'Internet Exchange Point (IXP)', definition: 'A shared facility where multiple ISPs interconnect and exchange traffic directly, avoiding the cost and latency of upstream transit.', topicIds: ['networking2-internet-overview'] },
+  { id: 'term-http-persistent', term: 'Persistent HTTP', definition: 'Reusing one TCP connection for multiple objects, cutting the per-object cost from about 2 RTT to about 1 RTT.', topicIds: ['networking2-application-layer'] },
+  { id: 'term-hol-blocking', term: 'Head-of-Line Blocking', definition: 'A delay in which the item at the front of a queue cannot proceed, forcing everything behind it to wait even though those items could be served.', topicIds: ['networking2-application-layer', 'networking2-network-data-plane'] },
+  { id: 'term-dns-hierarchy', term: 'DNS Hierarchy', definition: 'The distributed structure of root, top-level domain, and authoritative servers, plus local servers that cache results and act as proxies for their clients.', topicIds: ['networking2-application-layer'] },
+  { id: 'term-dash', term: 'DASH', definition: 'Dynamic Adaptive Streaming over HTTP. The client measures bandwidth and selects a per-chunk encoding rate from a manifest file.', topicIds: ['networking2-application-layer'] },
+  { id: 'term-cdn', term: 'Content Distribution Network (CDN)', definition: 'Geographically distributed servers holding copies of content, placed either deep inside access networks or in larger clusters nearby.', topicIds: ['networking2-application-layer'] },
+  { id: 'term-four-tuple', term: 'Four-Tuple', definition: 'Source IP, source port, destination IP, and destination port — the combination that identifies a TCP socket and allows one server port to hold many connections.', topicIds: ['networking2-transport-fundamentals'] },
+  { id: 'term-internet-checksum', term: 'Internet Checksum', definition: 'A one’s complement sum over 16-bit words with the wraparound carry added back. Weak: compensating bit flips can leave the sum unchanged.', topicIds: ['networking2-transport-fundamentals'] },
+  { id: 'term-udp', term: 'UDP', definition: 'A connectionless transport protocol adding only process addressing and an optional checksum to best-effort IP. No reliability, ordering, or congestion control.', topicIds: ['networking2-transport-fundamentals'] },
+  { id: 'term-logical-communication', term: 'Logical Communication', definition: 'The illusion that two peers talk directly. Transport provides it between processes; the network layer provides it between hosts.', topicIds: ['networking2-transport-fundamentals'] },
+  { id: 'term-go-back-n', term: 'Go-Back-N', definition: 'A pipelined protocol using cumulative ACKs and one timer. The receiver buffers nothing out of order, so one loss forces the whole window to be resent.', topicIds: ['networking2-tcp-reliability'] },
+  { id: 'term-selective-repeat', term: 'Selective Repeat', definition: 'A pipelined protocol acknowledging packets individually and buffering out-of-order arrivals, so only the lost packet is resent.', topicIds: ['networking2-tcp-reliability'] },
+  { id: 'term-aimd', term: 'AIMD', definition: 'Additive Increase Multiplicative Decrease. Gentle probing with sharp backoff, which drives competing TCP flows toward an equal share of a bottleneck.', topicIds: ['networking2-tcp-reliability'] },
+  { id: 'term-triple-dup-ack', term: 'Triple Duplicate ACK', definition: 'Three repeated acknowledgments for the same sequence number, indicating later segments arrived and one is missing. Triggers fast retransmit.', topicIds: ['networking2-tcp-reliability'] },
+  { id: 'term-bdp', term: 'Bandwidth-Delay Product', definition: 'Link rate multiplied by round-trip time — the amount of data that must be in flight to keep a link fully utilised.', topicIds: ['networking2-tcp-reliability'] },
+  { id: 'term-longest-prefix', term: 'Longest Prefix Matching', definition: 'Selecting the forwarding table entry with the longest matching address prefix. Specificity wins, never table order.', topicIds: ['networking2-network-data-plane'] },
+  { id: 'term-hol-input-queue', term: 'Input Queue HOL Blocking', definition: 'A queued datagram at the front of an input queue blocking others behind it, even when their output ports are free.', topicIds: ['networking2-network-data-plane'] },
+  { id: 'term-crossbar', term: 'Crossbar Switch', definition: 'An interconnection fabric with a dedicated crosspoint per input-output pair, allowing non-conflicting transfers to proceed in parallel.', topicIds: ['networking2-network-data-plane'] },
+  { id: 'term-best-effort', term: 'Best-Effort Service', definition: 'The Internet’s network-layer service model, which guarantees nothing about delivery, delay, jitter, or bandwidth.', topicIds: ['networking2-network-data-plane'] },
+  { id: 'term-vlsm', term: 'VLSM', definition: 'Variable Length Subnet Masking. Dividing an address space into subnets of different sizes so allocation matches actual need.', topicIds: ['networking2-network-data-plane'] },
+  { id: 'term-bellman-ford', term: 'Bellman-Ford Equation', definition: 'Dx(y) = min over neighbours v of { c(x,v) + Dv(y) }. The neighbour achieving the minimum becomes the next hop.', topicIds: ['networking2-routing-algorithms'] },
+  { id: 'term-dijkstra', term: 'Dijkstra’s Algorithm', definition: 'The link-state shortest-path algorithm. O(n squared) naively, O(n log n) with a priority queue.', topicIds: ['networking2-routing-algorithms'] },
+  { id: 'term-count-to-infinity', term: 'Count-to-Infinity', definition: 'Distance-vector pathology in which two routers repeatedly raise their cost estimates through each other after a link cost increase.', topicIds: ['networking2-routing-algorithms'] },
+  { id: 'term-black-holing', term: 'Black-Holing', definition: 'A router advertising very low costs to many destinations, attracting traffic it then discards. A distance-vector failure mode.', topicIds: ['networking2-routing-algorithms'] },
+  { id: 'term-ospf', term: 'OSPF', definition: 'Open Shortest Path First. A link-state interior gateway protocol that floods advertisements directly over IP and computes paths with Dijkstra.', topicIds: ['networking2-ospf'] },
+  { id: 'term-lsa', term: 'Link-State Advertisement (LSA)', definition: 'The message by which an OSPF router floods its own link costs to every other router in its area.', topicIds: ['networking2-ospf'] },
+  { id: 'term-as-path', term: 'AS-PATH', definition: 'The BGP attribute listing the autonomous systems an advertisement has crossed, used for loop detection and policy decisions.', topicIds: ['networking2-ospf'] },
+  { id: 'term-hot-potato', term: 'Hot Potato Routing', definition: 'Choosing the local gateway with the least intra-domain cost, regardless of how long the remaining external path is.', topicIds: ['networking2-ospf'] },
+  { id: 'term-icmp', term: 'ICMP', definition: 'Internet Control Message Protocol. Carries network-layer control and error information inside IP datagrams as a type plus code.', topicIds: ['networking2-ospf'] },
+  { id: 'term-mib', term: 'MIB', definition: 'Management Information Base. The structured collection of managed objects on a device, addressed by object identifiers.', topicIds: ['networking2-network-management'] },
+  { id: 'term-snmp-trap', term: 'SNMP Trap', definition: 'A message an agent sends unprompted to inform the manager of an exceptional event, as opposed to answering a poll.', topicIds: ['networking2-network-management'] },
+  { id: 'term-netconf', term: 'NETCONF', definition: 'An XML remote-procedure-call protocol for network-wide configuration, adding datastore locking and atomic commit that SNMP lacks.', topicIds: ['networking2-network-management'] },
+  { id: 'term-yang', term: 'YANG', definition: 'A data modelling language defining the structure, syntax, and semantics of network management data, including validity constraints.', topicIds: ['networking2-network-management'] },
+  { id: 'term-northbound-api', term: 'Northbound API', definition: 'The interface between an SDN controller and the network-control applications above it, commonly RESTful.', topicIds: ['networking2-network-management'] },
+  { id: 'term-crc', term: 'Cyclic Redundancy Check (CRC)', definition: 'Error detection by modulo-2 division against a generator polynomial. Detects all burst errors shorter than r+1 bits.', topicIds: ['networking2-datalink-control'] },
+  { id: 'term-parity', term: 'Parity Check', definition: 'Appending a bit so the count of 1s is even or odd. Detects any odd number of flips and misses any even number.', topicIds: ['networking2-datalink-control'] },
+  { id: 'term-fdma-tdma-cdma', term: 'FDMA, TDMA, CDMA', definition: 'Channelization by frequency band, by time slot, and by orthogonal code respectively. CDMA users share the whole band simultaneously.', topicIds: ['networking2-datalink-control'] },
+  { id: 'term-token-passing', term: 'Token Passing', definition: 'A controlled access method in which a special frame circulates and only its holder may transmit, so collisions cannot occur.', topicIds: ['networking2-datalink-control'] },
+  { id: 'term-csma', term: 'CSMA', definition: 'Carrier Sense Multiple Access. Listen before transmitting. Collisions still occur because propagation delay hides just-started transmissions.', topicIds: ['networking2-datalink-control'] },
+  { id: 'term-mac-address', term: 'MAC Address', definition: 'A 48-bit link-layer address burned into the network interface card, allocated through IEEE. Portable, unlike an IP address.', topicIds: ['networking2-lans-ethernet'] },
+  { id: 'term-arp', term: 'ARP', definition: 'Address Resolution Protocol. Resolves a next-hop IP address to a local MAC address, caching results with a TTL of about 20 minutes.', topicIds: ['networking2-lans-ethernet'] },
+  { id: 'term-self-learning', term: 'Self-Learning', definition: 'How a switch builds its table: it records the source MAC and incoming port of every frame it receives, and floods on a table miss.', topicIds: ['networking2-lans-ethernet'] },
+  { id: 'term-vlan', term: 'VLAN', definition: 'Virtual Local Area Network. Logically separates broadcast domains on a switch, so a relocated user can stay in their original group.', topicIds: ['networking2-lans-ethernet'] },
+  { id: 'term-8021q', term: 'IEEE 802.1Q', definition: 'The standard adding a 4-byte VLAN tag to frames crossing a trunk port. The native VLAN travels untagged.', topicIds: ['networking2-lans-ethernet'] },
+  { id: 'term-mpls-label', term: 'MPLS Label', definition: 'A short fixed-length value in a header between the link and IP headers, matched exactly instead of searching for the longest address prefix.', topicIds: ['networking2-link-virtualization'] },
+  { id: 'term-rsvp-te', term: 'RSVP-TE', definition: 'The signalling protocol an ingress MPLS router uses to install label forwarding state along a chosen path.', topicIds: ['networking2-link-virtualization'] },
+  { id: 'term-tor-switch', term: 'Top-of-Rack (TOR) Switch', definition: 'The switch serving one datacentre rack, typically connecting 20 to 40 server blades at 40 to 100 Gbps Ethernet.', topicIds: ['networking2-link-virtualization'] },
+  { id: 'term-ecn', term: 'Explicit Congestion Notification (ECN)', definition: 'Routers marking packets to signal congestion rather than dropping them, so senders slow down before buffers overflow.', topicIds: ['networking2-link-virtualization'] },
+  { id: 'term-day-in-life', term: 'Day in the Life of a Web Request', definition: 'The end-to-end synthesis in which one page load uses DHCP, ARP, DNS, TCP, and HTTP in that order.', topicIds: ['networking2-link-virtualization'] },
+  { id: 'term-csma-ca', term: 'CSMA/CA', definition: 'Carrier sense with collision avoidance, used by 802.11 because a transmitting radio cannot detect a remote collision beneath its own signal.', topicIds: ['networking2-wireless'] },
+  { id: 'term-hidden-terminal', term: 'Hidden Terminal Problem', definition: 'Two stations that can each hear a third but not each other, so their transmissions collide at that third station undetected.', topicIds: ['networking2-wireless'] },
+  { id: 'term-rts-cts', term: 'RTS/CTS', definition: 'An optional reservation exchange. The access point’s CTS is heard by all stations in range and tells them to defer, covering hidden terminals.', topicIds: ['networking2-wireless'] },
+  { id: 'term-bss', term: 'Basic Service Set (BSS)', definition: 'An 802.11 cell: hosts plus an access point in infrastructure mode, or hosts only in ad hoc mode.', topicIds: ['networking2-wireless'] },
+  { id: 'term-rate-adaptation', term: 'Rate Adaptation', definition: 'Dynamically changing physical-layer modulation as signal-to-noise ratio varies, trading throughput for reliability as a device moves.', topicIds: ['networking2-wireless'] },
+  { id: 'term-imsi', term: 'IMSI', definition: 'International Mobile Subscriber Identity. A 64-bit value on the SIM identifying both the subscriber and their home network.', topicIds: ['networking2-mobile-networks'] },
+  { id: 'term-gtp', term: 'GTP', definition: 'GPRS Tunneling Protocol. Encapsulates a mobile’s datagrams inside UDP across the cellular core, so only tunnel endpoints change on a move.', topicIds: ['networking2-mobile-networks'] },
+  { id: 'term-indirect-routing', term: 'Indirect Routing', definition: 'Mobility routing in which the home network intercepts traffic addressed to the mobile’s permanent address and tunnels it to the visited network.', topicIds: ['networking2-mobile-networks'] },
+  { id: 'term-triangle-routing', term: 'Triangle Routing', definition: 'The inefficiency of indirect routing, where traffic detours through a fixed home anchor even when the endpoints are near each other.', topicIds: ['networking2-mobile-networks'] },
+  { id: 'term-5g-nr', term: '5G NR', definition: '5G New Radio. Not backwards compatible with 4G, operating in FR1 below 6 GHz and FR2 in millimetre wave, which requires pico-cells.', topicIds: ['networking2-mobile-networks'] },
+  { id: 'term-symmetric-key', term: 'Symmetric Key Cryptography', definition: 'Encryption in which both parties share the same secret key. Fast, but requires the key to be agreed beforehand.', topicIds: ['networking2-security-crypto'] },
+  { id: 'term-public-key', term: 'Public Key Cryptography', definition: 'Encryption using a public key known to all and a private key known only to the holder, solving key distribution between parties who never met.', topicIds: ['networking2-security-crypto'] },
+  { id: 'term-digital-signature', term: 'Digital Signature', definition: 'A private-key operation over a message digest, providing integrity, authentication, and non-repudiation.', topicIds: ['networking2-security-crypto'] },
+  { id: 'term-certificate-authority', term: 'Certification Authority (CA)', definition: 'A trusted party that binds a public key to an entity and signs that binding, closing the man-in-the-middle gap in key exchange.', topicIds: ['networking2-security-crypto'] },
+  { id: 'term-nonce', term: 'Nonce', definition: 'A number used once, included in an authentication exchange so that a recorded exchange cannot be replayed later.', topicIds: ['networking2-security-crypto'] },
+  { id: 'term-ipsec-tunnel', term: 'IPsec Tunnel Mode', definition: 'Encrypting the entire original datagram and encapsulating it in a new one with a new IP header, hiding internal addressing.', topicIds: ['networking2-network-security'] },
+  { id: 'term-spi', term: 'Security Parameter Index (SPI)', definition: 'A 32-bit identifier in an IPsec datagram that the receiver uses to look up the correct security association in its database.', topicIds: ['networking2-network-security'] },
+  { id: 'term-stateful-filter', term: 'Stateful Packet Filter', definition: 'A firewall tracking connection setup and teardown, so it can reject packets that belong to no live connection.', topicIds: ['networking2-network-security'] },
+  { id: 'term-eap', term: 'EAP', definition: 'Extensible Authentication Protocol. The device-to-authentication-server conversation, carried over EAPoL on the wireless link and RADIUS on the wired network.', topicIds: ['networking2-network-security'] },
+  { id: 'term-ids', term: 'Intrusion Detection System (IDS)', definition: 'A system performing deep packet inspection and correlating across sessions to spot port scans, network mapping, and attack signatures.', topicIds: ['networking2-network-security'] },
 ];
 
 export const flashcards: Flashcard[] = [
-  {
-    id: 'fc-net2-01',
-    topicId: 'networking2-tcp-reliability',
-    front: 'What TCP mechanism ensures that a sender does not overwhelm a receiver\'s buffer?',
-    back: 'Flow Control (specifically, the Sliding Window mechanism).',
-    tags: ['tcp'],
-    easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new'
-  },
-  {
-    id: 'fc-net2-02',
-    topicId: 'networking2-tcp-reliability',
-    front: 'If a TCP sender does not receive an ACK before the timer expires, what happens?',
-    back: 'The sender retransmits the unacknowledged segment.',
-    tags: ['tcp'],
-    easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new'
-  },
-  {
-    id: 'fc-net2-03',
-    topicId: 'networking2-ospf',
-    front: 'What algorithm does OSPF use to calculate the best route?',
-    back: 'Dijkstra\'s Shortest Path First (SPF) algorithm.',
-    tags: ['ospf'],
-    easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new'
-  },
-  {
-    id: 'fc-net2-04',
-    topicId: 'networking2-ospf',
-    front: 'What is the purpose of Area 0 in OSPF?',
-    back: 'Area 0 is the backbone area. All other areas must connect to it to share routing information.',
-    tags: ['ospf'],
-    easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new'
-  },
-  {
-    id: 'fc-net2-05',
-    topicId: 'networking2-vlans',
-    front: 'At which OSI layer do VLANs operate?',
-    back: 'Layer 2 (Data Link Layer).',
-    tags: ['vlan'],
-    easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new'
-  },
-  {
-    id: 'fc-net2-06',
-    topicId: 'networking2-vlans',
-    front: 'How many bytes does an 802.1Q tag add to an Ethernet frame?',
-    back: '4 bytes.',
-    tags: ['vlan'],
-    easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new'
-  },
-  {
-    id: 'fc-net2-07',
-    topicId: 'networking2-subnetting',
-    front: 'What is the primary benefit of using VLSM over classful subnetting?',
-    back: 'It prevents the waste of IP addresses by allowing subnets to be sized precisely to their requirements.',
-    tags: ['ip'],
-    easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new'
-  },
-  {
-    id: 'fc-net2-08',
-    topicId: 'networking2-subnetting',
-    front: 'How many usable host IP addresses are in a /30 subnet?',
-    back: '2 usable hosts (out of 4 total IPs in the block).',
-    tags: ['ip'],
-    easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new'
-  }
+  { id: 'fc-net2-01', topicId: 'networking2-internet-overview', front: 'Which two delay components depend on the packet’s length?', back: 'Only transmission delay (L/R). Propagation delay is d/s and is independent of packet size; processing and queueing delays are not driven by length either.', tags: ['delay'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-02', topicId: 'networking2-internet-overview', front: 'Which single delay component varies with network load?', back: 'Queueing delay. The other three depend on router hardware, packet size, and distance respectively.', tags: ['delay'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-03', topicId: 'networking2-internet-overview', front: 'How long to send one L-bit packet across N store-and-forward links of rate R?', back: 'N x L/R. Each router must receive the whole packet before forwarding, so the L/R cost is paid once per link.', tags: ['delay'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-04', topicId: 'networking2-application-layer', front: 'Why does non-persistent HTTP cost about 2 RTT per object?', back: 'One RTT establishes the TCP connection and a second carries the request plus the first bytes of the response.', tags: ['http'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-05', topicId: 'networking2-application-layer', front: 'What limitation of HTTP/2 does HTTP/3 remove?', back: 'HTTP/2 rides one TCP connection, so a lost segment stalls every stream. HTTP/3 uses QUIC over UDP, giving each stream independent loss recovery.', tags: ['http'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-06', topicId: 'networking2-application-layer', front: 'Iterative versus recursive DNS query — what is the difference?', back: 'Iterative: the contacted server replies with the name of the next server to ask. Recursive: it takes on the resolution work itself.', tags: ['dns'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-07', topicId: 'networking2-transport-fundamentals', front: 'What does UDP use to choose a socket, and what does TCP use?', back: 'UDP uses the destination port alone. TCP uses the full four-tuple of source IP, source port, destination IP, destination port.', tags: ['transport'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-08', topicId: 'networking2-transport-fundamentals', front: 'Why does a matching Internet checksum not prove the segment is error-free?', back: 'Compensating flips — a 0 to 1 in one word and a 1 to 0 in the same position of another — leave the one’s complement sum unchanged.', tags: ['transport'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-09', topicId: 'networking2-tcp-reliability', front: 'Why does TCP wait for three duplicate ACKs rather than one?', back: 'One or two duplicates could be ordinary reordering. Three is strong evidence that later segments arrived and one is genuinely missing.', tags: ['tcp'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-10', topicId: 'networking2-tcp-reliability', front: 'What limits a TCP sender’s rate?', back: 'The minimum of the congestion window and the receive window. Congestion control protects the network; flow control protects the receiver.', tags: ['tcp'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-11', topicId: 'networking2-tcp-reliability', front: 'Why is slow start not actually slow?', back: 'The congestion window doubles every round trip. The name refers to starting from one segment, not to the growth rate.', tags: ['tcp'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-12', topicId: 'networking2-tcp-reliability', front: 'Go-Back-N versus Selective Repeat — what does the receiver do differently?', back: 'Go-Back-N discards out-of-order packets and re-ACKs the last in-order one. Selective Repeat buffers them and ACKs each individually.', tags: ['tcp'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-13', topicId: 'networking2-network-data-plane', front: 'When two forwarding table entries match, which wins?', back: 'The one with the longer prefix. Specificity decides, never the order entries appear in the table.', tags: ['forwarding'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-14', topicId: 'networking2-network-data-plane', front: 'What causes head-of-line blocking at a router input port?', back: 'A packet at the front waiting for a busy output port blocks packets behind it whose own output ports are free.', tags: ['forwarding'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-15', topicId: 'networking2-network-data-plane', front: 'How many usable hosts are in a /30 subnet, and what is it typically used for?', back: '2 usable hosts out of 4 total addresses. It is the standard size for a point-to-point router link.', tags: ['ip', 'subnetting'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-16', topicId: 'networking2-routing-algorithms', front: 'State the Bellman-Ford equation.', back: 'Dx(y) = min over neighbours v of { c(x,v) + Dv(y) }. The neighbour achieving the minimum is the next hop.', tags: ['routing'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-17', topicId: 'networking2-routing-algorithms', front: 'Why does a faulty distance-vector router do more damage than a faulty link-state router?', back: 'A link-state router can only misreport its own link costs. A distance-vector router’s claims are re-advertised by every router that believes them.', tags: ['routing'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-18', topicId: 'networking2-ospf', front: 'What is the BGP route selection order?', back: 'Highest local preference, then shortest AS-PATH, then closest NEXT-HOP (hot potato), then further tiebreakers. Policy outranks distance.', tags: ['bgp'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-19', topicId: 'networking2-ospf', front: 'Name the four BGP message types.', back: 'OPEN establishes and authenticates, UPDATE advertises or withdraws, KEEPALIVE holds the session up and ACKs OPEN, NOTIFICATION reports an error and closes.', tags: ['bgp'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-20', topicId: 'networking2-ospf', front: 'Which two ICMP messages does traceroute rely on?', back: 'Type 11 code 0 (TTL expired) from each router along the path, and type 3 code 3 (port unreachable) from the destination as the stopping condition.', tags: ['icmp'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-21', topicId: 'networking2-network-management', front: 'What can NETCONF do that SNMP cannot?', back: 'Apply a configuration change across many devices as a single atomic transaction, with datastore locking and rollback.', tags: ['management'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-22', topicId: 'networking2-network-management', front: 'What is the division of labour between NETCONF and YANG?', back: 'YANG models the data — its structure, syntax, semantics, and constraints. NETCONF is the protocol that moves it.', tags: ['management'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-23', topicId: 'networking2-datalink-control', front: 'Which errors does simple parity fail to detect, and why?', back: 'Any error flipping an even number of bits, because the count of 1s returns to its original parity. That is why parity is weak against bursts.', tags: ['error-detection'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-24', topicId: 'networking2-datalink-control', front: 'What burst errors does CRC with r check bits guarantee to detect?', back: 'All burst errors shorter than r+1 bits. Longer bursts may still be caught but are not guaranteed.', tags: ['error-detection'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-25', topicId: 'networking2-datalink-control', front: 'How does CDMA differ from FDMA and TDMA?', back: 'All stations transmit over the whole band at the same time, separated by orthogonal chipping codes rather than by frequency or time.', tags: ['multiple-access'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-26', topicId: 'networking2-lans-ethernet', front: 'Which addresses change as a datagram crosses routers, and which do not?', back: 'MAC addresses are rewritten at every hop. IP source and destination stay constant end to end.', tags: ['ethernet'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-27', topicId: 'networking2-lans-ethernet', front: 'How does a switch learn where hosts are?', back: 'Self-learning: it records the source MAC and incoming port of every frame it receives. It never asks — it only overhears.', tags: ['switching'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-28', topicId: 'networking2-lans-ethernet', front: 'What happens to native VLAN frames on an 802.1Q trunk?', back: 'They travel untagged. Every other VLAN’s frames carry the 4-byte 802.1Q tag with their VLAN ID.', tags: ['vlan'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-29', topicId: 'networking2-link-virtualization', front: 'Why does an MPLS-labelled datagram keep its IP header?', back: 'So the egress can hand it straight back to ordinary IP routing. Stripping it would strand traffic on any failure inside the domain.', tags: ['mpls'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-30', topicId: 'networking2-link-virtualization', front: 'List the protocols used, in order, to load one web page from a freshly attached laptop.', back: 'DHCP for configuration, ARP for the router’s MAC, DNS for the server’s address, TCP’s handshake, then HTTP.', tags: ['synthesis'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-31', topicId: 'networking2-wireless', front: 'Why does 802.11 avoid collisions instead of detecting them?', back: 'A transmitting radio’s own signal swamps the far weaker received one, and hidden-terminal collisions happen where the sender cannot observe them at all.', tags: ['wireless'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-32', topicId: 'networking2-wireless', front: 'In RTS/CTS, which message does the real work and why?', back: 'The CTS. It originates at the access point, so every station in range hears it and defers — including stations hidden from the original sender.', tags: ['wireless'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-33', topicId: 'networking2-wireless', front: 'How long is a Bluetooth time slot?', back: '625 microseconds, giving 1,600 hops per second across 79 channels. Some slides misprint this as milliseconds.', tags: ['bluetooth'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-34', topicId: 'networking2-mobile-networks', front: 'Why does tunnelling let a TCP connection survive a mobile handoff?', back: 'Only the outer wrapper is rewritten. The inner datagram’s addresses never change, so the transport layer sees no disruption.', tags: ['mobility'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-35', topicId: 'networking2-mobile-networks', front: 'Indirect versus direct routing — what does each trade away?', back: 'Indirect is transparent to the correspondent but produces triangle routing. Direct is efficient but non-transparent and complicates a further move.', tags: ['mobility'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-36', topicId: 'networking2-security-crypto', front: 'Why do real systems use RSA only to establish a symmetric session key?', back: 'Modular exponentiation is far slower than symmetric encryption. Public-key crypto solves key distribution; symmetric crypto does the bulk work.', tags: ['crypto'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-37', topicId: 'networking2-security-crypto', front: 'What flaw remains in authentication protocol ap5.0?', back: 'A man-in-the-middle can supply their own public key when asked for Alice’s, so Bob verifies the attacker’s signature. Certificates close this gap.', tags: ['authentication'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-38', topicId: 'networking2-security-crypto', front: 'Which RFC specifies TLS 1.3, and what do some slides get wrong?', back: 'RFC 8446, August 2018. Some decks transpose it to RFC 8846, which is an unrelated document.', tags: ['tls'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-39', topicId: 'networking2-network-security', front: 'What is the division of labour between the SPD and the SAD in IPsec?', back: 'The Security Policy Database says what to do — whether a datagram needs IPsec. The Security Association Database says how, holding keys and algorithms.', tags: ['ipsec'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  { id: 'fc-net2-40', topicId: 'networking2-network-security', front: 'Why is a stateless packet filter insufficient?', back: 'It admits a crafted packet with ACK set and a plausible port pair even though no connection exists, because it judges each packet in isolation.', tags: ['firewall'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
 ];
 
 export const questions: Question[] = [
   {
-    id: 'q-net2-01',
-    topicId: 'networking2-tcp-reliability',
-    difficulty: 3,
-    type: 'mcq',
+    id: 'q-net2-01', topicId: 'networking2-internet-overview', difficulty: 2, type: 'mcq',
+    stem: 'A 10,000-bit packet is transmitted onto a 100 Mb/s link. What is the transmission delay?',
+    options: ['0.1 ms', '1 ms', '10 ms', '100 ms'],
+    correct: [0],
+    explanation: 'L/R = 10,000 / 100,000,000 = 0.0001 s = 0.1 ms. The common slip is treating 100 Mb/s as 10^6 rather than 10^8 bits per second.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-net2-02', topicId: 'networking2-internet-overview', difficulty: 3, type: 'mcq',
+    stem: 'You upgrade both end links of a long-distance path from 100 Mb/s to 1 Gb/s, but round-trip time barely improves. Why?',
+    options: ['Queueing delay rose proportionally', 'Propagation delay dominates and is unaffected by link rate', 'The packets became larger', 'Processing delay scales with link rate'],
+    correct: [1],
+    explanation: 'Raising R shrinks transmission delay (L/R) but propagation delay (d/s) is fixed by distance and medium. Over a long path propagation dominates, so the total moves very little.',
+    adaptiveWeight: 2,
+  },
+  {
+    id: 'q-net2-03', topicId: 'networking2-application-layer', difficulty: 3, type: 'mcq',
+    stem: 'What problem does HTTP/2 frame interleaving solve?',
+    options: ['Weak encryption on TCP connections', 'Head-of-line blocking, where a small object waits behind a large one', 'The absence of persistent connections', 'The need for DNS lookups'],
+    correct: [1],
+    explanation: 'HTTP/1.1 serves pipelined requests in order, so a large object delays everything behind it. HTTP/2 splits objects into frames and interleaves them so small objects complete early.',
+    adaptiveWeight: 1.5,
+  },
+  {
+    id: 'q-net2-04', topicId: 'networking2-application-layer', difficulty: 2, type: 'mcq',
+    stem: 'Which DNS record type maps an alias to the real, canonical hostname?',
+    options: ['A', 'MX', 'CNAME', 'NS'],
+    correct: [2],
+    explanation: 'CNAME maps an alias to a canonical name. A maps a hostname to an address, MX names a mail server, and NS names an authoritative server for a domain.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-net2-05', topicId: 'networking2-transport-fundamentals', difficulty: 3, type: 'mcq',
+    stem: 'Three TCP segments arrive at host B, all with destination port 80, from three different client address-port pairs. How are they demultiplexed?',
+    options: ['To one socket, since the destination port matches', 'To three different sockets, one per four-tuple', 'They are discarded as duplicates', 'To the welcoming socket only'],
+    correct: [1],
+    explanation: 'TCP demultiplexes on the full four-tuple, so each distinct client pair gets its own socket. Under UDP all three would instead reach a single socket.',
+    adaptiveWeight: 2,
+  },
+  {
+    id: 'q-net2-06', topicId: 'networking2-transport-fundamentals', difficulty: 4, type: 'scenario',
+    stem: 'A segment arrives whose computed checksum matches the checksum field, yet the application receives corrupted data. How is this possible?',
+    options: ['The checksum field was never set', 'Compensating bit errors left the one’s complement sum unchanged', 'UDP does not verify checksums at the receiver', 'The application misread the socket'],
+    correct: [1],
+    explanation: 'The Internet checksum cannot detect every error pattern. Two offsetting flips in the same bit position of different words produce an identical sum, so the segment passes the check.',
+    adaptiveWeight: 2.5,
+  },
+  {
+    id: 'q-net2-07', topicId: 'networking2-tcp-reliability', difficulty: 3, type: 'mcq',
     stem: 'Which of the following is true regarding TCP congestion control?',
-    options: [
-      'It relies purely on the receiver\'s advertised window size.',
-      'It uses algorithms like Slow Start to probe the network\'s capacity.',
-      'It drops packets to inform the sender to slow down.',
-      'It operates strictly at Layer 2 of the OSI model.'
-    ],
+    options: ['It relies purely on the receiver’s advertised window size', 'It uses algorithms like slow start to probe the network’s capacity', 'It drops packets to inform the sender to slow down', 'It operates at Layer 2 of the OSI model'],
     correct: [1],
-    explanation: 'TCP congestion control (e.g. Slow Start, Congestion Avoidance) actively probes the network capacity to prevent overwhelming intermediate routers, whereas the advertised window is strictly for receiver flow control.',
-    adaptiveWeight: 1.5
+    explanation: 'Congestion control actively probes network capacity, whereas the advertised window is strictly receiver flow control. Routers, not senders, drop packets.',
+    adaptiveWeight: 1.5,
   },
   {
-    id: 'q-net2-02',
-    topicId: 'networking2-ospf',
-    difficulty: 4,
-    type: 'mcq',
-    stem: 'In a multi-access OSPF network, why is a Designated Router (DR) elected?',
-    options: [
-      'To provide the shortest path to the Internet.',
-      'To reduce the number of LSA floods between all routers on the segment.',
-      'To securely encrypt OSPF hellos.',
-      'To convert OSPF routes into BGP routes.'
-    ],
+    id: 'q-net2-08', topicId: 'networking2-tcp-reliability', difficulty: 4, type: 'scenario',
+    stem: 'A transfer over a satellite link with 600 ms RTT achieves poor throughput despite a fast link. What is the most likely cause?',
+    options: ['The checksum keeps failing', 'The window is too small for the bandwidth-delay product, so the sender idles waiting for ACKs', 'The receiver has no buffer', 'Congestion control is disabled'],
     correct: [1],
-    explanation: 'Without a DR, every router would form an adjacency with every other router, causing a massive flood of LSAs (n * (n-1) / 2). The DR acts as a central point of exchange.',
-    adaptiveWeight: 2
+    explanation: 'A huge RTT makes the bandwidth-delay product enormous. Unless the window scales to match, the sender spends most of its time waiting rather than transmitting.',
+    adaptiveWeight: 2.5,
   },
   {
-    id: 'q-net2-03',
-    topicId: 'networking2-vlans',
-    difficulty: 2,
-    type: 'mcq',
-    stem: 'What happens to a frame belonging to the Native VLAN when it crosses an 802.1Q trunk?',
-    options: [
-      'It is encrypted for security.',
-      'It is dropped by default.',
-      'It receives a priority tag of 0.',
-      'It remains untagged.'
-    ],
+    id: 'q-net2-09', topicId: 'networking2-network-data-plane', difficulty: 3, type: 'mcq',
+    stem: 'A table holds 11001000 00010111 00010*** ******** on interface 0 and 11001000 00010111 00011000 ******** on interface 1. Which interface serves 11001000 00010111 00011000 10101010?',
+    options: ['Interface 0', 'Interface 1', 'Neither — it is dropped', 'Both, load-balanced'],
+    correct: [1],
+    explanation: 'Only the second entry matches, and longest prefix matching selects the most specific match. The first entry’s third byte begins 00010, which does not match 00011000.',
+    adaptiveWeight: 2,
+  },
+  {
+    id: 'q-net2-10', topicId: 'networking2-network-data-plane', difficulty: 5, type: 'scenario',
+    stem: 'You have 192.168.1.0/24 and need subnets for 60 hosts, 25 hosts, and two point-to-point links. Allocating largest first with VLSM, what is the network address of the 25-host subnet?',
+    options: ['192.168.1.0', '192.168.1.64', '192.168.1.128', '192.168.1.192'],
+    correct: [1],
+    explanation: 'The 60-host subnet needs a /26 (64 addresses), taking 192.168.1.0/26. The next free block starts at 192.168.1.64, and the 25-host subnet needs a /27, so it is 192.168.1.64/27.',
+    adaptiveWeight: 3,
+  },
+  {
+    id: 'q-net2-11', topicId: 'networking2-routing-algorithms', difficulty: 4, type: 'mcq',
+    stem: 'Node u has neighbours with c(u,v)=2, c(u,x)=1, c(u,w)=5, advertising Dv(z)=5, Dx(z)=3, Dw(z)=3. What is Du(z), and which is the next hop?',
+    options: ['3, via w', '4, via x', '7, via v', '8, via w'],
+    correct: [1],
+    explanation: 'min{2+5, 1+3, 5+3} = 4, achieved via x, so x is the next hop. The next hop always falls out of the same Bellman-Ford computation as the cost.',
+    adaptiveWeight: 2.5,
+  },
+  {
+    id: 'q-net2-12', topicId: 'networking2-routing-algorithms', difficulty: 4, type: 'scenario',
+    stem: 'A compromised router advertises a distance of 1 to every prefix. Which routing family suffers more, and why?',
+    options: ['Link-state, because advertisements are flooded', 'Distance-vector, because neighbours accept and re-advertise the claim, spreading the black hole', 'Neither — both are equally affected', 'Link-state, because Dijkstra trusts all inputs'],
+    correct: [1],
+    explanation: 'In link-state a router can only lie about its own attached links. In distance-vector its distance claims propagate onward through every router that believes them.',
+    adaptiveWeight: 2.5,
+  },
+  {
+    id: 'q-net2-13', topicId: 'networking2-ospf', difficulty: 4, type: 'mcq',
+    stem: 'In a multi-access OSPF network, why is a Designated Router elected?',
+    options: ['To provide the shortest path to the Internet', 'To reduce the number of adjacencies and LSA floods on the segment', 'To encrypt OSPF hellos', 'To convert OSPF routes into BGP routes'],
+    correct: [1],
+    explanation: 'Without a DR every router would adjacency-pair with every other, producing n(n-1)/2 relationships and a flood of LSAs. The DR acts as a central exchange point.',
+    adaptiveWeight: 2,
+  },
+  {
+    id: 'q-net2-14', topicId: 'networking2-ospf', difficulty: 4, type: 'scenario',
+    stem: 'An operator wants all traffic to a destination to leave through a specific, more expensive provider for contractual reasons. Which BGP attribute achieves this?',
+    options: ['AS-PATH', 'Local preference', 'NEXT-HOP', 'MED'],
+    correct: [1],
+    explanation: 'Local preference is evaluated first in the selection order, so it overrides a shorter AS-PATH. That is exactly the mechanism for expressing a commercial preference.',
+    adaptiveWeight: 2.5,
+  },
+  {
+    id: 'q-net2-15', topicId: 'networking2-network-management', difficulty: 3, type: 'scenario',
+    stem: 'An operator must apply one configuration change to 40 routers, and a partial application would break routing. Which approach fits?',
+    options: ['SNMP SetRequest to each device in turn', 'NETCONF with datastore locking and atomic commit', 'CLI scripting over SSH', 'Sending traps to each device'],
+    correct: [1],
+    explanation: 'Only NETCONF offers transactional semantics across devices. The other approaches apply changes independently, so a mid-sequence failure leaves the network half-configured.',
+    adaptiveWeight: 2,
+  },
+  {
+    id: 'q-net2-16', topicId: 'networking2-datalink-control', difficulty: 3, type: 'mcq',
+    stem: 'A receiver accepts a frame whose parity checks out, but the data is wrong. What most likely happened?',
+    options: ['The CRC was omitted', 'An even number of bits flipped, leaving the parity count unchanged', 'The frame exceeded the MTU', 'The parity bit was stripped early'],
+    correct: [1],
+    explanation: 'Parity only distinguishes odd from even counts of 1 bits, so two compensating flips are invisible to it. This is the standard argument for using CRC instead.',
+    adaptiveWeight: 1.5,
+  },
+  {
+    id: 'q-net2-17', topicId: 'networking2-datalink-control', difficulty: 3, type: 'mcq',
+    stem: 'At very low load with one active node, which multiple access family performs best?',
+    options: ['Channel partitioning, because it is fair', 'Random access, because one node can use the entire channel rather than a 1/N share', 'Controlled access, because it eliminates collisions', 'They perform identically at low load'],
+    correct: [1],
+    explanation: 'TDMA would give the sole active node one slot in N and leave the rest idle. Random access lets it transmit whenever it likes, which is optimal with no competition.',
+    adaptiveWeight: 1.5,
+  },
+  {
+    id: 'q-net2-18', topicId: 'networking2-lans-ethernet', difficulty: 2, type: 'mcq',
+    stem: 'What happens to a frame belonging to the native VLAN when it crosses an 802.1Q trunk?',
+    options: ['It is encrypted for security', 'It is dropped by default', 'It receives a priority tag of 0', 'It remains untagged'],
     correct: [3],
-    explanation: 'By standard 802.1Q design, the Native VLAN (usually VLAN 1 by default) is sent across trunk links untagged.',
-    adaptiveWeight: 1
+    explanation: 'By 802.1Q design the native VLAN is the one exception to tagging on a trunk link, which is both a common exam point and a common security consideration.',
+    adaptiveWeight: 1,
   },
   {
-    id: 'q-net2-04',
-    topicId: 'networking2-subnetting',
-    difficulty: 5,
-    type: 'scenario',
-    stem: 'You have the network block 192.168.1.0/24. You need subnets for 60 hosts, 25 hosts, and two point-to-point links (2 hosts each). If you use VLSM and allocate the largest blocks first, what is the network address for the 25-host subnet?',
-    options: [
-      '192.168.1.0',
-      '192.168.1.64',
-      '192.168.1.128',
-      '192.168.1.192'
-    ],
+    id: 'q-net2-19', topicId: 'networking2-lans-ethernet', difficulty: 3, type: 'scenario',
+    stem: 'Two hosts in different VLANs on the same switch cannot reach each other despite correct IP configuration. What is missing?',
+    options: ['An ARP cache entry', 'A layer 3 device to route between the VLANs', 'A trunk port', 'A CRC check'],
     correct: [1],
-    explanation: 'The 60 host subnet requires a /26 block (64 IPs). We allocate 192.168.1.0/26. The next available block starts at 192.168.1.64. The 25 host subnet requires a /27 block (32 IPs), so its network address is 192.168.1.64/27.',
-    adaptiveWeight: 3
-  }
+    explanation: 'VLANs are separate broadcast domains by design, so a switch will not bridge them. Traffic between VLANs requires routing.',
+    adaptiveWeight: 2,
+  },
+  {
+    id: 'q-net2-20', topicId: 'networking2-link-virtualization', difficulty: 4, type: 'scenario',
+    stem: 'An ISP needs two customers’ traffic to the same destination prefix to traverse different physical paths. Which technology expresses this directly?',
+    options: ['Longest prefix matching', 'MPLS, which can select a label-switched path using source as well as destination', 'DHCP', 'ARP'],
+    correct: [1],
+    explanation: 'Destination-based IP forwarding cannot distinguish the two flows because both match the same prefix. MPLS traffic engineering exists for exactly this requirement.',
+    adaptiveWeight: 2.5,
+  },
+  {
+    id: 'q-net2-21', topicId: 'networking2-link-virtualization', difficulty: 3, type: 'mcq',
+    stem: 'Which sequence correctly orders the protocols used when a freshly attached laptop loads a web page?',
+    options: ['DNS, DHCP, ARP, HTTP, TCP', 'DHCP, ARP, DNS, TCP, HTTP', 'ARP, DHCP, TCP, DNS, HTTP', 'HTTP, DNS, TCP, ARP, DHCP'],
+    correct: [1],
+    explanation: 'Address first, then the router’s MAC, then name resolution, then the transport connection, then the application request. Each step depends on the one before it.',
+    adaptiveWeight: 2,
+  },
+  {
+    id: 'q-net2-22', topicId: 'networking2-wireless', difficulty: 3, type: 'scenario',
+    stem: 'Two stations at opposite edges of a cell repeatedly corrupt each other’s frames at the access point, though each senses an idle channel. What should be enabled?',
+    options: ['CSMA/CD', 'RTS/CTS, so the access point’s CTS silences stations that cannot hear each other', 'A larger MTU', 'Power management'],
+    correct: [1],
+    explanation: 'This is the hidden terminal situation. Only a signal originating at the access point reaches both stations, which is why the CTS rather than the RTS does the real work.',
+    adaptiveWeight: 2,
+  },
+  {
+    id: 'q-net2-23', topicId: 'networking2-wireless', difficulty: 4, type: 'mcq',
+    stem: 'Why is collision detection impractical on an 802.11 wireless link?',
+    options: ['Regulations forbid it', 'The transmitter cannot hear a far weaker remote signal beneath its own, and hidden-terminal collisions occur where the sender cannot observe them', 'Wireless frames are too short to detect', 'It would require more than 79 channels'],
+    correct: [1],
+    explanation: 'The limitation is physical, not a design oversight, which is why 802.11 avoids collisions and acknowledges every frame instead.',
+    adaptiveWeight: 2.5,
+  },
+  {
+    id: 'q-net2-24', topicId: 'networking2-mobile-networks', difficulty: 4, type: 'scenario',
+    stem: 'A correspondent in the same city as a roaming mobile sees unexpectedly high latency. Which routing model is in use?',
+    options: ['Direct routing', 'Indirect routing, producing triangle routing through a distant home network', 'No routing at all', 'Hot potato routing'],
+    correct: [1],
+    explanation: 'Proximity of the endpoints does not shorten the path under indirect routing, because traffic is anchored at the home network regardless of where the two ends are.',
+    adaptiveWeight: 2.5,
+  },
+  {
+    id: 'q-net2-25', topicId: 'networking2-mobile-networks', difficulty: 3, type: 'mcq',
+    stem: 'Which 4G LTE elements lie on the data path between the mobile and the Internet?',
+    options: ['MME and HSS', 'Serving Gateway and PDN Gateway', 'eNode-B and HSS', 'MME and Serving Gateway'],
+    correct: [1],
+    explanation: 'S-GW and P-GW carry user traffic. MME and HSS are control-plane elements handling authentication, mobility state, and subscriber data.',
+    adaptiveWeight: 2,
+  },
+  {
+    id: 'q-net2-26', topicId: 'networking2-security-crypto', difficulty: 3, type: 'mcq',
+    stem: 'Why does encrypting the password in authentication protocol ap3.0 still fail?',
+    options: ['The encryption algorithm is too weak', 'A playback attack still works — the attacker replays the encrypted password without needing to read it', 'The password is too short', 'Encryption breaks the IP header'],
+    correct: [1],
+    explanation: 'Confidentiality does not provide freshness. Replay is defeated by a nonce, not by hiding the secret being replayed.',
+    adaptiveWeight: 2,
+  },
+  {
+    id: 'q-net2-27', topicId: 'networking2-security-crypto', difficulty: 3, type: 'mcq',
+    stem: 'A design document specifies HMAC-MD5 and 3DES for a new system. What is the correct assessment?',
+    options: ['Both are current best practice', 'Both are retired — MD5 fails collision resistance and NIST disallows 3DES for encryption after 2023', 'Only MD5 is a problem', 'Only 3DES is a problem'],
+    correct: [1],
+    explanation: 'RFC 6151 rules MD5 out where collision resistance is needed, and NIST SP 800-131A Rev. 2 disallows three-key TDEA for encryption after 2023. Use AES with SHA-2.',
+    adaptiveWeight: 2.5,
+  },
+  {
+    id: 'q-net2-28', topicId: 'networking2-network-security', difficulty: 4, type: 'scenario',
+    stem: 'A firewall rule permits inbound TCP from port 80 to ports above 1023 with the ACK bit set. Why is this insufficient?',
+    options: ['It blocks legitimate web traffic', 'An attacker can craft a packet with exactly those properties even though no connection exists', 'It only works for UDP', 'It requires deep packet inspection'],
+    correct: [1],
+    explanation: 'The rule appears to admit only replies to outbound requests, but nothing verifies a request occurred. That gap is the entire argument for stateful inspection.',
+    adaptiveWeight: 2.5,
+  },
+  {
+    id: 'q-net2-29', topicId: 'networking2-network-security', difficulty: 4, type: 'scenario',
+    stem: 'Traffic between two branch offices crosses the public Internet unprotected, and dozens of applications are involved. What is the most efficient fix?',
+    options: ['Add TLS to every application individually', 'Deploy an IPsec tunnel-mode VPN between the two gateways', 'Install an IDS at each site', 'Move all traffic to UDP'],
+    correct: [1],
+    explanation: 'Operating below the transport layer is IPsec’s advantage: one gateway-to-gateway SA covers every application without modifying any, and tunnel mode also conceals internal addressing.',
+    adaptiveWeight: 3,
+  },
+  {
+    id: 'q-net2-30', topicId: 'networking2-network-security', difficulty: 3, type: 'mcq',
+    stem: 'How does the receiver of an IPsec datagram find the correct security association?',
+    options: ['By source IP address alone', 'By reading the Security Parameter Index and indexing the SAD with it', 'By trying every SA in turn', 'By querying the sender'],
+    correct: [1],
+    explanation: 'The 32-bit SPI is carried in the datagram specifically so the receiver can locate the right state in a single lookup.',
+    adaptiveWeight: 2,
+  },
 ];

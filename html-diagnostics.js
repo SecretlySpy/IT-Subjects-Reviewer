@@ -38,10 +38,12 @@ const REVIEWERS = [
       "glossary",
       "glossaryGrid",
     ],
+    // Counts are derived from the shipped data.js, not estimated. After any
+    // content change, re-derive them before committing or this suite fails.
     expectedCounts: {
       topics: 15,
-      glossary: 293,
-      flashcards: 300,
+      glossary: 620,
+      flashcards: 627,
       practiceTests: 15,
       questions: 450,
     },

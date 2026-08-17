@@ -286,6 +286,21 @@ async function main() {
   window.location.hash = "#/subject/networking2";
   await flush(window);
   await flush(window);
+
+  // The Networking 2 syllabus follows the course unit order, so unit 1.1 is the
+  // topic selected on arrival. Select topics by name rather than relying on
+  // whichever one happens to be first.
+  assert(
+    Boolean(findByText(document, "button", "Computer Networks and the Internet")),
+    "the Networking 2 syllabus opens on the first course unit"
+  );
+  assert(
+    Boolean(findByText(document, "button", "Network Layer Security, IPsec, Firewalls, and IDS")),
+    "the syllabus lists the final security unit, so all 15 units are present"
+  );
+
+  findByText(document, "button", "Reliable Data Transfer and TCP Control").click();
+  await flush(window);
   assert(Boolean(findByText(document, "h3", "TCP three-way handshake")), "the TCP topic renders the complete handshake visual");
   findByText(document, "button", "Start").click();
   await flush(window, 1);

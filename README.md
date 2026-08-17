@@ -126,6 +126,6 @@ npm run check:deploy # rejects raw-source or broken GitHub Pages artifacts
 - The zero-build reviewers need **no Node.js and no internet** — open \`index.html\` and study.
 - \`npm run build\` copies all three standalone reviewers into \`dist/\`, so the GitHub Pages deployment serves both the React platform and the zero-build apps.
 - GitHub Pages must use **Settings → Pages → Source: GitHub Actions**. Publishing from \`main / (root)\` serves uncompiled TSX and cannot run the React platform.
-- Systems Integration and Architecture 1 cites its primary standards (OASIS SOA-RM, W3C XML/SOAP/WSDL, IETF RFC 8259, NIST SP 800-145 and SP 500-292) in its glossary section so claims can be checked at source.
+- Networking 2 cites its primary sources (IETF RFCs, NIST CSRC, IEEE 802 standards, Bluetooth SIG, 3GPP, Wi-Fi Alliance) inside each topic's lesson blocks. Where the lecture slides are wrong or outdated — a mistyped TLS 1.3 RFC number, MD5/SHA-1/3DES taught as current, a Bluetooth slot given in milliseconds — the reviewer shows a correction callout in context. The full audit lives in [`docs/networking2/CONTENT-REVIEW.md`](docs/networking2/CONTENT-REVIEW.md).
 - The Mobile Computing web-form module cites MDN, W3C Web Accessibility Initiative, and OWASP guidance while keeping its lessons and capstone usable offline.
 - More subjects and modules will be continually added using this scalable, decoupled structure.

@@ -5,18 +5,48 @@
 - **Inputs**: None.
 - **Outputs**: `globalThis.reviewerData` containing `topics`, `glossary`, `flashcards`, `practiceTests`, `pathSteps`, and `studySteps`.
 - **Dependencies**: JavaScript global scope.
-- **Behavior**: Declares 15 topics, 293 glossary entries, 300 flashcards, 15 practice tests with 450 questions, five packet-path steps, and four study steps, then exposes them as one object.
+- **Behavior**: Declares 15 topics, 620 glossary entries, 300 flashcards, 15 practice tests with 450 questions, five packet-path steps, and four study steps, then exposes them as one object.
 - **Side Effects**: Assigns `globalThis.reviewerData`.
+- **Verification Status**: tested — `node html-diagnostics.js` validates counts, shapes, identifier uniqueness, and answer indexes. Content accuracy is reasoned and source-checked against primary specifications, not executable-tested.
 
 ## Feature / Capability: Networking content model
 - **Purpose**: Provide one data source for the offline HTML reviewer and React reference component.
 - **Data Shapes**:
-  - `topics[]`: `{ id, unit, title, color, subtitle, beginner, terms[], keyPoints[], compare, flow[] }`.
+  - `topics[]`: `{ id, unit, title, color, subtitle, beginner, terms[], keyPoints[], compare, flow[], objectives?[], lessonBlocks?[], sources?[] }`.
   - `glossary[]`: `[term, definition]`.
   - `flashcards[]`: `{ topic, front, back }`.
   - `practiceTests[]`: `{ title, description, questions[] }`.
   - `questions[]`: `{ q, options[], answer, explain }`.
 - **Operational Mechanics**: The classic script runs before either consumer reads `globalThis.reviewerData`.
+
+## Feature / Capability: Lecture-deck reconciliation (2026-08-17)
+- **Purpose**: Bring the reviewer into alignment with the 16 supplied Networking 2 lecture decks, and surface corrections where the decks are wrong or stale.
+- **What changed**:
+  - All 15 topics expanded from a uniform 20 terms / 5 key points / 3 compare rows to 640 terms total, 15–20 key points each, and 7–9 compare rows each.
+  - Glossary grew 293 → 620 entries. **Every one of the 640 topic terms now resolves to a glossary definition**; there are no duplicates.
+  - All 15 topics now carry `objectives`, `lessonBlocks`, and `sources` (40 cited HTTPS references to IETF, NIST, IEEE, Bluetooth SIG, 3GPP, Wi-Fi Alliance, and root-servers.org).
+- **Annotation convention** — how supplemental and corrective content is marked in the UI:
+  - `lessonBlocks[].tone === "note"` — material added beyond the lecture decks (worked examples, textbook content the slides omit).
+  - `lessonBlocks[].tone === "warning"` — a factual error or stale figure in the decks, with the corrected value.
+  - `lessonBlocks[].tone === "security"` — a deprecated or broken cryptographic primitive the decks present as current.
+- **Constraint**: the vanilla `lessonBlocks` validator in `html-diagnostics.js` accepts **only** `kind: "code"` and `kind: "callout"`. A `paragraph` or `list` block is valid in the SPA schema but fails here.
+- **Audit trail**: `docs/networking2/CONTENT-REVIEW.md` records the deck↔unit mapping, two truncated decks, 18 severity-tagged factual findings, and the coverage-gap manifest.
+- **Verification Status**: tested (structure) + source-verified (facts). The 11 correction claims in CONTENT-REVIEW Table 3 were each confirmed against a primary source on 2026-08-17.
+
+## Assessment rebuild (2026-08-17)
+- **All 15 practice tests were rewritten from scratch.** The previous 450 questions were machine-generated from glossary definitions; the replacements are authored.
+- **Measured before → after**: `explain` field a verbatim copy of the correct option **450 → 0**; `What is X?` stems **339 → 48** (the 48 that remain are genuine vocabulary items); unique stems **442 → 450**.
+- Each test keeps 30 questions and now mixes concept recall, applied computation (L/R transmission delay, Bellman-Ford, one's complement checksum, VLSM allocation, longest prefix match), and scenario diagnosis. Distractors are drawn from the same unit so they are not eliminable without domain knowledge.
+- **Flashcards 300 → 627.** The 327 added cards were derived deterministically from the authored glossary definitions (term → definition), which is the correct form for vocabulary spaced repetition. Seven duplicate fronts exist and are **pre-existing and intentional**: terms belonging to two topics get one card per topic so both topic filters show them.
+
+## Source decks (2026-08-17)
+- All 16 lecture decks are committed under `docs/networking2-source-slides/`, with a README recording provenance, the OCR-damage failure modes, and the deck↔unit mapping.
+- **They are under `docs/`, not inside `Networking 2/`, on purpose.** `vite.config.ts` copies each reviewer directory into `dist/` recursively, so placing them in the reviewer folder would publish ~330 KB of lecture text to GitHub Pages.
+- **Fidelity caveat**: these were reconstructed from the decks as supplied to the authoring session, not copied from original files on disk. They deliberately preserve the extraction damage (mojibake bullets, shredded tables, `RFC 531`, `625 msec`) because that corruption is what the audit depends on being visible. If the original PDF/PPTX files surface, they should replace these.
+
+## Known remaining work
+- **`Networking 2/NetworkingTwoBeginnerGuide.jsx`** reads `globalThis.reviewerData` and renders topics, but it has no renderer for `objectives` / `lessonBlocks` / `sources`. The corrections are therefore visible in `Networking 2/index.html` and in the React platform, but not in this standalone JSX component. Porting `renderLessonEnhancements` there is the remaining gap.
+- **Two truncated decks** (transport 2.1, network layer 2.2) still lack their later slides. Flagged for the instructor in CONTENT-REVIEW Table 2; not resolvable from this side.
 
 # Module / File: Networking 2/index.html
 
@@ -136,13 +166,28 @@
 - **Behavior**: Filters topics, replaces card markup, binds open/mark actions, and attaches reveals.
 - **Side Effects**: Replaces DOM and registers listeners.
 
+## Function: renderLessonEnhancements
+- **Purpose**: Render a topic's optional objectives, lesson blocks, and cited sources as escaped HTML.
+- **Inputs**:
+  - `topic` (`object`): a topic that may carry `objectives[]`, `lessonBlocks[]`, and `sources[]`.
+- **Outputs**: `string` — safe HTML, or `""` when the topic carries none of the three.
+- **Dependencies**: `escapeHtml`.
+- **Behavior**: Emits an objectives list, then one section per lesson block (`code` renders a keyboard-scrollable `<pre>`; `callout` renders a `data-tone` bar; unknown kinds render nothing), then a source list. Wraps the result in `.lesson-blocks`.
+- **Side Effects**: None — pure string builder.
+- **DSA Used**: Linear map/join over each array, O(n) in total block count.
+- **Responsive & Accessibility Notes**: Source links get `min-height: 44px` and an `aria-label` announcing the new tab. Callout tone bars are decorative only — every callout also names its kind in the heading, so colour never carries meaning alone. Code blocks are `tabindex="0"` so keyboard users can scroll them.
+- **Security Notes**: Every interpolated value passes through `escapeHtml`, including `source.url` and `block.tone`, so authored content cannot inject markup.
+- **Provenance**: Ported verbatim from `Mobile Computing/index.html` so both zero-build reviewers honour the same optional contract. Palette tokens remapped to this reviewer's light theme (`--panel-soft`, `--cyan`).
+- **Verification Status**: tested — `node html-diagnostics.js` validates the data contract; rendering confirmed by the same lesson-block assertions the Mobile reviewer uses.
+
 ## Function: renderTopicDetail
 - **Purpose**: Render the selected topic’s explanation, comparison, flow, and terms.
 - **Inputs**: None.
 - **Outputs**: `void`.
-- **Dependencies**: `state.activeTopic`, `topics`, `escapeHtml`, DOM.
-- **Behavior**: Projects the active topic and detail tab into the detail panel.
+- **Dependencies**: `state.activeTopic`, `topics`, `escapeHtml`, `renderLessonEnhancements`, DOM.
+- **Behavior**: Projects the active topic and detail tab into the detail panel, then appends lesson enhancements **outside** the tab panes so corrections stay visible on every tab.
 - **Side Effects**: Replaces DOM and binds tab/study controls.
+- **Responsive & Accessibility Notes**: `.flow` uses `repeat(auto-fit, minmax(9.5rem, 1fr))` rather than a fixed five columns, because topics now carry a variable number of flow steps. The existing 2-column and 1-column media queries still override it.
 
 ## Function: renderProgress
 - **Purpose**: Update Networking 2 completion statistics.
@@ -1654,6 +1699,20 @@ ecordQuizAnswer, updateTopicMastery, and incrementStreak.
 - **Behavior**: Builds nav items from `subjectsData` rather than a hard-coded list, so a new subject appears automatically. Mastery rings, the overall percentage, and the streak all come from the progress store.
 - **Side Effects**: None beyond routing and focus management.
 - **Correction Note**: The mastery rings (45/12/80), the "42%" overall figure, and the "5 day streak" were previously hard-coded literals.
+
+# Module / File: src/subjects/networking2/data.ts
+
+## Feature / Capability: Networking 2 study-platform dataset
+- **Purpose**: Supply the React platform with the same 15-unit syllabus the zero-build reviewer teaches.
+- **Data Shapes**: `subjectMeta`, `topics[]`, `glossary[]`, `flashcards[]`, `questions[]` from `src/types/study.ts`.
+- **Coverage**: Fifteen topics in course-unit order — Internet overview, application layer, transport fundamentals, TCP reliability, network-layer data plane, routing algorithms, OSPF/BGP, network management, data link control, LANs and VLANs, link virtualization, wireless, mobile networks, security and cryptography, and network-layer security.
+- **Totals**: 15 topics, 73 glossary terms, 40 flashcards, 30 adaptive questions.
+- **Operational Mechanics**: `topics` is declared before `subjectMeta` so `topicCount` and `estimatedHours` are derived. This replaced a hardcoded `topicCount: 4` / `estimatedHours: 12`, the latter of which contradicted its own topics (235 min ≈ 3.9 h).
+- **Visual aids**: all topics use `visualAidType: 'table'` except two that reuse already-registered diagram renderers — `tcp-handshake` on the TCP topic and `ospf-areas` on the OSPF topic. A new `diagram` type would need registering in `TopicVisuals.tsx`, the `professor-mode.tsx` dispatcher, **and** the `diagramFields` map in `subject-data-tests.js`.
+- **Rich lessons**: every topic supplies all three of `learningObjectives`, `lessonBlocks`, and `sources` — the validator treats a partial set as invalid. Unlike the vanilla reviewer, the SPA schema also accepts `paragraph` and `list` blocks, which are used here.
+- **Scope Note**: This replaced a 4-topic CCNA-flavored dataset covering roughly a quarter of the syllabus. Its VLSM material had no lecture-deck source; it is retained as a labelled beyond-deck supplement inside the network-layer topic rather than as a standalone topic.
+- **Test coupling**: `spa-smoke-tests.js` selects topics by name before asserting their visuals, because unit 1.1 — not the TCP topic — is now the default selection on arrival.
+- **Verification Status**: tested — `subject-data-tests.js` and `spa-smoke-tests.js` both pass; `tsc -b` compiles. Content accuracy is reasoned and source-checked, not executable-tested.
 
 # Module / File: src/subjects/sia1/data.ts
 
