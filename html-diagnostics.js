@@ -68,18 +68,18 @@ const REVIEWERS = [
       "referenceList",
     ],
     expectedCounts: {
-      modules: 10,
-      topics: 28,
-      glossary: 200,
-      glossaryEntries: 200,
-      flashcards: 200,
-      practiceTests: 10,
-      questions: 200,
+      modules: 15,
+      topics: 35,
+      glossary: 300,
+      glossaryEntries: 300,
+      flashcards: 300,
+      practiceTests: 15,
+      questions: 300,
       blueprintStages: 4,
       modelLayers: 3,
       scenarios: 39,
       studySteps: 4,
-      references: 7,
+      references: 23,
     },
   },
   {
@@ -101,16 +101,16 @@ const REVIEWERS = [
       "glossaryGrid",
     ],
     expectedCounts: {
-      modules: 3,
-      topics: 10,
-      glossary: 22,
-      flashcards: 17,
-      practiceTests: 3,
-      questions: 10,
+      modules: 5,
+      topics: 16,
+      glossary: 54,
+      flashcards: 32,
+      practiceTests: 5,
+      questions: 25,
       blueprintStages: 5,
       modelLayers: 3,
       modelMatchItems: 6,
-      scenarios: 5,
+      scenarios: 9,
       studySteps: 4,
     },
   },
@@ -402,6 +402,21 @@ function checkSharedDataShapes(data) {
  * @param {object} data - Evaluated reviewer data.
  * @returns {boolean[]} Individual diagnostic outcomes.
  */
+// Languages a lesson code block may declare. Extend deliberately: the point of
+// the list is that an unrecognised value is reported rather than rendered blind.
+const LESSON_CODE_LANGUAGES = [
+  "html",
+  "javascript",
+  "xml",
+  "java",
+  "bash",
+  "http",
+  "graphql",
+  "sql",
+  "json",
+  "text",
+];
+
 function checkLessonEnhancements(data) {
   const enriched = data.topics.filter(
     (topic) => topic.objectives || topic.lessonBlocks || topic.sources
@@ -417,7 +432,9 @@ function checkLessonEnhancements(data) {
         (Array.isArray(topic.lessonBlocks) && topic.lessonBlocks.length > 0)) &&
       (topic.lessonBlocks ?? []).every((block) => {
         if (block.kind === "code") {
-          return ["html", "javascript"].includes(block.language) &&
+          // An allowlist rather than a free string, so a typo still fails, but
+          // wide enough for the non-web subjects that now ship code lessons.
+          return LESSON_CODE_LANGUAGES.includes(block.language) &&
             typeof block.code === "string" && block.code.trim() &&
             typeof block.caption === "string" && block.caption.trim();
         }

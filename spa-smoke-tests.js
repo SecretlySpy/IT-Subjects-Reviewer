@@ -353,7 +353,40 @@ async function main() {
       Boolean(findByText(document, "button", "Validation, Accessibility, and Safe DOM Output")),
     "the syllabus lists all three enriched web-form lessons"
   );
+  assert(
+    Boolean(findByText(document, "h3", "The three concepts of mobile computing")),
+    "the syllabus opens on the mobile foundations topic"
+  );
+
+  // Select every topic by name rather than relying on the default selection, so
+  // reordering the syllabus cannot silently change what these assertions cover.
+  findByText(document, "button", "Evolution and Device Classification").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "Five generations of mobile networks")), "the evolution topic renders 1G through 5G");
+
+  findByText(document, "button", "Android Activity Lifecycle").click();
+  await flush(window);
   assert(Boolean(findByText(document, "h3", "Android activity lifecycle")), "the lifecycle topic renders callback order and return paths");
+
+  findByText(document, "button", "JavaScript Engines and Execution").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "How an engine executes your script")), "the engine topic renders the parse-to-machine-code pipeline");
+
+  findByText(document, "button", "Data Types, Variables, and Coercion").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "The JavaScript type system")), "the types topic renders the primitive versus object split");
+
+  findByText(document, "button", "Functions, Objects, and this").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "What this refers to, by call site")), "the functions topic renders all four this bindings");
+
+  findByText(document, "button", "Progressive Web Apps and Offline").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "A service worker intercepting a request")), "the PWA topic renders service worker fetch interception");
+
+  findByText(document, "button", "Mobile Performance, Responsiveness, and Security").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "Core Web Vitals and their \"good\" thresholds")), "the performance topic renders all three Core Web Vitals");
 
   findByText(document, "button", "Mobile Sensors and Context").click();
   await flush(window);

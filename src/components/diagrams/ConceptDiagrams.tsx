@@ -2,11 +2,12 @@ import { ArrowDown, ArrowRight, Radio } from 'lucide-react';
 import { VisualFrame } from './VisualFrame';
 
 /**
- * Data-driven network diagrams for the Networking 2 syllabus.
+ * Data-driven concept diagrams shared across every subject.
  *
  * Each renderer is generic and driven entirely by `visualAidData`, so one
  * component serves several topics instead of hand-building fifteen bespoke
- * pictures. They follow the same conventions as the existing diagrams: composed
+ * pictures. Networking 2, Systems Integration, and Mobile Computing all draw on the
+ * same set. They follow the conventions of the existing diagrams: composed
  * from elements rather than SVG, wrapped in `VisualFrame` for the accessible
  * figure/caption pairing, and using the design-system colour tokens.
  *

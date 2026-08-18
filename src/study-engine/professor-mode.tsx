@@ -14,7 +14,7 @@ import {
   WeightedGraphDiagram,
   ActorFlowDiagram,
   RadioRangeDiagram,
-} from '@/components/diagrams/NetworkDiagrams';
+} from '@/components/diagrams/ConceptDiagrams';
 
 interface ProfessorModeRendererProps {
   data: ProfessorMode;

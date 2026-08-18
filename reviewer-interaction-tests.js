@@ -189,6 +189,39 @@ function main() {
     "topic guide opens in the dialog"
   );
 
+  // Exercise the ported rich-lesson renderer on a topic that carries one.
+  document.querySelector('[data-module-filter="m5-4"]').click();
+  document.querySelector("#topicGrid [data-open-topic]").click();
+  const lessonBody = document.querySelector("#topicDialogBody");
+  assert(
+    Boolean(lessonBody.querySelector(".lesson-blocks")),
+    "an enriched topic renders its lesson enhancements block"
+  );
+  assert(
+    lessonBody.textContent.includes("Learning objectives"),
+    "the enriched topic renders its learning objectives"
+  );
+  assert(
+    lessonBody.querySelectorAll(".lesson-code pre[tabindex='0']").length > 0,
+    "lesson code renders in a keyboard-scrollable block"
+  );
+  assert(
+    lessonBody.querySelectorAll(".lesson-callout[data-tone]").length > 0,
+    "lesson callouts render with a tone the stylesheet can key on"
+  );
+  assert(
+    lessonBody.querySelectorAll('.lesson-sources a[href^="https://"]').length >= 2,
+    "lesson sources render as titled HTTPS links"
+  );
+  assert(
+    !lessonBody.innerHTML.includes("${"),
+    "no template placeholder leaks into the rendered lesson"
+  );
+
+  // Return to the modelling filter so the progress assertions below are unchanged.
+  document.querySelector('[data-module-filter="m1-3"]').click();
+  document.querySelector("#topicGrid [data-open-topic]").click();
+
   // Exercise topic progress and storage-key isolation.
   document
     .querySelector("#topicDialogBody [data-dialog-studied]")

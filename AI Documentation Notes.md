@@ -1741,10 +1741,10 @@ ecordQuizAnswer, updateTopicMastery, and incrementStreak.
 ## Feature / Capability: SIA 1 study-platform dataset
 - **Purpose**: Supply the React platform with content covering the same course modules as the zero-build reviewer.
 - **Data Shapes**: `subjectMeta`, `topics[]`, `glossary[]`, `flashcards[]`, `questions[]` from `src/types/study.ts`.
-- **Coverage**: Ten topics in syllabus order — EIA, IT Governance, Information and Data Modelling, SOA, Microservice Architecture, Data Representation (XML and JSON), Web Services (SOAP/WSDL/UDDI), EAI, Middleware, and Cloud Computing.
-- **Totals**: 10 topics, 45 glossary terms, 26 flashcards, 15 adaptive questions.
+- **Coverage**: Seventeen topics in syllabus order — EIA, IT Governance, Information and Data Modelling, SOA, Microservice Architecture, Data Representation (XML and JSON), Web Services (SOAP/WSDL/UDDI), EAI, Middleware, Cloud Computing, Principles of Project Management, Technopreneurship and Project Delivery, Project Reporting and Documentation, API Architecture (REST/SOAP/GraphQL), Performance and Stress Testing, Multi-Tier Architecture and Deployment, and XML Processing and Schema Validation.
+- **Totals**: 17 topics, 83 glossary terms, 40 flashcards, 26 adaptive questions.
 - **Operational Mechanics**: `topics` is declared before `subjectMeta` so `topicCount` and `estimatedHours` are derived from the topic list and cannot drift. `subject-data-tests.js` enforces that invariant for every subject.
-- **Scope Note**: A pre-existing "RESTful APIs & GraphQL" topic was replaced. GraphQL does not appear anywhere in the supplied course materials; REST is retained where the middleware module actually mentions it.
+- **Scope Note — corrected 2026-08-18**: An earlier note here recorded that a pre-existing "RESTful APIs & GraphQL" topic had been removed because *"GraphQL does not appear anywhere in the supplied course materials."* **That justification was wrong.** Canvas page 5.3 of IT 009-IT31S7 teaches REST, SOAP, **and** GraphQL explicitly. The removal has been reversed: `sia1-api-architecture` now covers all three styles plus gRPC, the Richardson maturity model, idempotency, versioning, and OAuth 2.0 / JWT, cited to RFC 9110, the OpenAPI Specification, the GraphQL Specification, RFC 6749, and RFC 7519. Treat coverage claims of the form "X does not appear in the course materials" as requiring a source-by-source check before acting on them.
 
 # Project Handover — Mobile Computing Modern JavaScript and Web Forms Integration
 _Generated: 2026-08-09 · For: subsequent LLM session_
