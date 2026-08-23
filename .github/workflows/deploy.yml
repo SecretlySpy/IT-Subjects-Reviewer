@@ -60,17 +60,29 @@ jobs:
         env:
           SITE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
-          # Cache-busting plus retries allows the Pages edge cache to converge.
-          for attempt in {1..6}; do
-            # Keep curl inside an if condition so Bash's fail-fast mode still
-            # permits the next retry after a transient edge/network failure.
-            if html="$(curl --fail --silent --show-error "${SITE_URL}?deployment=${GITHUB_SHA}&attempt=${attempt}")" &&
-              grep -q '/assets/' <<< "$html" && ! grep -q '/src/main.tsx' <<< "$html"; then
-              echo "Production entry point references the compiled bundle."
-              exit 0
+          # A competing "pages build and deployment" run can overwrite this
+          # artifact seconds later, so settle first and then re-check. Verifying
+          # immediately after upload reports success on a site that is already
+          # about to be replaced.
+          sleep 45
+
+          for attempt in {1..8}; do
+            if html="$(curl --fail --silent --show-error "${SITE_URL}?deployment=${GITHUB_SHA}&attempt=${attempt}")"; then
+              # Source files can only be reachable when Pages is publishing the
+              # repository root from a branch instead of this artifact.
+              leak="$(curl --silent --output /dev/null --write-out '%{http_code}' "${SITE_URL}package.json?attempt=${attempt}")"
+
+              if grep -q '/assets/' <<< "$html" && ! grep -q '/src/main.tsx' <<< "$html" && [ "$leak" != "200" ]; then
+                echo "Production entry point references the compiled bundle."
+                exit 0
+              fi
+
+              if [ "$leak" = "200" ]; then
+                echo "Attempt ${attempt}: repository source is reachable — a branch build is overwriting this deployment."
+              fi
             fi
-            sleep 10
+            sleep 15
           done
 
-          echo "::error::GitHub Pages is not serving the compiled artifact. In Settings > Pages, set Source to GitHub Actions."
+          echo "::error::GitHub Pages is serving the repository root, not this artifact. A 'pages build and deployment' run is competing with this workflow. In Settings > Pages > Build and deployment, set Source to 'GitHub Actions' (not 'Deploy from a branch'), then re-run this workflow."
           exit 1

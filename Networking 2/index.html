@@ -1054,7 +1054,9 @@
 
     .flow {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      /* auto-fit rather than a fixed 5 columns: topics now carry a variable
+         number of flow steps, and a hardcoded track count strands the extras. */
+      grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
       gap: 0.6rem;
     }
 
@@ -1070,6 +1072,53 @@
       transform: translateY(-3px);
       border-color: color-mix(in srgb, var(--green) 34%, var(--line));
       background: color-mix(in srgb, var(--green) 10%, var(--panel));
+    }
+
+    /* Rich lesson blocks. Ported from Mobile Computing/index.html so the two
+       zero-build reviewers render the same objectives/callout/sources contract.
+       Palette tokens are remapped to this reviewer's light theme. */
+    .lesson-blocks {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .lesson-code,
+    .lesson-callout,
+    .lesson-sources {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      padding: 1rem;
+    }
+
+    .lesson-code pre {
+      max-width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius);
+      background: #0b1220;
+      padding: 1rem;
+      color: #e2e8f0;
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+
+    .lesson-code code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    /* The tone bar is a redundant cue: each callout also names its kind in the
+       heading text, so colour is never the sole carrier of meaning. */
+    .lesson-callout[data-tone="warning"] { border-left: 4px solid var(--amber); }
+    .lesson-callout[data-tone="security"] { border-left: 4px solid var(--rose); }
+    .lesson-callout[data-tone="note"] { border-left: 4px solid var(--blue); }
+
+    .lesson-sources a {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      color: var(--cyan);
+      text-underline-offset: 0.2em;
     }
 
     .flow-step strong {
@@ -2036,6 +2085,41 @@
       attachRevealEffects($("#topicCards"));
     }
 
+    /**
+     * Render optional rich lesson blocks while escaping every data value.
+     *
+     * Ported from Mobile Computing/index.html so both zero-build reviewers honour
+     * the same optional contract (objectives / lessonBlocks / sources) that
+     * html-diagnostics.js already validates. Networking 2 uses it to carry
+     * corrections and cited supplements that are not in the lecture decks.
+     *
+     * @param {object} topic - Topic that may contain objectives, blocks, and sources.
+     * @returns {string} Safe HTML assembled from escaped text, or "" when absent.
+     */
+    function renderLessonEnhancements(topic) {
+      const objectives = Array.isArray(topic.objectives) && topic.objectives.length
+        ? `<section><h3>Learning objectives</h3><ul class="fact-list">${topic.objectives.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></section>`
+        : "";
+      const blocks = Array.isArray(topic.lessonBlocks)
+        ? topic.lessonBlocks.map((block) => {
+            if (block.kind === "code") {
+              return `<section class="lesson-code"><h3>${escapeHtml(block.title)}</h3><pre tabindex="0" aria-label="${escapeHtml(block.title)} code example"><code>${escapeHtml(block.code)}</code></pre><p>${escapeHtml(block.caption)}</p></section>`;
+            }
+            if (block.kind === "callout") {
+              return `<section class="lesson-callout" data-tone="${escapeHtml(block.tone)}"><h3>${escapeHtml(block.title)}</h3><p>${escapeHtml(block.text)}</p></section>`;
+            }
+            // Unknown kinds render nothing rather than injecting undefined text.
+            return "";
+          }).join("")
+        : "";
+      const references = Array.isArray(topic.sources) && topic.sources.length
+        ? `<section class="lesson-sources"><h3>Sources and further reading</h3><ul>${topic.sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer" aria-label="${escapeHtml(`${source.publisher}: ${source.title} (opens in a new tab)`)}">${escapeHtml(source.publisher)}: ${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul></section>`
+        : "";
+      return objectives || blocks || references
+        ? `<div class="lesson-blocks">${objectives}${blocks}${references}</div>`
+        : "";
+    }
+
     // Render the sticky detail panel for the active topic with its three tabbed
     // panes (overview / compare / flow). The "Mark studied" button toggles
     // coverage, persists, and fans out re-renders to cards, detail, and progress.
@@ -2098,6 +2182,8 @@
             </div>
           </div>
         </div>
+
+        ${renderLessonEnhancements(topic)}
       `;
 
       $$(".detail-tab", $("#topicDetail")).forEach((button) => {

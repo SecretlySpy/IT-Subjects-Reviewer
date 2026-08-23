@@ -286,6 +286,42 @@ async function main() {
   window.location.hash = "#/subject/networking2";
   await flush(window);
   await flush(window);
+
+  // The Networking 2 syllabus follows the course unit order, so unit 1.1 is the
+  // topic selected on arrival. Select topics by name rather than relying on
+  // whichever one happens to be first.
+  assert(
+    Boolean(findByText(document, "button", "Computer Networks and the Internet")),
+    "the Networking 2 syllabus opens on the first course unit"
+  );
+  assert(
+    Boolean(findByText(document, "button", "Network Layer Security, IPsec, Firewalls, and IDS")),
+    "the syllabus lists the final security unit, so all 15 units are present"
+  );
+
+  // The generic network diagrams are data-driven, so one assertion per renderer
+  // family guards the registration chain: data -> dispatcher -> component.
+  assert(
+    Boolean(findByText(document, "h3", "Where a packet spends its time")),
+    "the opening unit renders its path-chain diagram"
+  );
+
+  findByText(document, "button", "Data Link Layer Control, Packetizing, and Error Detection").click();
+  await flush(window);
+  assert(
+    Boolean(findByText(document, "h3", "The three families of multiple access protocol")),
+    "the data link unit renders its hierarchy diagram"
+  );
+
+  findByText(document, "button", "Wireless Networks and Wi-Fi").click();
+  await flush(window);
+  assert(
+    Boolean(findByText(document, "h3", "The hidden terminal problem")),
+    "the wireless unit renders its radio-range diagram"
+  );
+
+  findByText(document, "button", "Reliable Data Transfer and TCP Control").click();
+  await flush(window);
   assert(Boolean(findByText(document, "h3", "TCP three-way handshake")), "the TCP topic renders the complete handshake visual");
   findByText(document, "button", "Start").click();
   await flush(window, 1);
@@ -317,7 +353,40 @@ async function main() {
       Boolean(findByText(document, "button", "Validation, Accessibility, and Safe DOM Output")),
     "the syllabus lists all three enriched web-form lessons"
   );
+  assert(
+    Boolean(findByText(document, "h3", "The three concepts of mobile computing")),
+    "the syllabus opens on the mobile foundations topic"
+  );
+
+  // Select every topic by name rather than relying on the default selection, so
+  // reordering the syllabus cannot silently change what these assertions cover.
+  findByText(document, "button", "Evolution and Device Classification").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "Five generations of mobile networks")), "the evolution topic renders 1G through 5G");
+
+  findByText(document, "button", "Android Activity Lifecycle").click();
+  await flush(window);
   assert(Boolean(findByText(document, "h3", "Android activity lifecycle")), "the lifecycle topic renders callback order and return paths");
+
+  findByText(document, "button", "JavaScript Engines and Execution").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "How an engine executes your script")), "the engine topic renders the parse-to-machine-code pipeline");
+
+  findByText(document, "button", "Data Types, Variables, and Coercion").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "The JavaScript type system")), "the types topic renders the primitive versus object split");
+
+  findByText(document, "button", "Functions, Objects, and this").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "What this refers to, by call site")), "the functions topic renders all four this bindings");
+
+  findByText(document, "button", "Progressive Web Apps and Offline").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "A service worker intercepting a request")), "the PWA topic renders service worker fetch interception");
+
+  findByText(document, "button", "Mobile Performance, Responsiveness, and Security").click();
+  await flush(window);
+  assert(Boolean(findByText(document, "h3", "Core Web Vitals and their \"good\" thresholds")), "the performance topic renders all three Core Web Vitals");
 
   findByText(document, "button", "Mobile Sensors and Context").click();
   await flush(window);

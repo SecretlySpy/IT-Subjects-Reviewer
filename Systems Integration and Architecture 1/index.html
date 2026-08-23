@@ -913,6 +913,49 @@
       padding: clamp(1rem, 4vw, 2rem);
     }
 
+    /* Rich lesson enhancements, mapped onto this reviewer's warm light palette. */
+    .lesson-blocks {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .lesson-code,
+    .lesson-callout,
+    .lesson-sources {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-2);
+      padding: 1rem;
+    }
+
+    .lesson-code pre {
+      max-width: 100%;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: #101a19;
+      padding: 1rem;
+      color: #e6efec;
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+
+    .lesson-code code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .lesson-callout[data-tone="warning"] { border-left: 4px solid var(--amber); }
+    .lesson-callout[data-tone="security"] { border-left: 4px solid var(--rose); }
+    .lesson-callout[data-tone="note"] { border-left: 4px solid var(--blue); }
+
+    .lesson-sources a {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      color: var(--teal);
+      text-underline-offset: 0.2em;
+    }
+
     .compare-table {
       width: 100%;
       border-collapse: collapse;
@@ -1796,6 +1839,34 @@
     }
 
     /**
+     * Render optional rich lesson blocks while escaping every data value.
+     * @param {object} topic - Topic that may carry objectives, blocks, and sources.
+     * @returns {string} Safe HTML assembled from escaped text.
+     */
+    function renderLessonEnhancements(topic) {
+      const objectives = Array.isArray(topic.objectives) && topic.objectives.length
+        ? `<section><h3>Learning objectives</h3><ul>${topic.objectives.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></section>`
+        : "";
+      const blocks = Array.isArray(topic.lessonBlocks)
+        ? topic.lessonBlocks.map((block) => {
+            if (block.kind === "code") {
+              return `<section class="lesson-code"><h3>${escapeHtml(block.title)}</h3><pre tabindex="0" aria-label="${escapeHtml(block.title)} code example"><code>${escapeHtml(block.code)}</code></pre><p>${escapeHtml(block.caption)}</p></section>`;
+            }
+            if (block.kind === "callout") {
+              return `<section class="lesson-callout" data-tone="${escapeHtml(block.tone)}"><h3>${escapeHtml(block.title)}</h3><p>${escapeHtml(block.text)}</p></section>`;
+            }
+            return "";
+          }).join("")
+        : "";
+      const references = Array.isArray(topic.sources) && topic.sources.length
+        ? `<section class="lesson-sources"><h3>Sources and further reading</h3><ul>${topic.sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer" aria-label="${escapeHtml(`${source.publisher}: ${source.title} (opens in a new tab)`)}">${escapeHtml(source.publisher)}: ${escapeHtml(source.title)} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul></section>`
+        : "";
+      return objectives || blocks || references
+        ? `<div class="lesson-blocks">${objectives}${blocks}${references}</div>`
+        : "";
+    }
+
+    /**
      * Render a full topic guide in the native accessible dialog.
      * @param {string} topicId - Topic identifier to display.
      * @param {boolean} show - Whether to open a closed dialog.
@@ -1835,6 +1906,7 @@
         <div class="flow-list">
           ${topic.flow.map(([label, text]) => `<div class="flow-item"><strong>${escapeHtml(label)}</strong>${escapeHtml(text)}</div>`).join("")}
         </div>
+        ${renderLessonEnhancements(topic)}
         <div class="button-row" style="margin-top: 1.25rem">
           <button class="btn primary" type="button" data-dialog-studied="${escapeHtml(topic.id)}">
             ${state.studied.has(topic.id) ? "Mark unstudied" : "Mark studied"}

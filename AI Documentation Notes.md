@@ -5,18 +5,68 @@
 - **Inputs**: None.
 - **Outputs**: `globalThis.reviewerData` containing `topics`, `glossary`, `flashcards`, `practiceTests`, `pathSteps`, and `studySteps`.
 - **Dependencies**: JavaScript global scope.
-- **Behavior**: Declares 15 topics, 293 glossary entries, 300 flashcards, 15 practice tests with 450 questions, five packet-path steps, and four study steps, then exposes them as one object.
+- **Behavior**: Declares 15 topics, 620 glossary entries, 300 flashcards, 15 practice tests with 450 questions, five packet-path steps, and four study steps, then exposes them as one object.
 - **Side Effects**: Assigns `globalThis.reviewerData`.
+- **Verification Status**: tested — `node html-diagnostics.js` validates counts, shapes, identifier uniqueness, and answer indexes. Content accuracy is reasoned and source-checked against primary specifications, not executable-tested.
 
 ## Feature / Capability: Networking content model
 - **Purpose**: Provide one data source for the offline HTML reviewer and React reference component.
 - **Data Shapes**:
-  - `topics[]`: `{ id, unit, title, color, subtitle, beginner, terms[], keyPoints[], compare, flow[] }`.
+  - `topics[]`: `{ id, unit, title, color, subtitle, beginner, terms[], keyPoints[], compare, flow[], objectives?[], lessonBlocks?[], sources?[] }`.
   - `glossary[]`: `[term, definition]`.
   - `flashcards[]`: `{ topic, front, back }`.
   - `practiceTests[]`: `{ title, description, questions[] }`.
   - `questions[]`: `{ q, options[], answer, explain }`.
 - **Operational Mechanics**: The classic script runs before either consumer reads `globalThis.reviewerData`.
+
+## Feature / Capability: Lecture-deck reconciliation (2026-08-17)
+- **Purpose**: Bring the reviewer into alignment with the 16 supplied Networking 2 lecture decks, and surface corrections where the decks are wrong or stale.
+- **What changed**:
+  - All 15 topics expanded from a uniform 20 terms / 5 key points / 3 compare rows to 640 terms total, 15–20 key points each, and 7–9 compare rows each.
+  - Glossary grew 293 → 620 entries. **Every one of the 640 topic terms now resolves to a glossary definition**; there are no duplicates.
+  - All 15 topics now carry `objectives`, `lessonBlocks`, and `sources` (40 cited HTTPS references to IETF, NIST, IEEE, Bluetooth SIG, 3GPP, Wi-Fi Alliance, and root-servers.org).
+- **Annotation convention (superseded 2026-08-17)** — corrections were originally surfaced as `warning` / `security` / `note` callouts inside `lessonBlocks`. **At the user's request these were removed from the student-facing lessons**: all 49 callouts in `Networking 2/data.js` and all 25 in `src/subjects/networking2/data.ts`. The corrections themselves are unchanged and still recorded in `docs/networking2/CONTENT-REVIEW.md`, which remains the single source of truth for the audit.
+  - Vanilla topics now carry `objectives` + `sources` only; `lessonBlocks` was dropped entirely, so `checkLessonEnhancements` in `html-diagnostics.js` now treats `lessonBlocks` as optional (it must still be non-empty and renderable when present).
+  - SPA topics keep their `paragraph` and `list` blocks — worked examples and step lists, which are teaching content rather than commentary on the source decks.
+- **Constraint**: the vanilla `lessonBlocks` validator in `html-diagnostics.js` accepts **only** `kind: "code"` and `kind: "callout"`. A `paragraph` or `list` block is valid in the SPA schema but fails here.
+- **Audit trail**: `docs/networking2/CONTENT-REVIEW.md` records the deck↔unit mapping, two truncated decks, 18 severity-tagged factual findings, and the coverage-gap manifest.
+- **Verification Status**: tested (structure) + source-verified (facts). The 11 correction claims in CONTENT-REVIEW Table 3 were each confirmed against a primary source on 2026-08-17.
+
+## Assessment rebuild (2026-08-17)
+- **All 15 practice tests were rewritten from scratch.** The previous 450 questions were machine-generated from glossary definitions; the replacements are authored.
+- **Measured before → after**: `explain` field a verbatim copy of the correct option **450 → 0**; `What is X?` stems **339 → 48** (the 48 that remain are genuine vocabulary items); unique stems **442 → 450**.
+- Each test keeps 30 questions and now mixes concept recall, applied computation (L/R transmission delay, Bellman-Ford, one's complement checksum, VLSM allocation, longest prefix match), and scenario diagnosis. Distractors are drawn from the same unit so they are not eliminable without domain knowledge.
+- **Flashcards 300 → 627.** The 327 added cards were derived deterministically from the authored glossary definitions (term → definition), which is the correct form for vocabulary spaced repetition. Seven duplicate fronts exist and are **pre-existing and intentional**: terms belonging to two topics get one card per topic so both topic filters show them.
+
+## Source decks (2026-08-17)
+- All 16 lecture decks are committed under `docs/networking2-source-slides/`, with a README recording provenance, the OCR-damage failure modes, and the deck↔unit mapping.
+- **They are under `docs/`, not inside `Networking 2/`, on purpose.** `vite.config.ts` copies each reviewer directory into `dist/` recursively, so placing them in the reviewer folder would publish ~330 KB of lecture text to GitHub Pages.
+- **Fidelity caveat**: these were reconstructed from the decks as supplied to the authoring session, not copied from original files on disk. They deliberately preserve the extraction damage (mojibake bullets, shredded tables, `RFC 531`, `625 msec`) because that corruption is what the audit depends on being visible. If the original PDF/PPTX files surface, they should replace these.
+
+## Deployment failure mode — "The reviewer could not start" (diagnosed 2026-08-17)
+- **Symptom**: the published site renders the boot fallback in the root `index.html` instead of the app.
+- **Root cause**: GitHub Pages was publishing the **repository root from a branch**, not the GitHub Actions `dist/` artifact. Confirmed live: `/src/main.tsx`, `/package.json`, and `/vite.config.ts` all returned 200 while `/assets/index-*.js` returned 404. The browser receives uncompiled TypeScript with a non-JavaScript MIME type, refuses to execute the module script, the capture-phase `error` listener fires, and the fallback replaces the boot screen.
+- **This is a repository setting, not a code defect.** The build, `vite.config.ts` base handling, the workflow, and `dist/` were all correct throughout. Fix: **Settings → Pages → Build and deployment → Source: `GitHub Actions`**, then re-run the deploy workflow.
+- **Why the test suite did not catch it**: `spa-smoke-tests.js` re-bundles the app *from source* as a classic script for JSDOM (JSDOM cannot execute `<script type="module">`), and `deployment-diagnostics.js` validates the local `dist/` on disk. Neither observes the deployed site. `deployment-live-check.js` closes that gap.
+- **Confirmed 2026-08-18 via the GitHub REST API**: two publishers run on every push at the same second — our `Deploy to GitHub Pages` workflow *and* GitHub's automatic `pages build and deployment`. That automatic workflow only exists when Pages Source is "Deploy from a branch"; it publishes the repository root and overwrites the uploaded artifact. Only `main` exists — there is no stale `gh-pages` branch.
+- **Workflow defect, fixed**: the `Verify deployed entry point` step reported success on a broken site. It checked immediately after `deploy-pages` finished, before the competing branch build replaced the content — a race that produced false confidence. It now waits 45 s, retries 8 times, and additionally asserts that `package.json` is **not** reachable, which is the unambiguous signature of branch-root publishing.
+- **Related repo defect, fixed**: five `dist/` files were tracked in git despite `dist/` being gitignored, and they referenced asset hashes that were never committed. Under branch publishing they were served as a second, broken copy of the app. Now untracked via `git rm --cached -r dist`.
+
+# Module / File: deployment-live-check.js
+
+## Function: main
+- **Purpose**: Verify what GitHub Pages actually serves, as distinct from what the local build contains.
+- **Inputs**: `process.argv[2]` (optional site URL; defaults to this project's Pages URL).
+- **Outputs**: `void`; sets `process.exitCode = 1` on any failed assertion.
+- **Dependencies**: global `fetch` (Node 18+).
+- **Behavior**: Fetches the entry document with a cache-busting query, asserts it references a compiled `/assets/` bundle and **not** `/src/main.tsx`, probes every referenced asset for a 200, then probes `package.json`, `vite.config.ts`, and `src/main.tsx` — any of which returning 200 proves branch-root publishing. Prints a named diagnosis with the exact setting to change.
+- **Side Effects**: Network requests only; writes nothing.
+- **Security Notes**: Read-only probes of a public URL. The source-exposure check doubles as a disclosure warning — branch publishing exposes the entire repository.
+- **Verification Status**: tested — executed against the live site, correctly identified branch-root publishing.
+
+## Known remaining work
+- **Two truncated decks** (transport 2.1, network layer 2.2) still lack their later slides. Flagged for the instructor in CONTENT-REVIEW Table 2; not resolvable from this side.
+- **No headless-browser test** exercises the production ESM bundle. JSDOM cannot run module scripts, so the suite verifies app logic from source and artifact integrity on disk, but never boots `dist/` in a real engine. Adding Playwright would close this; `npm run check:live` covers the deployed case in the meantime.
 
 # Module / File: Networking 2/index.html
 
@@ -136,13 +186,28 @@
 - **Behavior**: Filters topics, replaces card markup, binds open/mark actions, and attaches reveals.
 - **Side Effects**: Replaces DOM and registers listeners.
 
+## Function: renderLessonEnhancements
+- **Purpose**: Render a topic's optional objectives, lesson blocks, and cited sources as escaped HTML.
+- **Inputs**:
+  - `topic` (`object`): a topic that may carry `objectives[]`, `lessonBlocks[]`, and `sources[]`.
+- **Outputs**: `string` — safe HTML, or `""` when the topic carries none of the three.
+- **Dependencies**: `escapeHtml`.
+- **Behavior**: Emits an objectives list, then one section per lesson block (`code` renders a keyboard-scrollable `<pre>`; `callout` renders a `data-tone` bar; unknown kinds render nothing), then a source list. Wraps the result in `.lesson-blocks`.
+- **Side Effects**: None — pure string builder.
+- **DSA Used**: Linear map/join over each array, O(n) in total block count.
+- **Responsive & Accessibility Notes**: Source links get `min-height: 44px` and an `aria-label` announcing the new tab. Callout tone bars are decorative only — every callout also names its kind in the heading, so colour never carries meaning alone. Code blocks are `tabindex="0"` so keyboard users can scroll them.
+- **Security Notes**: Every interpolated value passes through `escapeHtml`, including `source.url` and `block.tone`, so authored content cannot inject markup.
+- **Provenance**: Ported verbatim from `Mobile Computing/index.html` so both zero-build reviewers honour the same optional contract. Palette tokens remapped to this reviewer's light theme (`--panel-soft`, `--cyan`).
+- **Verification Status**: tested — `node html-diagnostics.js` validates the data contract; rendering confirmed by the same lesson-block assertions the Mobile reviewer uses.
+
 ## Function: renderTopicDetail
 - **Purpose**: Render the selected topic’s explanation, comparison, flow, and terms.
 - **Inputs**: None.
 - **Outputs**: `void`.
-- **Dependencies**: `state.activeTopic`, `topics`, `escapeHtml`, DOM.
-- **Behavior**: Projects the active topic and detail tab into the detail panel.
+- **Dependencies**: `state.activeTopic`, `topics`, `escapeHtml`, `renderLessonEnhancements`, DOM.
+- **Behavior**: Projects the active topic and detail tab into the detail panel, then appends lesson enhancements **outside** the tab panes so corrections stay visible on every tab.
 - **Side Effects**: Replaces DOM and binds tab/study controls.
+- **Responsive & Accessibility Notes**: `.flow` uses `repeat(auto-fit, minmax(9.5rem, 1fr))` rather than a fixed five columns, because topics now carry a variable number of flow steps. The existing 2-column and 1-column media queries still override it.
 
 ## Function: renderProgress
 - **Purpose**: Update Networking 2 completion statistics.
@@ -1655,15 +1720,31 @@ ecordQuizAnswer, updateTopicMastery, and incrementStreak.
 - **Side Effects**: None beyond routing and focus management.
 - **Correction Note**: The mastery rings (45/12/80), the "42%" overall figure, and the "5 day streak" were previously hard-coded literals.
 
+# Module / File: src/subjects/networking2/data.ts
+
+## Feature / Capability: Networking 2 study-platform dataset
+- **Purpose**: Supply the React platform with the same 15-unit syllabus the zero-build reviewer teaches.
+- **Data Shapes**: `subjectMeta`, `topics[]`, `glossary[]`, `flashcards[]`, `questions[]` from `src/types/study.ts`.
+- **Coverage**: Fifteen topics in course-unit order — Internet overview, application layer, transport fundamentals, TCP reliability, network-layer data plane, routing algorithms, OSPF/BGP, network management, data link control, LANs and VLANs, link virtualization, wireless, mobile networks, security and cryptography, and network-layer security.
+- **Totals**: 15 topics, 73 glossary terms, 40 flashcards, 30 adaptive questions.
+- **Operational Mechanics**: `topics` is declared before `subjectMeta` so `topicCount` and `estimatedHours` are derived. This replaced a hardcoded `topicCount: 4` / `estimatedHours: 12`, the latter of which contradicted its own topics (235 min ≈ 3.9 h).
+- **Visual aids**: **all 15 topics render a diagram** (no topic uses the generic `table` aid any more). Two reuse the pre-existing renderers (`tcp-handshake`, `ospf-areas`); the other 13 use seven new generic, data-driven renderers in `src/components/diagrams/NetworkDiagrams.tsx`: `path-chain`, `layer-stack`, `tree-hierarchy`, `field-layout`, `weighted-graph`, `actor-flow`, `radio-range`. Each is driven entirely by `visualAidData`, so one component serves several topics.
+- **Adding a diagram type requires three registrations**: the component (`NetworkDiagrams.tsx` or `TopicVisuals.tsx`), the dispatcher branch in `src/study-engine/professor-mode.tsx`, and the `diagramFields` map in `subject-data-tests.js` (which names the `visualAidData` field the renderer needs). Missing any one fails the "populated visual aid with a registered renderer" assertion.
+- **Accessibility of the diagrams**: each is wrapped in `VisualFrame`, which pairs a `<figure>` with `aria-labelledby`/`aria-describedby`. Arrows are `aria-hidden`; no state is signalled by colour alone (every coloured node also carries a text label); `path-chain` reflows from a horizontal row to a vertical stack below the `sm` breakpoint.
+- **Rich lessons**: every topic supplies all three of `learningObjectives`, `lessonBlocks`, and `sources` — the validator treats a partial set as invalid. Unlike the vanilla reviewer, the SPA schema also accepts `paragraph` and `list` blocks, which are used here.
+- **Scope Note**: This replaced a 4-topic CCNA-flavored dataset covering roughly a quarter of the syllabus. Its VLSM material had no lecture-deck source; it is retained as a labelled beyond-deck supplement inside the network-layer topic rather than as a standalone topic.
+- **Test coupling**: `spa-smoke-tests.js` selects topics by name before asserting their visuals, because unit 1.1 — not the TCP topic — is now the default selection on arrival.
+- **Verification Status**: tested — `subject-data-tests.js` and `spa-smoke-tests.js` both pass; `tsc -b` compiles. Content accuracy is reasoned and source-checked, not executable-tested.
+
 # Module / File: src/subjects/sia1/data.ts
 
 ## Feature / Capability: SIA 1 study-platform dataset
 - **Purpose**: Supply the React platform with content covering the same course modules as the zero-build reviewer.
 - **Data Shapes**: `subjectMeta`, `topics[]`, `glossary[]`, `flashcards[]`, `questions[]` from `src/types/study.ts`.
-- **Coverage**: Ten topics in syllabus order — EIA, IT Governance, Information and Data Modelling, SOA, Microservice Architecture, Data Representation (XML and JSON), Web Services (SOAP/WSDL/UDDI), EAI, Middleware, and Cloud Computing.
-- **Totals**: 10 topics, 45 glossary terms, 26 flashcards, 15 adaptive questions.
+- **Coverage**: Seventeen topics in syllabus order — EIA, IT Governance, Information and Data Modelling, SOA, Microservice Architecture, Data Representation (XML and JSON), Web Services (SOAP/WSDL/UDDI), EAI, Middleware, Cloud Computing, Principles of Project Management, Technopreneurship and Project Delivery, Project Reporting and Documentation, API Architecture (REST/SOAP/GraphQL), Performance and Stress Testing, Multi-Tier Architecture and Deployment, and XML Processing and Schema Validation.
+- **Totals**: 17 topics, 83 glossary terms, 40 flashcards, 26 adaptive questions.
 - **Operational Mechanics**: `topics` is declared before `subjectMeta` so `topicCount` and `estimatedHours` are derived from the topic list and cannot drift. `subject-data-tests.js` enforces that invariant for every subject.
-- **Scope Note**: A pre-existing "RESTful APIs & GraphQL" topic was replaced. GraphQL does not appear anywhere in the supplied course materials; REST is retained where the middleware module actually mentions it.
+- **Scope Note — corrected 2026-08-18**: An earlier note here recorded that a pre-existing "RESTful APIs & GraphQL" topic had been removed because *"GraphQL does not appear anywhere in the supplied course materials."* **That justification was wrong.** Canvas page 5.3 of IT 009-IT31S7 teaches REST, SOAP, **and** GraphQL explicitly. The removal has been reversed: `sia1-api-architecture` now covers all three styles plus gRPC, the Richardson maturity model, idempotency, versioning, and OAuth 2.0 / JWT, cited to RFC 9110, the OpenAPI Specification, the GraphQL Specification, RFC 6749, and RFC 7519. Treat coverage claims of the form "X does not appear in the course materials" as requiring a source-by-source check before acting on them.
 
 # Project Handover — Mobile Computing Modern JavaScript and Web Forms Integration
 _Generated: 2026-08-09 · For: subsequent LLM session_

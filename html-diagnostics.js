@@ -38,10 +38,12 @@ const REVIEWERS = [
       "glossary",
       "glossaryGrid",
     ],
+    // Counts are derived from the shipped data.js, not estimated. After any
+    // content change, re-derive them before committing or this suite fails.
     expectedCounts: {
       topics: 15,
-      glossary: 293,
-      flashcards: 300,
+      glossary: 620,
+      flashcards: 627,
       practiceTests: 15,
       questions: 450,
     },
@@ -66,18 +68,18 @@ const REVIEWERS = [
       "referenceList",
     ],
     expectedCounts: {
-      modules: 10,
-      topics: 28,
-      glossary: 200,
-      glossaryEntries: 200,
-      flashcards: 200,
-      practiceTests: 10,
-      questions: 200,
+      modules: 15,
+      topics: 35,
+      glossary: 300,
+      glossaryEntries: 300,
+      flashcards: 300,
+      practiceTests: 15,
+      questions: 300,
       blueprintStages: 4,
       modelLayers: 3,
       scenarios: 39,
       studySteps: 4,
-      references: 7,
+      references: 23,
     },
   },
   {
@@ -99,16 +101,16 @@ const REVIEWERS = [
       "glossaryGrid",
     ],
     expectedCounts: {
-      modules: 3,
-      topics: 10,
-      glossary: 22,
-      flashcards: 17,
-      practiceTests: 3,
-      questions: 10,
+      modules: 5,
+      topics: 16,
+      glossary: 54,
+      flashcards: 32,
+      practiceTests: 5,
+      questions: 25,
       blueprintStages: 5,
       modelLayers: 3,
       modelMatchItems: 6,
-      scenarios: 5,
+      scenarios: 9,
       studySteps: 4,
     },
   },
@@ -400,19 +402,39 @@ function checkSharedDataShapes(data) {
  * @param {object} data - Evaluated reviewer data.
  * @returns {boolean[]} Individual diagnostic outcomes.
  */
+// Languages a lesson code block may declare. Extend deliberately: the point of
+// the list is that an unrecognised value is reported rather than rendered blind.
+const LESSON_CODE_LANGUAGES = [
+  "html",
+  "javascript",
+  "xml",
+  "java",
+  "bash",
+  "http",
+  "graphql",
+  "sql",
+  "json",
+  "text",
+];
+
 function checkLessonEnhancements(data) {
   const enriched = data.topics.filter(
     (topic) => topic.objectives || topic.lessonBlocks || topic.sources
   );
   if (!enriched.length) return [];
   const results = [];
+  // lessonBlocks is optional: a topic may carry objectives and sources alone.
+  // When present it must still be non-empty and every block must be renderable.
   const validBlocks = enriched.every(
     (topic) =>
       Array.isArray(topic.objectives) && topic.objectives.length > 0 &&
-      Array.isArray(topic.lessonBlocks) && topic.lessonBlocks.length > 0 &&
-      topic.lessonBlocks.every((block) => {
+      (topic.lessonBlocks === undefined ||
+        (Array.isArray(topic.lessonBlocks) && topic.lessonBlocks.length > 0)) &&
+      (topic.lessonBlocks ?? []).every((block) => {
         if (block.kind === "code") {
-          return ["html", "javascript"].includes(block.language) &&
+          // An allowlist rather than a free string, so a typo still fails, but
+          // wide enough for the non-web subjects that now ship code lessons.
+          return LESSON_CODE_LANGUAGES.includes(block.language) &&
             typeof block.code === "string" && block.code.trim() &&
             typeof block.caption === "string" && block.caption.trim();
         }
