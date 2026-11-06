@@ -686,6 +686,89 @@ const { data } = await response.json();`,
     relatedTermIds: ['term-well-formed', 'term-valid-xml', 'term-dtd-vs-xsd', 'term-dom-parser', 'term-sax-parser', 'term-xpath', 'term-xxe'],
     tags: ['xml', 'schema', 'parsing', 'security'],
   },
+  {
+    id: 'sia1-maintenance-documentation',
+    subjectId: 'sia1',
+    title: 'Project Reporting and Maintenance Documentation',
+    order: 18,
+    estimatedMinutes: 45,
+    professorMode: {
+      eli5: 'While initial project reporting tracks whether you will finish building on time and within budget, maintenance documentation is the instruction manual and service log that keeps the system running safely for years after launch. It guides engineers through fixing defects, scheduling upgrades, and rolling back changes if an update causes errors.',
+      deepDive: 'Software systems enter maintenance immediately upon production release, often consuming over 70% of total lifecycle cost. Maintenance documentation serves a distinct operational purpose from project delivery reporting (SIA-14). While delivery reporting focuses on milestones, burn-down charts, and stakeholder updates toward launch, operational maintenance documentation ensures long-term system stability, incident resolution, and change safety. Software maintenance is classified into four ISO/IEC 14764 categories: (1) Corrective maintenance, diagnosing and resolving discovered defects and production incidents; (2) Preventive maintenance, proactively refactoring code, updating dependencies, and eliminating technical debt before failures manifest; (3) Adaptive maintenance, altering systems to accommodate changes in external environments, such as operating system patches, browser upgrades, cloud platform migrations, or new regulatory standards (e.g. GDPR, PCI-DSS); and (4) Perfective maintenance, introducing feature enhancements, performance optimizations, and user-requested improvements. Operational governance requires formalized Change Management through Requests for Change (RFCs), impact and risk assessments, and Change Advisory Board (CAB) reviews for high-risk changes. Incident reporting requires blameless post-mortems documenting the incident timeline, root cause analysis (using the 5 Whys or Ishikawa fishbone models), customer impact, remediation steps, and prioritized preventive action items. Safe upgrade planning demands versioned documentation (Semantic Versioning), pre-flight database backups, automated regression test suite verification, and unambiguous rollback procedures with quantified execution criteria. Disaster recovery targets are defined by Recovery Time Objective (RTO)—the maximum acceptable duration of system downtime—and Recovery Point Objective (RPO)—the maximum age of data that can be lost following a disaster.',
+      analogy: 'Project reporting is like the blueprints and construction log used while building a commercial skyscraper. Maintenance documentation is the permanent building operations manual, elevator inspection log, fire alarm runbook, and emergency evacuation plan used by building managers for decades after the ribbon is cut.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Maintenance Category', 'Triggering Condition', 'Core Objective', 'System Integration Scenario'],
+        rows: [
+          ['Corrective Maintenance', 'Discovered production defect / incident', 'Restore intended operational state immediately', 'Patching an unhandled null pointer exception in a REST API deserializer'],
+          ['Preventive Maintenance', 'Vulnerability bulletin or technical debt audit', 'Prevent future failures proactively before exploit', 'Upgrading an open-source JSON parser library to eliminate a known security CVE'],
+          ['Adaptive Maintenance', 'External environment, platform, or legal change', 'Maintain compatibility with external world', 'Updating API authentication endpoints to support OAuth 2.1 and revised regulatory data privacy mandates'],
+          ['Perfective Maintenance', 'User feedback, traffic growth, or throughput bottleneck', 'Enhance performance, scalability, and UX', 'Introducing Redis distributed caching into an ESB flow to cut query latency in half during peak load'],
+          ['Incident Post-Mortem', 'Major production outage or SLA breach', 'Identify root cause and prevent recurrence blamelessly', 'Documenting timeline, 5-Whys root cause, and automated alerting remediations for an API gateway timeout'],
+          ['Change Management (CAB)', 'Proposed production deployment or schema migration', 'Assess risk and ensure recovery readiness', 'Submitting an RFC detailing database migration scripts, traffic canary phases, and 10-minute rollback procedure'],
+          ['Disaster Recovery (RTO / RPO)', 'Catastrophic datacenter or hardware failure', 'Restore services within agreed SLA constraints', 'Targeting RTO <= 15 minutes (max downtime) and RPO <= 5 minutes (max transaction data loss)'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Distinguish operational maintenance documentation from project delivery and status reporting.',
+      'Classify software maintenance tasks into corrective, preventive, adaptive, and perfective categories.',
+      'Document blameless incident post-mortems incorporating root cause analysis and remediation items.',
+      'Structure Request for Change (RFC) records with risk assessment, regression testing, and rollback criteria.',
+      'Define operational recovery metrics including Recovery Time Objective (RTO) and Recovery Point Objective (RPO).',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'code',
+        title: 'Production Upgrade and Rollback Runbook',
+        language: 'javascript',
+        code: `// Operational Maintenance Runbook Configuration
+export const maintenancePlan = {
+  service: "Payment Integration Gateway",
+  release: { current: "v2.4.0", target: "v2.5.0" },
+  maintenanceType: "Adaptive & Perfective", // TLS 1.3 + Redis cache
+  rfcId: "RFC-2026-0814",
+  riskLevel: "Tier-1 High",
+  
+  preFlightChecks: [
+    "Database automated snapshot verified (RPO <= 5 min)",
+    "Staging automated regression suite passed (100%)",
+    "CAB approval verified and operational on-call alerted"
+  ],
+  
+  rollbackCriteria: {
+    errorRateThreshold: 0.001, // 0.1% 5xx errors
+    p99LatencyThresholdMs: 800, // 800ms
+    windowMinutes: 3
+  },
+  
+  rollbackProcedure: [
+    "1. Switch load balancer target group back to v2.4.0 instances",
+    "2. Execute rollback SQL migration script: migrate_down.sql",
+    "3. Flush Redis distributed cache cluster",
+    "4. Post incident notification to statuspage and declare recovery"
+  ]
+};`,
+        caption: 'Operational maintenance specifications define explicit pre-flight checks, telemetry thresholds, and rollback steps.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'Distinct from SIA-14 Project Reporting',
+        text: 'SIA-14 covers project delivery reporting (milestones, burn-down charts, project budget, and stakeholder updates toward launch). SIA-19 covers operational maintenance documentation (incident post-mortems, the four maintenance types, change requests, runbooks, regression testing, and rollback safety for running systems).',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'RTO vs RPO Metrics',
+        text: 'Recovery Time Objective (RTO) defines the maximum tolerable duration of downtime. Recovery Point Objective (RPO) defines the maximum tolerable age of lost data. A financial payment service typically demands RTO <= 15 minutes and RPO <= 5 minutes.',
+      },
+    ],
+    sources: [isoPm, pmiStandards, iso25010, sreSlo],
+    relatedTermIds: ['term-sia-corrective-maintenance', 'term-sia-preventive-maintenance', 'term-sia-adaptive-maintenance', 'term-sia-perfective-maintenance', 'term-sia-rto', 'term-sia-rpo', 'term-sia-rfc', 'term-sia-cab'],
+    tags: ['maintenance', 'operations', 'incidents', 'change-management', 'rto', 'rpo'],
+  },
+
 ];
 
 export const subjectMeta: SubjectMeta = {
@@ -787,16 +870,18 @@ export const glossary: GlossaryTerm[] = [
   { id: 'term-sax-parser', term: 'SAX Parser', definition: 'An event-driven, read-only parser that streams the document and emits callbacks, keeping memory roughly constant regardless of file size.', topicIds: ['sia1-xml-processing'] },
   { id: 'term-xpath', term: 'XPath', definition: 'A language for addressing nodes in an XML document using path expressions and predicates. XSLT uses it to drive transformations.', topicIds: ['sia1-xml-processing'] },
   { id: 'term-xxe', term: 'XML External Entity (XXE)', definition: 'An attack in which a declared external entity makes the parser read local files or reach internal URLs. Prevented by disabling DTD and external entity resolution.', topicIds: ['sia1-xml-processing'] },
+  { id: 'term-sia-corrective-maintenance', term: 'Corrective Maintenance', definition: 'Software maintenance performed to diagnose and correct discovered defects and restore system operations.', topicIds: ['sia1-maintenance-documentation'] },
+  { id: 'term-sia-preventive-maintenance', term: 'Preventive Maintenance', definition: 'Proactive software maintenance performed to prevent latent defects, update dependencies, and remediate security vulnerabilities before they cause failure.', topicIds: ['sia1-maintenance-documentation'] },
+  { id: 'term-sia-adaptive-maintenance', term: 'Adaptive Maintenance', definition: 'Software maintenance performed to modify a system to remain compatible with evolving external environments, platforms, or legal regulations.', topicIds: ['sia1-maintenance-documentation'] },
+  { id: 'term-sia-perfective-maintenance', term: 'Perfective Maintenance', definition: 'Software maintenance performed to enhance software features, optimize performance, and improve user experience.', topicIds: ['sia1-maintenance-documentation'] },
+  { id: 'term-sia-rto', term: 'Recovery Time Objective (RTO)', definition: 'The maximum acceptable duration of system downtime following a disruption or disaster.', topicIds: ['sia1-maintenance-documentation'] },
+  { id: 'term-sia-rpo', term: 'Recovery Point Objective (RPO)', definition: 'The maximum acceptable age of data that can be lost due to an outage or disaster.', topicIds: ['sia1-maintenance-documentation'] },
+  { id: 'term-sia-rfc', term: 'Request for Change (RFC)', definition: 'A formal proposal for a change to be made to a production system, evaluated for risk, impact, and rollback safety.', topicIds: ['sia1-maintenance-documentation'] },
+  { id: 'term-sia-cab', term: 'Change Advisory Board (CAB)', definition: 'A governance body that evaluates, prioritizes, and approves non-standard production changes.', topicIds: ['sia1-maintenance-documentation'] },
+
 ];
 
-/** Default spaced-repetition state applied to every card before the first review. */
-const NEW_CARD = {
-  easeFactor: 2.5,
-  interval: 0,
-  repetitions: 0,
-  nextReview: 0,
-  masteryLevel: 'new',
-} as const;
+const NEW_CARD = { easeFactor: 2.5, interval: 1, repetitions: 0, nextReview: 0, masteryLevel: 'new' as const };
 
 export const flashcards: Flashcard[] = [
   { id: 'fc-sia1-01', topicId: 'sia1-eia', front: 'What is the primary goal of an Enterprise Information Architecture?', back: 'To reduce complexity, and thereby remove the factors that inhibit change and block new business paradigms.', tags: ['eia'], ...NEW_CARD },
@@ -840,6 +925,67 @@ export const flashcards: Flashcard[] = [
   { id: 'fc-sia1-38', topicId: 'sia1-multitier-deployment', front: 'Why must the middle tier be stateless to scale horizontally?', back: 'If session state lives in one instance\'s memory, only that instance can serve the user. Stateless instances let a load balancer send any request anywhere.', tags: ['architecture'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
   { id: 'fc-sia1-39', topicId: 'sia1-xml-processing', front: 'What is the difference between well-formed and valid XML?', back: 'Well-formed obeys XML syntax. Valid is well-formed AND conforms to a declared grammar such as a DTD or XSD.', tags: ['xml'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
   { id: 'fc-sia1-40', topicId: 'sia1-xml-processing', front: 'When should you choose SAX over DOM?', back: 'When the document is large and only needs reading. SAX streams with roughly constant memory; DOM holds the whole tree, so memory grows with file size.', tags: ['xml'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+  {
+    id: 'fc-sia1-41',
+    topicId: 'sia1-maintenance-documentation',
+    front: 'What are the four recognized categories of software maintenance?',
+    back: 'Corrective (defect repair), Preventive (proactive hardening & refactoring), Adaptive (environment & regulatory adaptation), and Perfective (performance & feature enhancements).',
+    tags: ['maintenance', 'operations', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-sia1-42',
+    topicId: 'sia1-maintenance-documentation',
+    front: 'How does maintenance documentation (SIA-19) differ from project delivery reporting (SIA-14)?',
+    back: 'Delivery reporting tracks progress to release (milestones, budget, burn-down), while maintenance documentation guides reliability, incidents, changes, and recovery for live running systems.',
+    tags: ['maintenance', 'reporting', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-sia1-43',
+    topicId: 'sia1-maintenance-documentation',
+    front: 'What is the operational distinction between RTO and RPO in disaster recovery?',
+    back: 'Recovery Time Objective (RTO) is the maximum acceptable duration of downtime; Recovery Point Objective (RPO) is the maximum acceptable age of data lost.',
+    tags: ['disaster-recovery', 'rto', 'rpo', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-sia1-44',
+    topicId: 'sia1-maintenance-documentation',
+    front: 'What must a Request for Change (RFC) include before production deployment approval?',
+    back: 'A detailed change description, risk and impact assessment, automated test results, and a verified, time-bounded rollback procedure with explicit abort triggers.',
+    tags: ['change-management', 'rfc', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-sia1-45',
+    topicId: 'sia1-maintenance-documentation',
+    front: 'What is the objective of a blameless post-mortem after a production incident?',
+    back: 'To establish an accurate timeline, identify root causes (e.g. 5 Whys), and implement preventive action items without assigning personal blame.',
+    tags: ['incident-management', 'post-mortem', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+
 ];
 
 export const questions: Question[] = [
@@ -1147,4 +1293,81 @@ export const questions: Question[] = [
     explanation: 'This is an XXE attack. A declared external entity makes the parser fetch a URI such as file:///etc/passwd, and the content lands in the parsed document. The fix is disabling DTD and external entity resolution, not input filtering.',
     adaptiveWeight: 3,
   },
+  {
+    id: 'q-sia1-27',
+    topicId: 'sia1-maintenance-documentation',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'A system engineer updates an open-source parsing library to patch a reported security vulnerability before any exploit occurs. Which category of software maintenance does this action represent?',
+    options: ['Preventive maintenance', 'Corrective maintenance', 'Adaptive maintenance', 'Perfective maintenance'],
+    correct: [0],
+    explanation: 'Preventive maintenance involves proactive modifications to prevent future failures, update dependencies, and resolve security vulnerabilities before they are exploited in production.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-sia1-28',
+    topicId: 'sia1-maintenance-documentation',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'An enterprise integration platform must modify its API endpoints because a partner bank is upgrading its operating system and data security protocols to TLS 1.3. Which type of maintenance is this?',
+    options: ['Adaptive maintenance', 'Corrective maintenance', 'Preventive maintenance', 'Perfective maintenance'],
+    correct: [0],
+    explanation: 'Adaptive maintenance modifies software to keep pace with changing external hardware, operating systems, partner interfaces, or regulatory environments.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-sia1-29',
+    topicId: 'sia1-maintenance-documentation',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'What is the core distinction between Recovery Time Objective (RTO) and Recovery Point Objective (RPO) in system disaster recovery documentation?',
+    options: [
+      'RTO specifies the maximum acceptable downtime duration, while RPO specifies the maximum acceptable data loss in time',
+      'RTO measures transaction volume, while RPO measures hardware cost',
+      'RTO applies only to databases, while RPO applies to networks',
+      'RTO and RPO are identical metrics with different acronyms'
+    ],
+    correct: [0],
+    explanation: 'Recovery Time Objective (RTO) defines the target time to restore a system after an outage (how long you can be down). Recovery Point Objective (RPO) defines the maximum age of data that must be recovered (how much data loss is tolerable).',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-sia1-30',
+    topicId: 'sia1-maintenance-documentation',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'Which requirement is mandatory in a Request for Change (RFC) before deploying a high-risk integration service upgrade to production?',
+    options: [
+      'A documented and verified rollback procedure with defined trigger criteria',
+      'A complete rewrite of the entire application architecture',
+      'Approval from all end-users of the system',
+      'Permanent deletion of all legacy database backups'
+    ],
+    correct: [0],
+    explanation: 'A Request for Change (RFC) for a high-risk deployment must include a tested, documented rollback procedure and clear rollback trigger metrics so that service can be restored quickly if failure occurs.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-sia1-31',
+    topicId: 'sia1-maintenance-documentation',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'A team refactors an ESB message orchestration flow to incorporate distributed caching, reducing peak query response times from 1200ms to 250ms. Which maintenance type was performed?',
+    options: ['Perfective maintenance', 'Corrective maintenance', 'Adaptive maintenance', 'Preventive maintenance'],
+    correct: [0],
+    explanation: 'Perfective maintenance enhances system performance, adds improvements, or optimizes user experience based on operational observations.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-sia1-32',
+    topicId: 'sia1-maintenance-documentation',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'Following an unexpected production outage, which document captures the event timeline, root cause analysis, customer impact, and remediations without assigning personal fault?',
+    options: ['Blameless incident post-mortem', 'Project charter', 'Request for Proposal (RFP)', 'Weekly status report'],
+    correct: [0],
+    explanation: 'A blameless incident post-mortem focuses on systemic causes, establishing what happened, why it happened, and how to prevent recurrence through concrete action items.',
+    adaptiveWeight: 1,
+  },
+
 ];

@@ -58,6 +58,14 @@ const owaspDomXss = {
   url: 'https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html',
 };
 
+const reactDocs: SourceReference = { title: 'React Documentation: Describing the UI', publisher: 'React / Meta', url: 'https://react.dev/learn' };
+const reactNativeDocs: SourceReference = { title: 'React Native Core Components and APIs', publisher: 'React Native / Meta', url: 'https://reactnative.dev/docs/components-and-apis' };
+const expoDocs: SourceReference = { title: 'Expo Documentation', publisher: '650 Industries (Expo)', url: 'https://docs.expo.dev/' };
+const reactNavigationDocs: SourceReference = { title: 'React Navigation Documentation', publisher: 'Software Mansion / React Navigation', url: 'https://reactnavigation.org/docs/getting-started' };
+const asyncStorageDocs: SourceReference = { title: 'Async Storage Documentation', publisher: 'React Native Community', url: 'https://react-native-async-storage.github.io/async-storage/docs/usage' };
+
+
+
 export const topics: Topic[] = [
   {
     id: 'mobile-concepts',
@@ -873,6 +881,466 @@ form.reset();`,
     relatedTermIds: ['term-lcp', 'term-inp', 'term-cls', 'term-mobile-first', 'term-secure-context'],
     tags: ['performance', 'responsive', 'security', 'accessibility'],
   },
+  {
+    id: 'mobile-js-arrays-math',
+    subjectId: 'mobile',
+    title: 'JavaScript Arrays, Functions, and Math',
+    order: 16,
+    estimatedMinutes: 45,
+    professorMode: {
+      eli5: 'An array is a numbered list of values starting at index 0. A function is a reusable set of instructions that takes inputs and returns an answer. The Math object gives you built-in math tools like random decimal numbers.',
+      deepDive: 'Arrays in JavaScript are ordered collections declared using square brackets, such as let myArray = [] or var cars = ["Saab", "Volvo", "BMW"]. Elements are accessed by bracket notation using zero-based indexing, where cars[0] retrieves the first element and cars[cars.length - 1] accesses the last element. The .length property returns the total number of items. A fundamental quirk of JavaScript is that typeof [] evaluates to "object" rather than "array", which is why Array.isArray(value) is the standard built-in method to test if a value is an array. Core array methods include push() and pop() for adding and removing elements from the end, map() for transforming elements into a new array, filter() for keeping elements that pass a boolean test, and find() for locating the first match. Functions are defined with the syntax function myFunction() {} and invoked with myFunction(). The return statement specifies the value the function outputs and halts execution; functions without a return statement implicitly return undefined. Parameters act as placeholders in function definitions, while arguments are the actual values supplied during invocation. The global Math object provides mathematical constants and functions. Specifically, Math.random() generates a pseudorandom floating-point number in the range 0 inclusive to 1 exclusive (0 <= n < 1). It can return 0, but never reaches exactly 1. Multiplying and applying Math.floor() scales this range to generate random integers for games and simulations.',
+      analogy: 'Think of an array as an egg carton where slots are numbered 0 to 11. Think of a function as a bread maker where flour and water are arguments, kneading is the function body, and the baked loaf is the return value. Math.random() is like a spinning prize wheel where the pointer can land anywhere from 0 degrees up to 359.99 degrees, but never on 360.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Concept / Method', 'Syntax Example', 'Evaluated Result', 'Key Examination Rule'],
+        rows: [
+          ['Array Declaration', 'let cars = ["Saab", "Volvo", "BMW"]', 'Array with 3 elements', 'Declared using square brackets []; typeof cars returns "object"'],
+          ['Zero-Based Indexing', 'cars[0]', '"Saab"', 'First element is at index 0, not 1; cars[1] is the second item'],
+          ['Array Length', 'cars.length', '3', 'Returns count of items; always 1 greater than highest index'],
+          ['Array Type Check', 'Array.isArray(cars)', 'true', 'Array.isArray() must be used because typeof [] evaluates to "object"'],
+          ['Function Declaration', 'function myFunction() { return 42; }', 'myFunction() yields 42', 'return keyword sends value back; omitting return yields undefined'],
+          ['Math.random()', 'Math.random()', 'Number n (0 <= n < 1)', 'Generates random decimal from 0 inclusive to 1 exclusive (never 1.0)'],
+          ['Array Manipulation', 'cars.push("Audi"); cars.pop();', '"Audi" added then removed', 'push adds to array tail; pop removes and returns last element'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Declare arrays using bracket syntax and access elements using zero-based indexing.',
+      'Use Array.isArray() to detect arrays and explain why typeof [] returns "object".',
+      'Declare functions with parameters and return values, and trace function execution.',
+      'Explain the exact output range of Math.random() and calculate bounded random integers.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'code',
+        title: 'Arrays, Zero-Indexing, and Array.isArray()',
+        language: 'javascript',
+        code: `// Array declaration using square brackets
+const cars = ["Saab", "Volvo", "BMW"];
+
+console.log(cars[0]);         // "Saab" - zero-based index
+console.log(cars.length);      // 3
+console.log(typeof cars);      // "object" (arrays are objects in JavaScript)
+console.log(Array.isArray(cars)); // true - built-in reliable test
+
+// Common array transformations
+cars.push("Toyota");          // Add to end: ["Saab", "Volvo", "BMW", "Toyota"]
+const last = cars.pop();      // Remove from end: "Toyota"
+const uppercase = cars.map(c => c.toUpperCase()); // ["SAAB", "VOLVO", "BMW"]
+console.log(uppercase);`,
+        caption: 'Arrays are zero-indexed and return "object" under typeof. Use Array.isArray() to verify arrays.',
+      },
+      {
+        kind: 'code',
+        title: 'Function Syntax and Math.random() Range',
+        language: 'javascript',
+        code: `// Function syntax and return keyword
+function calculateArea(width, height) {
+  return width * height; // return keyword sends the value back
+}
+const area = calculateArea(5, 10); // 50
+
+// Math.random() generates 0 inclusive up to 1 exclusive: 0 <= n < 1
+const rand = Math.random();
+console.log(rand >= 0 && rand < 1); // true (never exactly 1.0)
+
+// Generating random integer between min (inclusive) and max (inclusive)
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+console.log(getRandomInt(1, 6)); // Random roll between 1 and 6`,
+        caption: 'Functions return values using return. Math.random() returns a decimal from 0 inclusive to 1 exclusive.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'Examination Trap: typeof [] vs Array.isArray()',
+        text: 'In JavaScript, typeof [1, 2, 3] evaluates to "object", NOT "array". If an exam asks how to verify whether a variable is an array, the correct answer is Array.isArray(variable).',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Math.random() Boundaries',
+        text: 'Math.random() can return 0, but it will never return 1. The output range is formally described as 0 <= n < 1 (or 0 inclusive to 1 exclusive).',
+      },
+    ],
+    sources: [mdnJsGuide, ecma262],
+    relatedTermIds: ['term-mob-array', 'term-mob-zero-index', 'term-mob-is-array', 'term-mob-return-keyword', 'term-mob-math-random'],
+    tags: ['javascript', 'arrays', 'functions', 'math'],
+  },
+  {
+    id: 'mobile-es6-features',
+    subjectId: 'mobile',
+    title: 'Modern JavaScript (ES6 and Beyond)',
+    order: 17,
+    estimatedMinutes: 50,
+    professorMode: {
+      eli5: 'ES6 is the modern update to JavaScript that introduced block-scoped variables (let and const), arrow functions, template strings with ${}, exponential math (**), object cloning helpers, and async functions that return Promises.',
+      deepDive: 'ECMAScript is the standardized language specification that JavaScript implements. The first standardized version (ECMA-262) was released in 1997. The release of ECMAScript 2015 (commonly known as ES6) was a landmark modernization of the language. Scoping was fundamentally upgraded: variables declared with let and const are block-scoped, meaning they exist only within the nearest enclosing curly braces {}. Unlike var (which is function-scoped and hoisted as undefined), let and const reside in a Temporal Dead Zone (TDZ) prior to their declaration, causing any premature access to throw a ReferenceError. A const variable cannot be reassigned; however, mutating properties inside a const object or array is fully permitted because const locks the variable binding, not the underlying heap object. Modern syntax enhancements include: Arrow functions (() => {}), which provide a concise syntax and lexically bind this; Template literals enclosed in backticks (`...`), which allow embedding dynamic expressions via ${expression}; The exponentiation operator (**), which cleanly evaluates powers (e.g. 2 ** 3 equals 8, replacing Math.pow(2, 3)); Destructuring for objects and arrays; Rest parameters (...args) for collecting remaining arguments into an array; Spread syntax (...iterable) for spreading items into new arrays or objects. Modern object utilities include Object.values(obj), which returns an array of all enumerable property values; Object.fromEntries(entries), which transforms a list of key-value pairs into an object; Rest/Spread for objects ({ ...original, active: true }), which creates clean copies to modify without mutating the original; Array.prototype.flat(depth), which recursively flattens nested arrays. In asynchronous JavaScript, an async function always returns a Promise. When paired with await, asynchronous operations read like synchronous code, with try...catch handling errors cleanly.',
+      analogy: 'Think of ES6 as upgrading from a paper notebook to a smartphone: let and const give you locked compartments where notes cannot fall out into other rooms, template literals are like voice messages where you say variables naturally, the ** operator is a dedicated power button, and an async function is like ordering online where you get a delivery tracking promise immediately.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['ES6+ Feature', 'Syntax Example', 'Description / Mechanism', 'Examination Focus'],
+        rows: [
+          ['ECMAScript Standard', 'ECMA-262 (1st Edition 1997, ES6 2015)', 'Standardized specification for JavaScript', 'First standardized edition was released in 1997; ES6 = 2015'],
+          ['Block Scoping', 'let count = 1; const MAX = 100;', 'Variables accessible only inside block {}', 'let & const are block-scoped; var is function-scoped'],
+          ['Arrow Functions', 'const double = (x) => x * 2;', 'Shorthand way to declare functions', 'Concise function syntax with lexical this binding'],
+          ['Template Literals', '`Welcome, ${user.name}!`', 'Embed expressions using ${expression}', 'Uses backticks; embeds expressions cleanly without concatenation'],
+          ['Exponentiation Operator', '2 ** 3 // evaluates to 8', 'Calculates base to exponent power', 'Replaces messy Math.pow() chains (e.g. 2 ** 3 instead of Math.pow(2, 3))'],
+          ['Object.values()', 'Object.values({ a: 1, b: 2 }) // [1, 2]', 'Extracts array of all object values', 'Returns array of all enumerable property values of an Object'],
+          ['Object.fromEntries()', 'Object.fromEntries([["a", 1]]) // {a: 1}', 'Transforms key-value pairs into object', 'Turns list of key-value tuples back into an object'],
+          ['Array.prototype.flat()', '[1, [2, 3]].flat() // [1, 2, 3]', 'Recursively flattens sub-arrays', 'Flattens nested array up to specified depth (default 1)'],
+          ['Async Function', 'async function fetchData() { ... }', 'Asynchronous function declaration', 'An async function ALWAYS returns a Promise'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'State the history of ECMAScript from its 1997 first edition through ES6.',
+      'Explain block scoping for let and const and contrast reassignment with object mutation.',
+      'Use arrow functions, template literals with ${}, and the exponentiation operator (**).',
+      'Apply Object.values(), Object.fromEntries(), and Array.prototype.flat().',
+      'Demonstrate that an async function always returns a Promise and handle errors with try/catch.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'code',
+        title: 'Modern Syntax: Scoping, Arrow Functions, and Operators',
+        language: 'javascript',
+        code: `// 1. Block scoping with let and const
+{
+  let blockVar = "visible only inside";
+  const PI = 3.14159;
+  // PI = 3; // TypeError: Assignment to constant variable
+}
+// console.log(blockVar); // ReferenceError: blockVar is not defined
+
+// 2. Arrow functions and Template Literals
+const greet = (name) => \`Hello, \${name}!\`;
+console.log(greet("Alice")); // "Hello, Alice!"
+
+// 3. Exponentiation operator (**)
+const squared = 5 ** 2; // 25 (replaces Math.pow(5, 2))
+const cubed = 2 ** 3;   // 8
+
+// 4. Object cloning with spread syntax
+const original = { theme: "dark", fontSize: 14 };
+const updated = { ...original, fontSize: 16 }; // clean clone with modification`,
+        caption: 'let and const provide block scope; template literals use ${}; ** replaces Math.pow().',
+      },
+      {
+        kind: 'code',
+        title: 'Object/Array Utilities and Asynchronous JavaScript',
+        language: 'javascript',
+        code: `// Object.values() and Object.fromEntries()
+const user = { name: "Kim", score: 95, active: true };
+console.log(Object.values(user)); // ["Kim", 95, true]
+
+const entries = [["role", "admin"], ["level", 4]];
+const obj = Object.fromEntries(entries);
+console.log(obj); // { role: "admin", level: 4 }
+
+// Array.prototype.flat()
+const nested = [1, [2, 3], [[4]]];
+console.log(nested.flat()); // [1, 2, 3, [4]]
+
+// Asynchronous execution: async function returns a Promise
+async function loadUserData(userId) {
+  try {
+    const response = await fetch(\`https://api.example.com/users/\${userId}\`);
+    if (!response.ok) throw new Error("HTTP error " + response.status);
+    return await response.json(); // wrapped in resolved Promise
+  } catch (error) {
+    console.error("Fetch failed:", error);
+    throw error;
+  }
+}
+// Invoking an async function always yields a Promise
+console.log(loadUserData(1) instanceof Promise); // true`,
+        caption: 'Object.values() extracts values, Array.flat() flattens arrays, and async functions return Promises.',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'ECMAScript History (Exam Keypoint)',
+        text: 'The first standardized version of ECMAScript was released in 1997. ES6 (ECMAScript 2015) introduced let, const, arrow functions, template literals, and promises.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'Async Functions Return Promises',
+        text: 'Remember that an async function always returns a Promise. If an async function returns 42, it actually returns Promise.resolve(42).',
+      },
+    ],
+    sources: [ecma262, mdnJsGuide],
+    relatedTermIds: ['term-mob-ecmascript-1997', 'term-mob-block-scope', 'term-mob-template-literals', 'term-mob-exponentiation-operator', 'term-mob-object-values', 'term-mob-object-from-entries', 'term-mob-array-flat', 'term-mob-async-promise'],
+    tags: ['javascript', 'es6', 'ecmascript', 'async'],
+  },
+  {
+    id: 'mobile-react-fundamentals',
+    subjectId: 'mobile',
+    title: 'React Fundamentals: Components, JSX, Props, and Lifecycle',
+    order: 18,
+    estimatedMinutes: 55,
+    professorMode: {
+      eli5: 'React is a library for building UIs out of independent Lego blocks called components. You write JSX where HTML and JavaScript live together inside curly braces. Parents pass settings called props down to children, while components use state to remember things that change.',
+      deepDive: 'React is a declarative, component-based user interface library. React components are independent, reusable bits of code that work in isolation and return HTML (in the form of JSX) via a render function. Component trees compose small UI pieces into full applications. Babel is the compiler and transpiler used to convert JSX and modern ES6+ into standard JavaScript (specifically React.createElement calls) that any browser runtime can execute. JSX (JavaScript XML) is a markup syntax popularized by React that makes components easy to create and maintain by keeping rendering logic close to markup. Inside JSX, curly braces {} evaluate any JavaScript expression, such as {1 + 1} rendering as 2, or ternary conditionals like {i === 1 ? "True" : "False"} rendering True if i is 1. JSX differs from HTML in key attributes: class becomes className, for becomes htmlFor, and all self-closing tags must be explicitly closed (<input />). React Fragments (<>...</> or <React.Fragment>) allow grouping multiple child nodes without adding extra DOM wrapper elements. Component names must be capitalized (PascalCase, like <UserProfile />) so React can distinguish custom components from built-in HTML tags (<div />). Components exist in two forms: Class components, which use class MyComponent extends React.Component to inherit access to React component features and must define a render() method; and modern Functional components, which are JavaScript functions that accept props and return JSX. Props are used to pass data from one component to another in a strict unidirectional flow (parent to child). Props are read-only (immutable) and must never be altered by the child component. Component properties that change over time should be kept in an internal object called state. When state updates, React automatically schedules a re-render. Hooks allow functional components to access state and other React features; the correct import syntax is import React, { useState } from "react". In component lifecycles, componentDidUpdate() is the first method called when a component gets updated (after qualifying props or state change; it does NOT run during the initial mount). Events in React use camelCase (onClick, onChange) and are passed as function references (onClick={handleClick}) rather than executed inline.',
+      analogy: 'Imagine a puppet theater. A component is a puppet. Props are the physical appearance and costume handed to the puppet by the stage director (immutable during the act). State is what the puppet is thinking or holding right now (dynamic). When the puppet changes state, it re-acts its scene. componentDidUpdate is the puppet immediately adjusting its posture after a new command is received.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['Concept', 'Class Components', 'Functional Components with Hooks', 'Core Behavioral Rule'],
+        rows: [
+          ['Component Definition', 'class MyComp extends React.Component', 'function MyComp(props) { return <JSX />; }', 'Class extends React.Component; Functional returns JSX directly'],
+          ['JSX Expressions', '{1 + 1} -> 2; {i === 1 ? "True" : "False"}', '{1 + 1} -> 2; {i === 1 ? "True" : "False"}', 'Curly braces {} evaluate any JavaScript expression inside JSX'],
+          ['Props Flow', 'this.props.title', 'props.title', 'Props pass data unidirectionally parent->child; strictly read-only'],
+          ['State Storage', 'this.state = { count: 0 };', 'const [count, setCount] = useState(0);', 'Properties that change over time must be kept in state object'],
+          ['State Updates', 'this.setState({ count: 1 });', 'setCount(1);', 'Updating state triggers component re-render; never mutate state directly'],
+          ['Update Lifecycle', 'componentDidUpdate(prevProps, prevState)', 'useEffect(() => {}, [deps])', 'componentDidUpdate is first method called after a component gets updated'],
+          ['Event Handlers', '<button onClick={this.handleClick}>', '<button onClick={handleClick}>', 'Pass function reference; do not call function immediately (<button onClick={fn()}> is wrong)'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Define React components as independent, reusable units and identify Babel as the transpiler.',
+      'Evaluate JavaScript expressions inside JSX curly braces and contrast JSX with HTML.',
+      'Inherit component capabilities using extends React.Component and write render() methods.',
+      'Explain unidirectional data flow with read-only props and reactive state updates.',
+      'Import useState with correct syntax and recognize componentDidUpdate as the initial update lifecycle callback.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'code',
+        title: 'Class Components vs Functional Components with Hooks',
+        language: 'javascript',
+        code: `// 1. Class Component: extends React.Component to inherit functions
+import React from 'react';
+
+class CounterClass extends React.Component {
+  constructor(props) {
+    super(props);
+    // Component properties kept in state object
+    this.state = { count: 0 };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  // componentDidUpdate is the first method called when a component gets updated
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.count !== this.state.count) {
+      console.log("Component updated! New count:", this.state.count);
+    }
+  }
+
+  handleClick() {
+    this.setState(prev => ({ count: prev.count + 1 }));
+  }
+
+  render() {
+    // Evaluating expressions in JSX curly braces
+    return (
+      <div className="counter-card">
+        <h2>{this.props.title}</h2>
+        <p>Current Count: {this.state.count}</p>
+        <p>Status: {this.state.count > 0 ? 'Active' : 'Zero'}</p>
+        <button onClick={this.handleClick}>Increment</button>
+      </div>
+    );
+  }
+}
+
+// 2. Modern Functional Component with Hooks
+import { useState } from 'react';
+
+function CounterFunction({ title }) {
+  const [count, setCount] = useState(0);
+  return (
+    <div className="counter-card">
+      <h2>{title}</h2>
+      <p>Current: {count} ({1 + 1 === 2 ? 'Math Valid' : 'Error'})</p>
+      <button onClick={() => setCount(c => c + 1)}>Increment</button>
+    </div>
+  );
+}`,
+        caption: 'Class components extend React.Component and use render(). componentDidUpdate is the first method called when a component gets updated.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'Lifecycle Rule: componentDidUpdate()',
+        text: 'In React class components, componentDidUpdate() is the first method called when a component gets updated (e.g. after setState or new props). It does NOT run on the initial mount — componentDidMount() handles initial mounting.',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Babel and JSX Expressions',
+        text: 'Babel is the compiler and transpiler that turns JSX into standard JavaScript. In JSX, curly braces {} evaluate JavaScript expressions, like {1+1} rendering 2, or {i===1 ? "True" : "False"} rendering True if i=1.',
+      },
+    ],
+    sources: [reactDocs, ecma262],
+    relatedTermIds: ['term-mob-react-component', 'term-mob-jsx', 'term-mob-props', 'term-mob-state', 'term-mob-component-did-update', 'term-mob-use-state', 'term-mob-babel'],
+    tags: ['react', 'jsx', 'components', 'props', 'state', 'lifecycle'],
+  },
+  {
+    id: 'mobile-react-native-core',
+    subjectId: 'mobile',
+    title: 'React Native: Architecture, Core Components, CLI, and Storage',
+    order: 19,
+    estimatedMinutes: 60,
+    professorMode: {
+      eli5: 'React Native lets you build real iPhone and Android apps using JavaScript. It uses a Bridge to talk to native components. Instead of <div>, you use <View> and <Text>, and you store data with AsyncStorage.',
+      deepDive: 'React Native is a cross-platform mobile framework primarily used for developing native mobile apps using JavaScript. Unlike hybrid web-view wrappers, React Native renders genuine native platform widgets (UIView on iOS, android.view.View on Android). In the classic React Native architecture, communication between the JavaScript thread and the Native platform thread occurs over an asynchronous, serialized JSON message "Bridge". (Modern React Native also introduces the New Architecture using JSI for direct C++ host object bindings, TurboModules for lazy native module loading, and the Fabric renderer). Environment setup involves Node.js, JDK, and Android Studio / Xcode. Historical and exam CLI workflows feature react-native init <ProjectName> to create a new project and react-native run-android to compile and run on an Android emulator, alongside modern community tooling (npx @react-native-community/cli) and beginner-friendly Expo workflows (npx create-expo-app). React Native does NOT use web HTML elements; specifically, <div> and <span> are NOT core React Native components and will crash if used directly. Instead, core components include: <View> as the primary layout container; <Text> for all string content; <TextInput placeholder="Enter your name" /> for capturing typed input; <Image> for rendering local or remote images; <ScrollView> for small scrollable views; <FlatList> for displaying large sets of dynamic data in an efficient, virtualized, scrollable list; <Modal> for temporary overlays like alerts; <Pressable> and <Button> for user touch interactions; <StyleSheet> for styling, where text styles are applied using style={styles.myText}. React Native layouts default to Flexbox with flexDirection: "column" and unitless density-independent pixels. For tools and libraries, developers use Chrome Developer Tools to inspect and debug JavaScript execution. React Navigation is the standard, commonly used navigation library providing Stack and Tab navigators. AsyncStorage is used to store and retrieve small amounts of persistent data asynchronously as key-value string pairs.',
+      analogy: 'Think of React Native as an architect designing a house in a universal blueprint language (JavaScript). On an iOS job site, Apple builders assemble brick and timber (UIViews); on an Android site, Android builders assemble steel and concrete (Android Views). The Bridge is the radio dispatcher calling instructions between the architect and the on-site construction crew.',
+      visualAidType: 'table',
+      visualAidData: {
+        headers: ['React Native Construct', 'Purpose / Description', 'Web / HTML Contrast', 'Examination Keypoint'],
+        rows: [
+          ['Bridge Architecture', 'Connects JS thread with native platform components', 'Web uses DOM tree directly', 'React Native uses a "Bridge" to connect JS with native components'],
+          ['CLI: react-native init', 'Command to create a new React Native project', 'npx create-react-app (web)', 'Exam command to initialize a new project: react-native init'],
+          ['CLI: react-native run-android', 'Compiles & launches app on Android emulator', 'npm start / npm run dev', 'Exam command to run on an Android emulator: react-native run-android'],
+          ['<View>', 'Fundamental layout and UI container', '<div> (NOT a core RN component)', 'Div is NOT a core React Native component; use View instead'],
+          ['<Text>', 'Container for text strings', '<p>, <span>', 'All text in React Native must be wrapped in <Text> components'],
+          ['<TextInput>', 'Captures text input from virtual keyboard', '<input type="text">', 'Correct syntax: <TextInput placeholder="Enter your name" />'],
+          ['<FlatList>', 'Virtualized scrollable list for large datasets', '<ul> / <table>', 'Used to display large sets of data or dynamic content in a scrollable list'],
+          ['<Modal>', 'Presents temporary dialogs / alerts', '<dialog> / alert()', 'Used for temporary overlays like alerts'],
+          ['StyleSheet', 'Creates optimized style declarations', 'CSS stylesheet', 'To apply styles to text, add the property style={styles.myText}'],
+          ['AsyncStorage', 'Asynchronous key-value storage system', 'localStorage (synchronous)', 'Used to store and retrieve small amounts of data asynchronously'],
+          ['React Navigation', 'Commonly used screen navigation library', 'react-router-dom', 'Commonly used navigation library for mobile screen transitions'],
+          ['Chrome DevTools', 'Debugging and profiling environment', 'Browser inspect', 'Used to debug React Native applications via remote JS debugging'],
+        ],
+      },
+    },
+    learningObjectives: [
+      'Explain React Native as a cross-platform framework and describe the role of the Bridge.',
+      'Identify CLI commands: react-native init to create and react-native run-android to run.',
+      'Select core components: View, Text, TextInput, FlatList, Modal (and note Div is NOT a component).',
+      'Apply styles using StyleSheet.create() and verify style={styles.myText} syntax.',
+      'Utilize Chrome Developer Tools, React Navigation, and AsyncStorage for data persistence.',
+      'Implement six foundational practice applications in React Native.',
+    ],
+    lessonBlocks: [
+      {
+        kind: 'code',
+        title: 'Core Components, TextInput, and StyleSheet Example',
+        language: 'javascript',
+        code: `import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, Modal, Pressable } from 'react-native';
+
+export default function UserInputCard() {
+  const [name, setName] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+
+  return (
+    <View style={styles.container}>
+      {/* TextInput placeholder syntax */}
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your name"
+        value={name}
+        onChangeText={setName}
+      />
+
+      {/* Applying styles to text */}
+      <Text style={styles.myText}>
+        Hello, {name || 'Guest'}!
+      </Text>
+
+      {/* Modal for temporary overlays like alerts */}
+      <Modal visible={modalVisible} transparent={true} animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.myText}>This is a temporary overlay alert!</Text>
+            <Pressable onPress={() => setModalVisible(false)}>
+              <Text style={styles.buttonText}>Dismiss</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, justifyContent: 'center' },
+  input: { borderWidth: 1, borderColor: '#ccc', padding: 8, borderRadius: 4 },
+  myText: { fontSize: 16, color: '#333', marginTop: 10 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
+  modalContent: { backgroundColor: '#fff', padding: 20, borderRadius: 8 },
+  buttonText: { color: '#007AFF', marginTop: 12, fontWeight: 'bold' },
+});`,
+        caption: 'TextInput placeholder="Enter your name", style={styles.myText}, and Modal for temporary overlays.',
+      },
+      {
+        kind: 'code',
+        title: 'FlatList, React Navigation, and AsyncStorage Example',
+        language: 'javascript',
+        code: `import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// 1. FlatList for large sets of dynamic data
+const productData = [
+  { id: '1', title: 'Smartphone' },
+  { id: '2', title: 'Laptop' },
+  { id: '3', title: 'Wireless Headphones' },
+];
+
+export function ProductListScreen() {
+  const [savedCount, setSavedCount] = useState('0');
+
+  // 2. AsyncStorage stores and retrieves small amounts of data asynchronously
+  useEffect(() => {
+    async function loadStoredData() {
+      try {
+        await AsyncStorage.setItem('viewCount', '3'); // Store asynchronously
+        const count = await AsyncStorage.getItem('viewCount'); // Retrieve asynchronously
+        setSavedCount(count ?? '0');
+      } catch (err) {
+        console.error('AsyncStorage error:', err);
+      }
+    }
+    loadStoredData();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.myText}>Saved Views: {savedCount}</Text>
+      <FlatList
+        data={productData}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.itemCard}>
+            <Text style={styles.myText}>{item.title}</Text>
+          </View>
+        )}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16 },
+  myText: { fontSize: 16, color: '#111' },
+  itemCard: { padding: 12, borderBottomWidth: 1, borderColor: '#eee' },
+});`,
+        caption: 'FlatList renders large data sets efficiently; AsyncStorage stores small amounts of data asynchronously.',
+      },
+      {
+        kind: 'callout',
+        tone: 'warning',
+        title: 'Core Components Rule: <div> is NOT in React Native',
+        text: 'In React Native, <div> and <span> are NOT core components. HTML markup cannot be rendered directly by native mobile engines. Core components are <View>, <Text>, <TextInput>, <Image>, <ScrollView>, and <FlatList>.',
+      },
+      {
+        kind: 'callout',
+        tone: 'note',
+        title: 'Exam CLI Commands and AsyncStorage',
+        text: 'The examination specifically tests: "react-native init" to create a new project; "react-native run-android" to run on an Android emulator; and "AsyncStorage" to store and retrieve small amounts of data asynchronously.',
+      },
+    ],
+    sources: [reactNativeDocs, expoDocs, reactNavigationDocs, asyncStorageDocs],
+    relatedTermIds: ['term-mob-react-native-bridge', 'term-mob-view-component', 'term-mob-text-input', 'term-mob-flatlist', 'term-mob-modal', 'term-mob-stylesheet', 'term-mob-async-storage', 'term-mob-react-navigation'],
+    tags: ['react-native', 'mobile', 'bridge', 'flatlist', 'asyncstorage', 'cli'],
+  },
+
 ];
 
 export const subjectMeta: SubjectMeta = {
@@ -954,6 +1422,36 @@ export const glossary: GlossaryTerm[] = [
   { id: 'term-cls', term: 'Cumulative Layout Shift', definition: 'Core Web Vital for visual stability, good at 0.1 or less. Penalises content that moves after rendering.', topicIds: ['mobile-performance-security'] },
   { id: 'term-mobile-first', term: 'Mobile-First CSS', definition: 'Writing small-screen rules as the base and layering enhancements with min-width queries, keeping desktop assumptions out of the mobile path.', topicIds: ['mobile-performance-security'] },
   { id: 'term-secure-context', term: 'Secure Context', definition: 'HTTPS or localhost. Required for service workers, geolocation, camera, and other powerful APIs by design.', topicIds: ['mobile-performance-security'] },
+
+  { id: 'term-mob-array', term: 'Array (JavaScript)', definition: 'An ordered list of values declared using square brackets []; arrays are specialized objects with a length property and zero-based indexing.', topicIds: ['mobile-js-arrays-math'] },
+  { id: 'term-mob-zero-index', term: 'Zero-Based Indexing', definition: 'The indexing convention where the first element of an array is at index 0 (e.g. array[0]).', topicIds: ['mobile-js-arrays-math'] },
+  { id: 'term-mob-is-array', term: 'Array.isArray()', definition: 'The built-in ECMAScript static method used to determine whether a passed value is an Array (returning true or false).', topicIds: ['mobile-js-arrays-math'] },
+  { id: 'term-mob-return-keyword', term: 'return (JavaScript)', definition: 'The keyword in a function body that specifies the value to output back to the caller and terminates function execution.', topicIds: ['mobile-js-arrays-math'] },
+  { id: 'term-mob-math-random', term: 'Math.random()', definition: 'A built-in method that generates a pseudorandom floating-point number in the range 0 inclusive to 1 exclusive (0 <= n < 1).', topicIds: ['mobile-js-arrays-math'] },
+  { id: 'term-mob-ecmascript-1997', term: 'ECMAScript (1997)', definition: 'The official language specification underlying JavaScript; the first standardized edition (ECMA-262) was released in 1997.', topicIds: ['mobile-es6-features'] },
+  { id: 'term-mob-block-scope', term: 'Block Scope', definition: 'The scope restriction introduced by let and const where variables are accessible only within the nearest enclosing curly braces {}.', topicIds: ['mobile-es6-features'] },
+  { id: 'term-mob-template-literals', term: 'Template Literals', definition: 'String literals delimited with backticks (`) that allow multiline strings and embedded expressions using the ${expression} syntax.', topicIds: ['mobile-es6-features'] },
+  { id: 'term-mob-exponentiation-operator', term: 'Exponentiation Operator (**)', definition: 'An ES6 arithmetic operator that raises the left operand to the power of the right operand, replacing Math.pow().', topicIds: ['mobile-es6-features'] },
+  { id: 'term-mob-object-values', term: 'Object.values()', definition: 'A static method that returns an array of a given object own enumerable property values.', topicIds: ['mobile-es6-features'] },
+  { id: 'term-mob-object-from-entries', term: 'Object.fromEntries()', definition: 'A static method that transforms a list of key-value pairs into an object.', topicIds: ['mobile-es6-features'] },
+  { id: 'term-mob-array-flat', term: 'Array.prototype.flat()', definition: 'A method that creates a new array with all sub-array elements concatenated into it recursively up to a specified depth.', topicIds: ['mobile-es6-features'] },
+  { id: 'term-mob-async-promise', term: 'async Function', definition: 'A function declared with the async keyword that operates asynchronously and always returns a Promise.', topicIds: ['mobile-es6-features'] },
+  { id: 'term-mob-react-component', term: 'React Component', definition: 'An independent, reusable piece of code that works in isolation and returns HTML markup (JSX) via a render function.', topicIds: ['mobile-react-fundamentals'] },
+  { id: 'term-mob-jsx', term: 'JSX (JavaScript XML)', definition: 'A markup syntax extension popularized by React that allows writing HTML-like code within JavaScript, evaluating expressions in curly braces {}.', topicIds: ['mobile-react-fundamentals'] },
+  { id: 'term-mob-props', term: 'Props (React)', definition: 'Read-only attributes passed unidirectionally from parent components to child components.', topicIds: ['mobile-react-fundamentals'] },
+  { id: 'term-mob-state', term: 'State (React)', definition: 'An internal object holding component properties that can change over time, triggering a re-render when updated.', topicIds: ['mobile-react-fundamentals'] },
+  { id: 'term-mob-component-did-update', term: 'componentDidUpdate()', definition: 'The first React class lifecycle method called after a component updates (when qualifying props or state change); not called on initial mount.', topicIds: ['mobile-react-fundamentals'] },
+  { id: 'term-mob-use-state', term: 'useState', definition: 'A React Hook that allows functional components to declare and update local state variables: import React, { useState } from "react".', topicIds: ['mobile-react-fundamentals'] },
+  { id: 'term-mob-babel', term: 'Babel', definition: 'The JavaScript compiler and transpiler commonly used to transform JSX and ES6+ into browser-compatible JavaScript.', topicIds: ['mobile-react-fundamentals'] },
+  { id: 'term-mob-react-native-bridge', term: 'React Native Bridge', definition: 'The architectural channel that transmits asynchronous serialized JSON messages between the JavaScript thread and native platform threads.', topicIds: ['mobile-react-native-core'] },
+  { id: 'term-mob-view-component', term: 'View (React Native)', definition: 'The fundamental layout container in React Native, mapping to native UIView on iOS and android.view.View on Android.', topicIds: ['mobile-react-native-core'] },
+  { id: 'term-mob-text-input', term: 'TextInput (React Native)', definition: 'A core component for entering text via a keyboard, accepting a placeholder prop (e.g. <TextInput placeholder="Enter your name" />).', topicIds: ['mobile-react-native-core'] },
+  { id: 'term-mob-flatlist', term: 'FlatList (React Native)', definition: 'A performant, virtualized core component used to display large sets of dynamic data in a scrollable list.', topicIds: ['mobile-react-native-core'] },
+  { id: 'term-mob-modal', term: 'Modal (React Native)', definition: 'A core component used for temporary overlays, alerts, or dialogs rendered on top of the current view hierarchy.', topicIds: ['mobile-react-native-core'] },
+  { id: 'term-mob-stylesheet', term: 'StyleSheet (React Native)', definition: 'An abstraction similar to CSS stylesheets that creates optimized immutable style references applied via style={styles.myText}.', topicIds: ['mobile-react-native-core'] },
+  { id: 'term-mob-async-storage', term: 'AsyncStorage', definition: 'An unencrypted, asynchronous, persistent key-value storage system used to store and retrieve small amounts of data across app launches.', topicIds: ['mobile-react-native-core'] },
+  { id: 'term-mob-react-navigation', term: 'React Navigation', definition: 'The standard third-party routing and navigation library for React Native applications providing Stack and Tab navigators.', topicIds: ['mobile-react-native-core'] },
+
 ];
 
 export const flashcards: Flashcard[] = [
@@ -1074,6 +1572,248 @@ export const flashcards: Flashcard[] = [
   { id: 'fc-mob-27', topicId: 'mobile-pwa-offline', front: 'Which caching strategy suits a news feed, and why?', back: 'Stale-while-revalidate — the cached copy paints instantly while a fresh copy is fetched in the background. One revision behind is acceptable for a feed.', tags: ['pwa'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
   { id: 'fc-mob-28', topicId: 'mobile-performance-security', front: 'Name the three Core Web Vitals and their good thresholds.', back: 'LCP 2.5 s or less, INP 200 ms or less, CLS 0.1 or less — all assessed at the 75th percentile of real page loads.', tags: ['performance'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
   { id: 'fc-mob-29', topicId: 'mobile-performance-security', front: 'Can a JWT be safely hidden in localStorage?', back: 'No. Any script running on the origin can read localStorage, IndexedDB, and caches. Tokens need short lifetimes and server-side revocation instead.', tags: ['security'], easeFactor: 2.5, interval: 0, repetitions: 0, nextReview: 0, masteryLevel: 'new' },
+
+  {
+    id: 'fc-mob-30',
+    topicId: 'mobile-js-arrays-math',
+    front: 'What does typeof 42 evaluate to in JavaScript?',
+    back: '"number" (a lowercase string representing the numeric primitive type).',
+    tags: ['javascript', 'types', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-31',
+    topicId: 'mobile-js-arrays-math',
+    front: 'Why does typeof [1, 2, 3] return "object" and how do you reliably check for an array?',
+    back: 'Arrays are specialized objects in JavaScript. Use Array.isArray([1, 2, 3]) which returns true.',
+    tags: ['javascript', 'arrays', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-32',
+    topicId: 'mobile-js-arrays-math',
+    front: 'What is the exact output range of Math.random()?',
+    back: 'A pseudorandom floating-point number n where 0 <= n < 1 (0 inclusive to 1 exclusive; can return 0, never 1).',
+    tags: ['javascript', 'math', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-33',
+    topicId: 'mobile-js-arrays-math',
+    front: 'What is the difference between break and continue inside a loop?',
+    back: 'break immediately terminates the entire loop; continue skips the rest of the current iteration and jumps to the next.',
+    tags: ['javascript', 'control-flow', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-34',
+    topicId: 'mobile-js-arrays-math',
+    front: 'What does the remainder operator % calculate, e.g. 17 % 5?',
+    back: 'It returns the integer remainder after division; 17 % 5 evaluates to 2.',
+    tags: ['javascript', 'operators', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-35',
+    topicId: 'mobile-es6-features',
+    front: 'When was the first standardized version of ECMAScript released?',
+    back: 'In 1997 (ECMA-262 1st Edition).',
+    tags: ['es6', 'history', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-36',
+    topicId: 'mobile-es6-features',
+    front: 'What scoping do variables declared with let and const have?',
+    back: 'Block scope: they are accessible only within the nearest enclosing block {} where declared.',
+    tags: ['es6', 'scoping', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-37',
+    topicId: 'mobile-es6-features',
+    front: 'Which operator simplifies powers and replaces Math.pow() chains in ES6?',
+    back: 'The exponentiation operator (**), e.g. 2 ** 3 evaluates to 8 instead of Math.pow(2, 3).',
+    tags: ['es6', 'syntax', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-38',
+    topicId: 'mobile-es6-features',
+    front: 'What does an async function always return in JavaScript?',
+    back: 'An async function ALWAYS returns a Promise (wrapping any primitive return value in Promise.resolve).',
+    tags: ['es6', 'async', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-39',
+    topicId: 'mobile-es6-features',
+    front: 'What does Object.values() and Object.fromEntries() return?',
+    back: 'Object.values() returns an array of an object values; Object.fromEntries() converts an iterable of [key, value] pairs back into an object.',
+    tags: ['es6', 'objects', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-40',
+    topicId: 'mobile-react-fundamentals',
+    front: 'What are React components and what compiler transpiles JSX?',
+    back: 'Independent, reusable bits of code that work in isolation and return HTML/JSX via a render function. Babel is the compiler and transpiler used.',
+    tags: ['react', 'components', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-41',
+    topicId: 'mobile-react-fundamentals',
+    front: 'How are JavaScript expressions evaluated inside JSX markup?',
+    back: 'Inside curly braces {}, e.g. {1 + 1} renders 2, and {i === 1 ? "True" : "False"} renders True if i is 1.',
+    tags: ['react', 'jsx', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-42',
+    topicId: 'mobile-react-fundamentals',
+    front: 'How is a React class component created to inherit component functionality?',
+    back: 'By using class MyComponent extends React.Component, and defining a render() method.',
+    tags: ['react', 'class-components', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-43',
+    topicId: 'mobile-react-fundamentals',
+    front: 'Where should component properties that change over time be stored, and how do Props differ?',
+    back: 'In an object called state (updating state triggers re-render). Props are read-only and passed unidirectionally from parent to child.',
+    tags: ['react', 'props-state', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-44',
+    topicId: 'mobile-react-fundamentals',
+    front: 'Which lifecycle method is the first method called when a component gets updated?',
+    back: 'componentDidUpdate() (it runs after qualifying state or prop updates; it does NOT run during initial mount).',
+    tags: ['react', 'lifecycle', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-45',
+    topicId: 'mobile-react-fundamentals',
+    front: 'What is the correct syntax to import useState in React?',
+    back: 'import React, { useState } from "react"; (or import { useState } from "react";).',
+    tags: ['react', 'hooks', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-46',
+    topicId: 'mobile-react-native-core',
+    front: 'What connects React Native JavaScript code to native mobile components?',
+    back: 'The Bridge (which serializes and transmits asynchronous JSON messages between the JS thread and native threads).',
+    tags: ['react-native', 'bridge', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-47',
+    topicId: 'mobile-react-native-core',
+    front: 'Is <div> a core React Native component?',
+    back: 'No. <div> is an HTML element. React Native core components include View, Text, TextInput, Image, ScrollView, FlatList, and Modal.',
+    tags: ['react-native', 'components', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-48',
+    topicId: 'mobile-react-native-core',
+    front: 'Which CLI commands were traditionally used to create a project and run on an Android emulator?',
+    back: 'react-native init to create a new project; react-native run-android to run on an Android emulator.',
+    tags: ['react-native', 'cli', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+  {
+    id: 'fc-mob-49',
+    topicId: 'mobile-react-native-core',
+    front: 'What component displays large dynamic lists efficiently, and what library stores small key-value data asynchronously?',
+    back: 'FlatList renders large data sets in a scrollable list; AsyncStorage stores and retrieves small amounts of data asynchronously.',
+    tags: ['react-native', 'flatlist', 'asyncstorage', 'exam'],
+    easeFactor: 2.5,
+    interval: 1,
+    repetitions: 0,
+    nextReview: 0,
+    masteryLevel: 'new',
+  },
+
 ];
 
 export const questions: Question[] = [
@@ -1280,4 +2020,320 @@ export const questions: Question[] = [
     explanation: 'A mean is dominated by fast loads and can look healthy while a large minority has an unusable experience. The 75th percentile keeps the target honest about real-world conditions.',
     adaptiveWeight: 2,
   },
+
+  {
+    id: 'q-mob-21',
+    topicId: 'mobile-js-arrays-math',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'What is the evaluated result of the expression typeof 42 in JavaScript?',
+    options: ['"number"', '"Number"', '"integer"', '42'],
+    correct: [0],
+    explanation: 'The typeof operator in JavaScript returns the primitive type as a lowercase string; for any numeric primitive, it produces "number".',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-22',
+    topicId: 'mobile-js-arrays-math',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'Given const cars = ["Saab", "Volvo", "BMW"]; what does cars[0] evaluate to, and what does typeof cars return?',
+    options: [
+      '"Saab" and "object"',
+      '"Saab" and "array"',
+      '"Volvo" and "object"',
+      '0 and "Array"'
+    ],
+    correct: [0],
+    explanation: 'Arrays in JavaScript use zero-based indexing, so cars[0] is the first item ("Saab"). Under the JavaScript type system, arrays are specialized objects, so typeof cars returns "object".',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-23',
+    topicId: 'mobile-js-arrays-math',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'Which built-in JavaScript method should be used to reliably verify if a variable holding a list is an array?',
+    options: ['Array.isArray(variable)', 'typeof variable === "array"', 'variable instanceof "array"', 'Array.check(variable)'],
+    correct: [0],
+    explanation: 'Array.isArray() is the official ECMAScript static method designed to reliably detect arrays, overcoming the fact that typeof returns "object".',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-24',
+    topicId: 'mobile-js-arrays-math',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'Which statement accurately describes the output range of the built-in Math.random() function?',
+    options: [
+      'A pseudorandom floating-point number between 0 inclusive and 1 exclusive (0 <= n < 1)',
+      'A pseudorandom number between 0 and 1 inclusive (0 <= n <= 1)',
+      'A random integer between 1 and 10',
+      'A random integer between 0 and 100'
+    ],
+    correct: [0],
+    explanation: 'Math.random() returns a floating-point value n such that 0 <= n < 1. It can return 0, but it never reaches exactly 1.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-25',
+    topicId: 'mobile-js-arrays-math',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'Inside a loop, what is the exact difference between the break statement and the continue statement?',
+    options: [
+      'break terminates the entire loop, while continue skips the remainder of the current iteration',
+      'continue terminates the loop, while break pauses execution for 1 second',
+      'break restarts the loop from index 0, while continue exits the program',
+      'They are completely interchangeable synonyms'
+    ],
+    correct: [0],
+    explanation: 'break immediately exits the enclosing loop structure. continue halts execution of the current iteration and advances the loop counter to the next iteration.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-26',
+    topicId: 'mobile-js-arrays-math',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'What does the JavaScript expression 17 % 5 evaluate to?',
+    options: ['2', '3', '3.4', '0'],
+    correct: [0],
+    explanation: 'The % remainder operator returns the integer remainder of division: 17 divided by 5 is 3 with a remainder of 2.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-27',
+    topicId: 'mobile-es6-features',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'In what year was the first standardized version of ECMAScript (ECMA-262) officially released?',
+    options: ['1997', '1995', '2015', '2000'],
+    correct: [0],
+    explanation: 'The first edition of the ECMAScript standard (ECMA-262) was adopted by the Ecma General Assembly in June 1997.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-28',
+    topicId: 'mobile-es6-features',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'How does the scoping of let and const compare to traditional var declarations in JavaScript?',
+    options: [
+      'let and const are block-scoped, while var is function-scoped',
+      'let and const are function-scoped, while var is block-scoped',
+      'let is global-scoped, while const is function-scoped',
+      'All three declarations have identical lexical block scoping'
+    ],
+    correct: [0],
+    explanation: 'Variables declared with let and const are block-scoped ({}), making them accessible only within their declaring block. var is function-scoped and hoists undefined.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-29',
+    topicId: 'mobile-es6-features',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'Which ES6 operator simplifies exponentiation math and directly replaces messy Math.pow() chains?',
+    options: ['**', '^', '^^', '//'],
+    correct: [0],
+    explanation: 'The exponentiation operator ** raises the base to the exponent (e.g. 2 ** 3 equals 8), cleanly replacing Math.pow(2, 3).',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-30',
+    topicId: 'mobile-es6-features',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'What is the return value of an async function in JavaScript?',
+    options: ['Always a Promise', 'The raw synchronous value directly', 'A callback function', 'undefined only'],
+    correct: [0],
+    explanation: 'An async function always wraps its return value in a Promise. Even if you write "return 42", the caller receives Promise.resolve(42).',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-31',
+    topicId: 'mobile-es6-features',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'Which method returns an array of all the values of an object in JavaScript?',
+    options: ['Object.values(obj)', 'Object.entries(obj)', 'Object.keys(obj)', 'Object.fromEntries(obj)'],
+    correct: [0],
+    explanation: 'Object.values() returns an array containing all enumerable property values of the passed object.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-32',
+    topicId: 'mobile-es6-features',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'What is the result of evaluating [1, [2, 3], [[4]]].flat() with the default depth?',
+    options: ['[1, 2, 3, [4]]', '[1, 2, 3, 4]', '[[1, 2, 3, 4]]', '[1, [2, 3, 4]]'],
+    correct: [0],
+    explanation: 'Array.prototype.flat() defaults to a depth of 1, so the outer sub-arrays are flattened to give [1, 2, 3, [4]].',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-33',
+    topicId: 'mobile-react-fundamentals',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'What is the fundamental definition of a React component?',
+    options: [
+      'Independent, reusable bits of code that work in isolation and return HTML/JSX via a render function',
+      'A database table storing JSON documents',
+      'A CSS stylesheet that automatically compiles Sass',
+      'A backend Node.js HTTP router'
+    ],
+    correct: [0],
+    explanation: 'React components are independent, reusable units of code that work in isolation and return UI markup via a render function or return statement.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-34',
+    topicId: 'mobile-react-fundamentals',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'How does React JSX evaluate expressions, and what is rendered by {1 + 1} and {i === 1 ? "True" : "False"} when i is 1?',
+    options: [
+      'Curly braces evaluate expressions: {1 + 1} renders 2, and the ternary renders "True"',
+      'Square brackets evaluate expressions: [1 + 1] renders "1+1"',
+      'HTML entities evaluate expressions: &eval(1+1) renders 2',
+      'JSX cannot evaluate arithmetic or ternary expressions'
+    ],
+    correct: [0],
+    explanation: 'In JSX, curly braces {} evaluate JavaScript expressions. {1 + 1} renders 2, and {i === 1 ? "True" : "False"} renders "True" when i is 1.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-35',
+    topicId: 'mobile-react-fundamentals',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'What syntax is required to create a React class component that inherits component features?',
+    options: [
+      'class MyComponent extends React.Component',
+      'class MyComponent implements ReactComponent',
+      'function MyComponent extends React',
+      'const MyComponent = new React.Class()'
+    ],
+    correct: [0],
+    explanation: 'React class components are created by declaring a class that extends React.Component to inherit its state, lifecycle, and methods.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-36',
+    topicId: 'mobile-react-fundamentals',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'In React, where should component properties that change over time be stored, and how are Props handled?',
+    options: [
+      'In an object called state; Props are read-only and passed from parent to child',
+      'In an object called props; State is read-only and passed from child to parent',
+      'In global variables; Props and State are identical',
+      'In HTML data-attributes only'
+    ],
+    correct: [0],
+    explanation: 'Component properties that change over time should be kept in state. Props are read-only and flow unidirectionally from parent to child.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-37',
+    topicId: 'mobile-react-fundamentals',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'In a React class component, which lifecycle method is the first method called when a component gets updated?',
+    options: ['componentDidUpdate()', 'componentDidMount()', 'componentWillUnmount()', 'componentWillMount()'],
+    correct: [0],
+    explanation: 'componentDidUpdate() is the first method called after a component update occurs (e.g. after setState or receiving new props). It does NOT run on initial mount.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-38',
+    topicId: 'mobile-react-fundamentals',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'What is the correct syntax for importing React and the useState hook in modern React code?',
+    options: [
+      'import React, { useState } from "react";',
+      'import { React, useState } from "react-dom";',
+      'const { useState } = require("react-hooks");',
+      'include React.useState from "react";'
+    ],
+    correct: [0],
+    explanation: 'The standard ES module syntax is import React, { useState } from "react"; which imports the React default export and the named useState hook.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-39',
+    topicId: 'mobile-react-native-core',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'Which of the following is NOT a core React Native component?',
+    options: ['<div>', 'View', 'Text', 'FlatList'],
+    correct: [0],
+    explanation: '<div> is an HTML web element and is NOT a core React Native component. React Native uses View, Text, FlatList, TextInput, etc.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-40',
+    topicId: 'mobile-react-native-core',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'What is the correct syntax for declaring a single-line text input with placeholder text in React Native?',
+    options: [
+      '<TextInput placeholder="Enter your name" />',
+      '<input type="text" placeholder="Enter your name" />',
+      '<Text placeholder="Enter your name" />',
+      '<TextInput text="Enter your name" />'
+    ],
+    correct: [0],
+    explanation: 'The core component for capturing text is <TextInput placeholder="Enter your name" />.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-41',
+    topicId: 'mobile-react-native-core',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'Which React Native component is optimized to display large sets of data or dynamic content in a scrollable list?',
+    options: ['FlatList', 'ScrollView', 'ListView', 'DataGrid'],
+    correct: [0],
+    explanation: 'FlatList is designed specifically for large, dynamic data sets. It virtualizes the list, rendering only items currently visible on screen to conserve memory.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-42',
+    topicId: 'mobile-react-native-core',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'In React Native, which component is used to present temporary overlays such as alerts and dialogs over the current screen?',
+    options: ['Modal', 'Overlay', 'AlertBox', 'Popup'],
+    correct: [0],
+    explanation: 'The core <Modal> component is used to present temporary overlays like alerts and dialogs on top of the enclosing view.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-43',
+    topicId: 'mobile-react-native-core',
+    difficulty: 3,
+    type: 'mcq',
+    stem: 'Which storage library is used in React Native applications to store and retrieve small amounts of data asynchronously?',
+    options: ['AsyncStorage', 'localStorage', 'sessionStorage', 'IndexedDB'],
+    correct: [0],
+    explanation: 'AsyncStorage is an asynchronous, unencrypted, persistent key-value storage system for React Native used to store and retrieve small amounts of data.',
+    adaptiveWeight: 1,
+  },
+  {
+    id: 'q-mob-44',
+    topicId: 'mobile-react-native-core',
+    difficulty: 2,
+    type: 'mcq',
+    stem: 'What is the correct syntax to apply styles defined in a StyleSheet object to a Text component?',
+    options: ['<Text style={styles.myText}>', '<Text class="myText">', '<Text stylesheet={styles.myText}>', '<Text css={styles.myText}>'],
+    correct: [0],
+    explanation: 'React Native styles are applied via the style prop using JavaScript object references, e.g. <Text style={styles.myText}>.',
+    adaptiveWeight: 1,
+  },
+
 ];

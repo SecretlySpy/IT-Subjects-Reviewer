@@ -38,6 +38,18 @@ const modules = [
     objective: "Understand how an engine executes a script, and the type, control-flow, and binding rules underneath modern syntax.",
   },
   {
+    id: "m6",
+    label: "6",
+    title: "React Fundamentals",
+    objective: "Master React components, JSX syntax, unidirectional props, component state, lifecycle methods, hooks, and event handling.",
+  },
+  {
+    id: "m7",
+    label: "7",
+    title: "React Native & Mobile App Development",
+    objective: "Develop cross-platform mobile apps using React Native, the native Bridge, core components, StyleSheet styling, React Navigation, and AsyncStorage.",
+  },
+  {
     id: "m5",
     label: "5",
     title: "Modern Mobile Web Platform",
@@ -46,6 +58,13 @@ const modules = [
 ];
 
 const sources = {
+  mdnArray: { title: "Array - JavaScript | MDN", publisher: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" },
+  mdnFunctions: { title: "Functions - JavaScript | MDN", publisher: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" },
+  mdnMath: { title: "Math.random() - JavaScript | MDN", publisher: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random" },
+  reactDocs: { title: "React Documentation", publisher: "React Community / Meta", url: "https://react.dev/" },
+  reactJSX: { title: "Writing Markup with JSX", publisher: "React Documentation", url: "https://react.dev/learn/writing-markup-with-jsx" },
+  reactNativeDocs: { title: "React Native Core Components and APIs", publisher: "Meta Open Source", url: "https://reactnative.dev/docs/components-and-apis" },
+  reactNavigationDocs: { title: "React Navigation Guides", publisher: "Software Mansion", url: "https://reactnavigation.org/docs/getting-started" },
   javascript: { title: "JavaScript language overview", publisher: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Language_overview" },
   formData: { title: "FormData", publisher: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/API/FormData" },
   submit: { title: "HTMLFormElement: submit event", publisher: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event" },
@@ -972,6 +991,399 @@ class BookClass {
     ],
     sources: [sources.vitals, sources.responsive, sources.wcag, sources.permissions],
   },
+  {
+    id: "js-arrays-math",
+    moduleId: "m4",
+    unit: "4.5",
+    estimatedMinutes: 30,
+    title: "Arrays, Functions, and Math Methods",
+    color: "emerald",
+    subtitle: "Bracket declaration, zero-based indexing, Array.isArray(), function definitions, and Math.random().",
+    beginner: "Arrays store ordered collections using square brackets. In JavaScript, typeof [] is 'object', so Array.isArray() is required to detect arrays. Functions encapsulate reusable logic with the return keyword, and Math.random() produces decimal values between 0 (inclusive) and 1 (exclusive).",
+    example: "let cars = ['Saab', 'Volvo', 'BMW']; cars[0] is 'Saab', cars.length is 3, and Array.isArray(cars) is true.",
+    objectives: [
+      "Declare arrays with brackets, inspect length, and access elements with zero-based indexes.",
+      "Distinguish array type inspection (typeof [] === 'object' vs Array.isArray()).",
+      "Define functions with correct syntax and use return to output values.",
+      "Utilize Math.random() and predict modulo % and loop control (break/continue) outputs.",
+    ],
+    terms: ["Array Declaration", "Zero-Indexing", "Array.isArray()", "Function Declaration", "return Statement", "Math.random()"],
+    keyPoints: [
+      "Arrays are declared using brackets: let myArray = [] or var cars = ['Saab', 'Volvo', 'BMW'].",
+      "Elements are accessed via zero-based indexes: array[0] accesses the first element.",
+      "The .length property returns the element count, and Array.isArray() verifies arrays (since typeof [] returns 'object').",
+      "Functions are declared with function myFunction() {} and invoked with myFunction(); return sends back a value.",
+      "Math.random() generates a pseudo-random floating-point number in the range [0, 1) — inclusive of 0, exclusive of 1.",
+      "The remainder operator % returns division remainder; break terminates a loop; continue skips to the next iteration.",
+    ],
+    compare: {
+      headers: ["Construct / Method", "Syntax / Expression", "Result / Behavior"],
+      rows: [
+        ["Array declaration", "let arr = ['A', 'B']", "Creates an array with length 2"],
+        ["Type check (typeof)", "typeof [1, 2, 3]", "'object' (historical JS design)"],
+        ["Array check", "Array.isArray([1, 2, 3])", "true (correct diagnostic check)"],
+        ["Function syntax", "function add(a, b) { return a + b; }", "Returns evaluated sum to caller"],
+        ["Math.random()", "Math.random()", "Decimal d where 0 <= d < 1"],
+        ["Loop control", "break vs continue", "break exits loop; continue jumps to next loop cycle"],
+      ],
+    },
+    flow: [
+      ["Declare", "Define array using brackets let arr = ['Apple', 'Banana']."],
+      ["Index", "Access first item via arr[0] and inspect length with arr.length."],
+      ["Verify", "Check with Array.isArray(arr) before calling methods like push, pop, or map."],
+      ["Execute", "Call declared function with arguments and process returned output."],
+    ],
+    lessonBlocks: [
+      {
+        kind: "code",
+        title: "Array and Function Operations",
+        language: "javascript",
+        code: `// Array declaration and zero-based indexing
+const cars = ['Saab', 'Volvo', 'BMW'];
+console.log(cars[0]); // 'Saab'
+console.log(cars.length); // 3
+console.log(typeof cars); // 'object'
+console.log(Array.isArray(cars)); // true
+
+// Function definition and invocation
+function myFunction(value) {
+  return 'Result: ' + value;
+}
+console.log(myFunction(42)); // 'Result: 42'
+
+// Math.random() range [0, 1)
+const roll = Math.floor(Math.random() * 6) + 1; // Integer 1 to 6
+
+// Modulo and loop control
+for (let i = 1; i <= 5; i++) {
+  if (i % 2 === 0) continue; // skip even numbers
+  console.log(i); // prints 1, 3, 5
+}`,
+        caption: "Arrays use bracket indexing while Array.isArray() safely verifies array identity.",
+      },
+      { kind: "callout", tone: "note", title: "Examination Takeaway", text: "typeof 42 is 'number', but typeof [] is 'object'! To determine if a value is an array, invoke Array.isArray()." },
+    ],
+    sources: [sources.mdnArray, sources.mdnFunctions, sources.mdnMath],
+  },
+  {
+    id: "react-core-jsx",
+    moduleId: "m6",
+    unit: "6.1",
+    estimatedMinutes: 35,
+    title: "React Core Concepts & JSX Syntax",
+    color: "blue",
+    subtitle: "Independent reusable components, Babel transpilation, and JSX embedded expressions.",
+    beginner: "React builds user interfaces out of independent, reusable components that work in isolation. JSX is a syntax extension that looks like HTML but allows full JavaScript expressions inside curly braces, transpiled by Babel into React element function calls.",
+    example: "Embedding {1 + 1} evaluates to 2, and {i === 1 ? 'True' : 'False'} renders 'True' when i equals 1.",
+    objectives: [
+      "Understand React components as isolated, reusable UI building blocks.",
+      "Identify Babel as the compiler and transpiler transforming JSX into JavaScript.",
+      "Embed expressions in JSX using curly braces and predict evaluation outcomes.",
+      "Apply JSX rules including className, closing tags, fragments, and keys in lists.",
+    ],
+    terms: ["React Component", "Babel", "JSX", "Transpilation", "Embedded Expressions", "React Fragment"],
+    keyPoints: [
+      "React components are independent, reusable bits of code that work in isolation and return UI markup.",
+      "Babel is the JavaScript compiler and transpiler used to convert JSX tags into standard React.createElement calls.",
+      "Curly braces {} in JSX evaluate embedded JavaScript expressions, such as {1+1} yielding 2 or ternary conditionals.",
+      "JSX attributes use camelCase (e.g. className, onClick) and all tags must be explicitly closed.",
+      "Lists rendered in JSX require unique 'key' props to assist the virtual DOM reconciler.",
+    ],
+    compare: {
+      headers: ["HTML Standard", "JSX Equivalent", "Explanation"],
+      rows: [
+        ["class='card'", "className='card'", "class is a reserved keyword in JavaScript"],
+        ["onclick='handleClick()'", "onClick={handleClick}", "Passes function reference instead of inline string"],
+        ["<input>", "<input />", "All JSX elements must be self-closing or paired"],
+        ["Static text only", "{variable || expression}", "Curly braces evaluate dynamic JavaScript directly"],
+        ["Multiple roots allowed", "<> <ChildA /> <ChildB /> </>", "JSX requires a single root element or Fragment"],
+      ],
+    },
+    flow: [
+      ["Write JSX", "Author declarative markup with embedded expressions {expression}."],
+      ["Babel Transpile", "Babel compiles JSX tags into React.createElement() calls."],
+      ["Virtual DOM", "React builds the in-memory component tree representation."],
+      ["Reconcile & Paint", "React computes minimal DOM diffs and commits updates to the browser."],
+    ],
+    lessonBlocks: [
+      {
+        kind: "code",
+        title: "JSX Expressions and Transpilation",
+        language: "javascript",
+        code: `// JSX Component with embedded expressions
+function ScoreCard({ score, isFinal }) {
+  const i = 1;
+  return (
+    <div className="score-card">
+      <h3>Total: {1 + 1}</h3>
+      <p>Status: {i === 1 ? 'True' : 'False'}</p>
+      {isFinal && <span className="badge">Official</span>}
+    </div>
+  );
+}
+
+// Babel compiles <div className="score-card">...</div> into:
+// React.createElement('div', { className: 'score-card' }, ...);`,
+        caption: "Babel transpiles JSX tags into React.createElement calls while expressions inside curly braces evaluate directly.",
+      },
+      { kind: "callout", tone: "note", title: "Examination Takeaway", text: "JSX is not HTML! It is syntactic sugar for React.createElement(). Expressions inside curly braces { } are evaluated immediately in their surrounding JavaScript scope." },
+    ],
+    sources: [sources.reactDocs, sources.reactJSX],
+  },
+  {
+    id: "react-components-state-lifecycle",
+    moduleId: "m6",
+    unit: "6.2",
+    estimatedMinutes: 40,
+    title: "Components, Props, State, Lifecycle & Events",
+    color: "purple",
+    subtitle: "Class vs functional components, unidirectional props, component state, componentDidUpdate, and events.",
+    beginner: "Props pass data down from parent to child in a read-only, unidirectional stream. State holds mutable local data that triggers rerenders when changed. Class components inherit from React.Component, while modern components use Hooks like useState.",
+    example: "Calling this.setState({ count: count + 1 }) or setCount(c => c + 1) schedules a rerender. When an existing component receives updates, componentDidUpdate() is called first.",
+    objectives: [
+      "Distinguish class components (extends React.Component) from functional components with Hooks.",
+      "Understand unidirectional data flow and why props are strictly read-only.",
+      "Manage component properties in state and trigger deterministic rerenders.",
+      "Explain the lifecycle sequence: componentDidMount on creation, componentDidUpdate on subsequent updates.",
+      "Bind event handlers properly using onClick and parameter closures.",
+    ],
+    terms: ["extends React.Component", "Props", "State", "useState Hook", "componentDidUpdate", "SyntheticEvent"],
+    keyPoints: [
+      "Class components declare extends React.Component to inherit component features and the render() method.",
+      "Props pass data from parent to child in an immutable, unidirectional flow; a component must never mutate its own props.",
+      "Mutable component properties must be stored in an object called state.",
+      "Modern functional components use hooks: import React, { useState } from 'react'.",
+      "componentDidUpdate() is the first lifecycle method invoked after an existing component is updated and rerendered.",
+      "React event names use camelCase (onClick) and accept function references rather than function invocations.",
+    ],
+    compare: {
+      headers: ["Aspect", "Props", "State"],
+      rows: [
+        ["Origin", "Passed from parent component", "Created and owned within the component"],
+        ["Mutability", "Read-only (immutable)", "Mutable via setState() or state updater hook"],
+        ["Purpose", "Configure child behavior and appearance", "Track interactive, dynamic user or network data"],
+        ["Rerender effect", "Parent rerenders child with new props", "Updating state triggers local component rerender"],
+      ],
+    },
+    flow: [
+      ["Mounting", "constructor() -> render() -> DOM updated -> componentDidMount()"],
+      ["Updating", "New props / setState() -> render() -> DOM updated -> componentDidUpdate()"],
+      ["Unmounting", "componentWillUnmount() cleans up timers, subscriptions, and listeners."],
+    ],
+    lessonBlocks: [
+      {
+        kind: "code",
+        title: "Class vs Functional Component Comparison",
+        language: "javascript",
+        code: `// Class Component (Exam Core)
+import React from 'react';
+
+class CounterClass extends React.Component {
+  state = { count: 0 };
+
+  componentDidUpdate(prevProps, prevState) {
+    // First method called after an existing component updates
+    console.log('Updated count:', this.state.count);
+  }
+
+  render() {
+    return (
+      <button onClick={() => this.setState({ count: this.state.count + 1 })}>
+        Count: {this.state.count}
+      </button>
+    );
+  }
+}
+
+// Functional Component with Hook (Modern Standard)
+import React, { useState } from 'react';
+
+function CounterHook() {
+  const [count, setCount] = useState(0);
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Count: {count}
+    </button>
+  );
+}`,
+        caption: "componentDidUpdate() runs after qualifying updates, while useState provides state in functional components.",
+      },
+      { kind: "callout", tone: "note", title: "Examination Takeaway", text: "componentDidUpdate() is NOT called on initial mount — it is called first when an existing component receives updates from new props or state changes." },
+    ],
+    sources: [sources.reactDocs],
+  },
+  {
+    id: "react-native-architecture-components",
+    moduleId: "m7",
+    unit: "7.1",
+    estimatedMinutes: 40,
+    title: "React Native Architecture, CLI & Core Components",
+    color: "amber",
+    subtitle: "Cross-platform Bridge architecture, CLI commands, and native UI building blocks.",
+    beginner: "React Native compiles JavaScript logic into truly native Android and iOS views via an asynchronous Bridge. Instead of web <div> and <span>, it provides native primitives like <View>, <Text>, <FlatList>, <Modal>, and <TextInput>.",
+    example: "react-native init MyApp creates a project, and react-native run-android boots it on the emulator. Text styling is applied with style={styles.myText}.",
+    objectives: [
+      "Explain how the React Native Bridge communicates asynchronously with native OEM widgets.",
+      "Execute CLI commands: react-native init to scaffold projects and react-native run-android to execute.",
+      "Apply core components: View for layout, Text for all text strings, and recognize that div is NOT a core component.",
+      "Implement FlatList for performant scrollable lists and Modal for overlays.",
+      "Style components using StyleSheet.create and style={styles.myText}.",
+    ],
+    terms: ["React Native Bridge", "react-native init", "react-native run-android", "View Component", "Text Component", "FlatList", "Modal", "TextInput", "StyleSheet"],
+    keyPoints: [
+      "React Native is a cross-platform mobile framework using JavaScript to build native apps with OEM widgets.",
+      "The Bridge serializes messages asynchronously between the JavaScript runtime (JSC/Hermes) and native platform threads.",
+      "CLI Commands: react-native init creates a new project; react-native run-android launches it on an Android emulator or device.",
+      "Core components: View (container) and Text (all text must be inside Text; div is NOT a core React Native component).",
+      "Modal provides temporary modal overlays for dialogs and alerts.",
+      "FlatList efficiently displays large scrollable lists using windowing and virtualization.",
+      "TextInput syntax: <TextInput placeholder='Enter your name' />.",
+      "Styles are written with StyleSheet.create and referenced via style={styles.myText}.",
+    ],
+    compare: {
+      headers: ["Web (HTML/DOM)", "React Native Core", "Native Android Primitive", "Behavior"],
+      rows: [
+        ["<div>", "<View>", "android.view.ViewGroup", "Layout box, defaults to flexbox column"],
+        ["<p>, <span>", "<Text>", "android.widget.TextView", "Required for all text rendering in RN"],
+        ["<input type='text'>", "<TextInput placeholder='...'>", "android.widget.EditText", "Controlled text input with keyboard support"],
+        ["<ul>, <table>", "<FlatList data={...}>", "androidx.recyclerview.widget.RecyclerView", "Virtualized list recycling view items"],
+        ["<dialog>, alert()", "<Modal visible={...}>", "android.app.Dialog", "Full-screen or overlay popup layer"],
+      ],
+    },
+    flow: [
+      ["Init CLI", "Run react-native init MobileApp to scaffold native iOS/Android wrappers."],
+      ["Compose UI", "Assemble View, Text, TextInput, and FlatList with StyleSheet styling."],
+      ["Bridge", "JavaScript commands serialize as JSON over the bridge to native UI managers."],
+      ["Run Android", "Execute react-native run-android to package APK and deploy to emulator."],
+    ],
+    lessonBlocks: [
+      {
+        kind: "code",
+        title: "React Native Core App Structure",
+        language: "javascript",
+        code: `import React, { useState } from 'react';
+import { StyleSheet, View, Text, TextInput, Modal, Button } from 'react-native';
+
+export default function App() {
+  const [name, setName] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.myText}>Welcome to Mobile Computing</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your name"
+        value={name}
+        onChangeText={setName}
+      />
+      <Button title="Show Modal" onPress={() => setModalVisible(true)} />
+      <Modal visible={modalVisible} transparent={true} animationType="slide">
+        <View style={styles.modalContent}>
+          <Text>Hello, {name}!</Text>
+          <Button title="Close" onPress={() => setModalVisible(false)} />
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, justifyContent: 'center' },
+  myText: { fontSize: 20, fontWeight: 'bold', color: '#1e293b' },
+  input: { borderWidth: 1, borderColor: '#cbd5e1', padding: 10, marginVertical: 10 },
+  modalContent: { margin: 20, backgroundColor: 'white', padding: 35, borderRadius: 10 },
+});`,
+        caption: "React Native uses View and Text instead of div and p, with styles referenced as style={styles.myText}.",
+      },
+      { kind: "callout", tone: "warning", title: "No HTML Tags", text: "Never use <div> in React Native! Core primitives are <View> and <Text>. Text styling is applied with style={styles.myText}, and text inputs use <TextInput placeholder='Enter your name' />." },
+    ],
+    sources: [sources.reactNativeDocs],
+  },
+  {
+    id: "react-native-ecosystem-apps",
+    moduleId: "m7",
+    unit: "7.2",
+    estimatedMinutes: 45,
+    title: "React Native Ecosystem, Tooling & Practice Apps",
+    color: "cyan",
+    subtitle: "Chrome DevTools debugging, React Navigation, AsyncStorage, and 6 core practical mobile apps.",
+    beginner: "React Native applications rely on Chrome DevTools for inspection, React Navigation for multi-screen stacks and tabs, and AsyncStorage for persisting offline key-value data. The curriculum culminates in six practical apps demonstrating these features.",
+    example: "AsyncStorage.setItem('theme', 'dark') stores settings asynchronously, while createStackNavigator manages screen transitions.",
+    objectives: [
+      "Debug React Native apps with Chrome Developer Tools and React DevTools.",
+      "Implement multi-screen flows using React Navigation containers and stack/tab navigators.",
+      "Store and retrieve offline persistent key-value data asynchronously with AsyncStorage.",
+      "Understand the architecture of the 6 required practice apps: Profile Card, Counter, Recipe/Todo, Form, Navigation, and Weather.",
+    ],
+    terms: ["Chrome Developer Tools", "React Navigation", "AsyncStorage", "setItem", "getItem", "Practice Apps"],
+    keyPoints: [
+      "Chrome Developer Tools allow setting breakpoints, logging network requests, and profiling JS execution in React Native.",
+      "React Navigation is the standard community routing library for Stack, Tab, and Drawer navigators.",
+      "AsyncStorage is an unencrypted, asynchronous, persistent key-value storage system for small data payloads.",
+      "Practice App 1: Profile Card demonstrates View, Text, Image, and StyleSheet flexbox.",
+      "Practice App 2: Counter / Tally demonstrates useState and touchable interaction.",
+      "Practice App 3: Recipe / Todo List demonstrates FlatList with dynamic keys.",
+      "Practice App 4: Form & Modal demonstrates TextInput, placeholder, and Modal overlays.",
+      "Practice App 5: Tab / Stack Navigation demonstrates screen routing and parameter passing.",
+      "Practice App 6: Weather / Notes demonstrates fetching REST APIs and saving data with AsyncStorage.",
+    ],
+    compare: {
+      headers: ["Practice Application", "Key Components Used", "Core Learning Outcome"],
+      rows: [
+        ["1. Profile Card", "View, Text, Image, StyleSheet", "Mastering native layout, flexbox, and styling"],
+        ["2. Counter / Tally", "useState, TouchableOpacity / Pressable", "State-driven rerendering and touch events"],
+        ["3. Recipe / Todo List", "FlatList, data, renderItem, keyExtractor", "High-performance scrollable list rendering"],
+        ["4. Feedback Form", "TextInput, placeholder, Modal, Button", "Form validation, controlled inputs, and popups"],
+        ["5. Multi-Screen Flow", "NavigationContainer, createNativeStackNavigator", "Stack transitions and header title config"],
+        ["6. Persistent Notes", "AsyncStorage (getItem/setItem), useEffect", "Asynchronous persistence across app restarts"],
+      ],
+    },
+    flow: [
+      ["Scaffold", "Create components and screens with View, Text, and TextInput."],
+      ["Route", "Wrap screens inside NavigationContainer and configure stack/tab navigators."],
+      ["Persist", "Save offline state with AsyncStorage.setItem() on changes."],
+      ["Debug", "Open Chrome Developer Tools to inspect console logs and diagnose errors."],
+    ],
+    lessonBlocks: [
+      {
+        kind: "code",
+        title: "AsyncStorage Integration",
+        language: "javascript",
+        code: `import React, { useState, useEffect } from 'react';
+import { View, Text, Button } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export function SettingsScreen() {
+  const [user, setUser] = useState('');
+
+  useEffect(() => {
+    async function loadUser() {
+      const saved = await AsyncStorage.getItem('@username');
+      if (saved) setUser(saved);
+    }
+    loadUser();
+  }, []);
+
+  const saveUser = async (name) => {
+    await AsyncStorage.setItem('@username', name);
+    setUser(name);
+  };
+
+  return (
+    <View>
+      <Text>Logged in as: {user || 'Guest'}</Text>
+      <Button title="Save Archim" onPress={() => saveUser('Archim')} />
+    </View>
+  );
+}`,
+        caption: "AsyncStorage stores and retrieves small key-value strings asynchronously without blocking UI interactions.",
+      },
+      { kind: "callout", tone: "note", title: "Examination Takeaway", text: "Chrome Developer Tools is the primary tool used for debugging React Native code, React Navigation provides standard routing, and AsyncStorage stores small amounts of data asynchronously." },
+    ],
+    sources: [sources.reactNativeDocs, sources.reactNavigationDocs],
+  },
+
 ];
 
 const glossary = [
@@ -1029,6 +1441,35 @@ const glossary = [
   ["Cumulative Layout Shift", "The Core Web Vital for visual stability; good is 0.1 or less."],
   ["Mobile-First CSS", "Writing small-screen rules as the base and layering enhancements with min-width queries."],
   ["Secure Context", "HTTPS or localhost, required for service workers, geolocation, camera, and other powerful APIs."],
+  ["Array Declaration", "Creating an ordered collection using bracket syntax, e.g. let myArray = [] or var cars = ['Saab', 'Volvo', 'BMW']."],
+  ["Zero-Indexing", "Accessing array elements starting at offset 0, e.g. array[0] retrieves the first element."],
+  ["Array length Property", "The property returning the total count of elements inside an array."],
+  ["Array.isArray", "The standard static method used to reliably determine if a value is an Array, since typeof [] returns 'object'."],
+  ["Function Declaration", "Defining reusable logic using the syntax function myFunction() {}, invoked with myFunction()."],
+  ["return Statement", "The keyword used inside a function to pass an evaluated value back to the caller."],
+  ["Math.random", "A built-in method returning a pseudo-random floating-point number in the range [0, 1) — inclusive of 0, exclusive of 1."],
+  ["Modulo Operator (%)", "The binary operator that calculates the remainder of integer division."],
+  ["break Keyword", "The loop control statement used to terminate loop execution immediately."],
+  ["continue Keyword", "The loop control statement used to skip the remainder of the current loop iteration and advance to the next."],
+  ["React Component", "An independent, reusable piece of UI code that works in isolation and returns markup via a render function."],
+  ["Babel", "The compiler and transpiler used to convert JSX syntax and modern ECMAScript into browser-executable JavaScript."],
+  ["JSX Expression", "JavaScript code evaluated inside curly braces { } within JSX, such as {1+1} yielding 2."],
+  ["Props Unidirectional Flow", "Read-only component parameters passed exclusively from parent to child to guarantee predictable data flow."],
+  ["Component State", "An internal object holding mutable component properties that triggers rerendering when modified."],
+  ["useState Hook", "The React Hook enabling functional components to maintain and update local state: import React, { useState } from 'react'."],
+  ["componentDidUpdate", "The lifecycle method called first when an existing component receives updates from new props or state changes."],
+  ["React Native Bridge", "The asynchronous, serialized communication bus connecting the JavaScript runtime thread to native mobile OEM UI threads."],
+  ["react-native init", "The CLI command used to create and scaffold a new React Native project."],
+  ["react-native run-android", "The CLI command used to build, package, and launch a React Native app on an Android emulator or device."],
+  ["View Component", "The fundamental layout container in React Native, analogous to a div, backed by native view groups."],
+  ["Text Component", "The core React Native primitive required for displaying text strings (div is NOT a core React Native component)."],
+  ["Modal Component", "The core React Native component used to present temporary overlay dialogs and alerts above current content."],
+  ["FlatList", "A high-performance virtualized list component designed for scrolling through large or dynamic datasets efficiently."],
+  ["TextInput Component", "The core component for capturing user keyboard input, formatted as <TextInput placeholder='Enter your name' />."],
+  ["StyleSheet Property", "Styling mechanism in React Native referenced on components via style={styles.myText}."],
+  ["React Navigation", "The standard routing and navigation library for building stack, tab, and drawer screen flows in React Native."],
+  ["AsyncStorage", "An asynchronous, unencrypted, persistent key-value storage system for saving small data payloads in React Native."],
+
 ];
 
 const flashcards = [
@@ -1064,6 +1505,27 @@ const flashcards = [
   { topic: "web-pwa", front: "What does the web app manifest supply?", back: "Name, icons, theme colour, start URL, and display mode - what the browser needs to offer installation." },
   { topic: "web-performance", front: "Name the three Core Web Vitals and their good thresholds.", back: "LCP 2.5 s or less, INP 200 ms or less, CLS 0.1 or less - all at the 75th percentile of real page loads." },
   { topic: "web-performance", front: "Can a token be safely hidden in localStorage?", back: "No. Any script running on the origin can read it. Use short lifetimes and server-side revocation instead." },
+  { topic: "js-arrays-math", front: "What does typeof [] evaluate to in JavaScript, and how do you reliably check for an array?", back: "typeof [] returns 'object'. Use Array.isArray(value) to reliably verify an array." },
+  { topic: "js-arrays-math", front: "What range of numbers does Math.random() generate?", back: "A pseudo-random floating-point decimal between 0 (inclusive) and 1 (exclusive): 0 <= x < 1." },
+  { topic: "js-arrays-math", front: "What is the difference between break and continue in a loop?", back: "break terminates the loop immediately; continue skips the remainder of the current iteration and jumps to the next." },
+  { topic: "js-arrays-math", front: "What is the correct syntax for declaring and invoking a JavaScript function?", back: "Declare with function myFunction() {} and invoke it with myFunction(). Use return to send back a value." },
+  { topic: "react-core-jsx", front: "What compiler and transpiler is used to convert JSX into standard JavaScript?", back: "Babel." },
+  { topic: "react-core-jsx", front: "What does the JSX expression {1 + 1} render, and what does {i == 1 ? 'True' : 'False'} render when i = 1?", back: "{1 + 1} renders 2; {i == 1 ? 'True' : 'False'} renders 'True'." },
+  { topic: "react-core-jsx", front: "Why are React components described as independent and reusable?", back: "They encapsulate their own markup, logic, and state in isolation, returning UI elements via a render function." },
+  { topic: "react-components-state-lifecycle", front: "How do class components inherit access to React component features?", back: "By declaring class MyComponent extends React.Component." },
+  { topic: "react-components-state-lifecycle", front: "Why are props read-only, and where should mutable component values be kept?", back: "Props enforce unidirectional flow from parent to child. Mutable values must be kept in an object called state." },
+  { topic: "react-components-state-lifecycle", front: "What is the correct import statement for the state hook in React?", back: "import React, { useState } from 'react';" },
+  { topic: "react-components-state-lifecycle", front: "Which lifecycle method is the first called when an existing component gets updated?", back: "componentDidUpdate() (it is not called during initial mounting)." },
+  { topic: "react-native-architecture-components", front: "What architecture connects JavaScript to native UI components in React Native?", back: "The React Native Bridge, which serializes JSON messages asynchronously between threads." },
+  { topic: "react-native-architecture-components", front: "What CLI commands create a new React Native project and run it on Android?", back: "react-native init <ProjectName> creates the project; react-native run-android executes it on Android." },
+  { topic: "react-native-architecture-components", front: "Is <div> a valid core React Native component? What core primitives are used?", back: "No, <div> is NOT a core component. Core components include <View> for layout containers and <Text> for strings." },
+  { topic: "react-native-architecture-components", front: "Which core component is used for temporary overlays like alerts?", back: "The <Modal> component." },
+  { topic: "react-native-architecture-components", front: "Which component is recommended for rendering large or dynamic scrollable lists?", back: "The <FlatList> component." },
+  { topic: "react-native-architecture-components", front: "What is the correct syntax for text input and applying text styles in React Native?", back: "<TextInput placeholder='Enter your name' /> and style={styles.myText}." },
+  { topic: "react-native-ecosystem-apps", front: "Which browser developer tool is used to debug React Native applications?", back: "Chrome Developer Tools (remotely debugging the JavaScript thread)." },
+  { topic: "react-native-ecosystem-apps", front: "What library is commonly used for persistent asynchronous key-value storage in React Native?", back: "AsyncStorage (e.g. AsyncStorage.setItem and AsyncStorage.getItem)." },
+  { topic: "react-native-ecosystem-apps", front: "Name the six core practical apps covered in the React Native curriculum.", back: "Profile Card, Counter / Tally, Recipe / Todo List, Feedback / Form with Modal, Tab / Stack Navigation, and Persistent Notes / Weather." },
+
 ];
 
 const practiceTests = [
@@ -1297,6 +1759,89 @@ const practiceTests = [
       },
     ],
   },
+  {
+    title: "Module 6 • React Fundamentals",
+    questions: [
+      {
+        q: "What compiler/transpiler transforms JSX markup into standard JavaScript function calls?",
+        options: ["Webpack", "Babel", "Vite", "TypeScript only"],
+        answer: 1,
+        explain: "Babel is the transpiler that parses JSX tags and transforms them into React.createElement calls.",
+      },
+      {
+        q: "What does the JSX expression {1 + 1} render into the DOM?",
+        options: ["11", "{1+1}", "2", "NaN"],
+        answer: 2,
+        explain: "Curly braces in JSX evaluate JavaScript expressions directly, so 1 + 1 evaluates to numeric 2.",
+      },
+      {
+        q: "What is the correct class declaration for a React class component?",
+        options: ["class App implements Component", "class App extends React.Component", "function App extends Component", "class App : ReactComponent"],
+        answer: 1,
+        explain: "Class components inherit access to lifecycle methods and state by using extends React.Component.",
+      },
+      {
+        q: "Where should mutable component properties be stored in a React component?",
+        options: ["In an object called state", "In the props object", "In window.sessionStorage", "In global variables"],
+        answer: 0,
+        explain: "Component properties that change over time and drive UI updates must be kept in an object called state.",
+      },
+      {
+        q: "Which lifecycle method is called first when an existing component receives updates?",
+        options: ["componentDidMount", "componentDidUpdate", "componentWillMount", "renderUpdate"],
+        answer: 1,
+        explain: "componentDidUpdate() is called immediately after updating occurs, but is never invoked for the initial render.",
+      },
+      {
+        q: "What is the correct syntax for importing React and the useState hook?",
+        options: ["import { React, useState } from 'react'", "import React, { useState } from 'react'", "const { React, useState } = 'react'", "import useState from 'react/hooks'"],
+        answer: 1,
+        explain: "React is the default export while useState is a named export: import React, { useState } from 'react'.",
+      },
+    ],
+  },
+  {
+    title: "Module 7 • React Native & Mobile App Development",
+    questions: [
+      {
+        q: "What mechanism connects JavaScript logic to native platform widgets in React Native?",
+        options: ["DOM Shadow Root", "The React Native Bridge", "A WebView wrapper", "Direct C++ compilation only"],
+        answer: 1,
+        explain: "React Native uses an asynchronous serialized Bridge to communicate between the JS thread and native OEM threads.",
+      },
+      {
+        q: "Which CLI command scaffolds a new React Native project from scratch?",
+        options: ["react-native create-app", "npm init native", "react-native init", "npx react-native-start"],
+        answer: 2,
+        explain: "The standard React Native CLI initialization command is react-native init <ProjectName>.",
+      },
+      {
+        q: "Which element is NOT a core React Native component?",
+        options: ["View", "Text", "div", "Modal"],
+        answer: 2,
+        explain: "div is an HTML DOM element and is NOT a core React Native component. Core components include View and Text.",
+      },
+      {
+        q: "What is the correct React Native syntax for a text input with placeholder text?",
+        options: ["<input type='text' placeholder='Enter your name' />", "<TextInput placeholder='Enter your name' />", "<TextView hint='Enter your name' />", "<Text input='true'>Enter your name</Text>"],
+        answer: 1,
+        explain: "React Native uses <TextInput placeholder='Enter your name' /> to render native single or multi-line edit controls.",
+      },
+      {
+        q: "How is styling correctly applied to a Text component in React Native?",
+        options: ["class='myText'", "className={styles.myText}", "style={styles.myText}", "css='myText'"],
+        answer: 2,
+        explain: "Styles created with StyleSheet.create are attached to native components using the style prop: style={styles.myText}.",
+      },
+      {
+        q: "Which library is used to store and retrieve small amounts of data asynchronously in React Native?",
+        options: ["AsyncStorage", "LocalDatabase", "IndexedDB", "Cookies"],
+        answer: 0,
+        explain: "AsyncStorage provides asynchronous, unencrypted key-value persistent storage across app restarts.",
+      },
+    ],
+  },
+
 ];
 
 const blueprintStages = [
@@ -1455,6 +2000,35 @@ const scenarios = [
     answer: 1,
     explanation: "Reserving the space before the image arrives removes the reflow that Cumulative Layout Shift measures, which is the defect the users are describing.",
   },
+  {
+    id: "scenario-react-props-state",
+    moduleId: "m6",
+    category: "React",
+    prompt: "A developer modifies this.props directly inside a child component, and the change fails to rerender. Which principle explains why this approach is invalid?",
+    options: [
+      "Props are read-only and flow unidirectionally from parent; mutable local data must be stored in state",
+      "Props must be updated using this.setProps() instead",
+      "The component needed to extend React.Hook instead of React.Component",
+      "The child component must be registered in the browser window registry first",
+    ],
+    answer: 0,
+    explanation: "Props are strictly read-only and flow unidirectionally from parent to child. Any mutable state must live in component state and be updated via setState().",
+  },
+  {
+    id: "scenario-react-native-components",
+    moduleId: "m7",
+    category: "React Native",
+    prompt: "A web team porting a layout to React Native attempts to use <div> containers and <span> tags, resulting in compilation errors. Which refactor conforms to React Native architecture?",
+    options: [
+      "Install jQuery Mobile into the Android assets folder",
+      "Replace <div> with <View>, wrap all text strings in <Text>, and reference styles with style={styles.myText}",
+      "Add an HTML doctype to the index.js entry file",
+      "Import CSS style sheets directly into the AndroidManifest.xml",
+    ],
+    answer: 1,
+    explanation: "React Native does not use DOM elements like div and span. Layout containers must use View, text must be enclosed in Text, and styling must use StyleSheet objects.",
+  },
+
 ];
 
 const studySteps = [

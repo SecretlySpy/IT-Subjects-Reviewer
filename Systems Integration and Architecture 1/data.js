@@ -2082,9 +2082,101 @@ LOG_LEVEL=warn \
     ],
     sources: [lessonSources.tls, lessonSources.c4],
   },
+  {
+    id: "maintenance-documentation",
+    moduleId: "m6-1",
+    unit: "6.1B",
+    estimatedMinutes: 45,
+    title: "Project Reporting and Maintenance Documentation",
+    color: "emerald",
+    subtitle:
+      "Plan the four maintenance types, manage changes with rollback safety, and document operations.",
+    beginner:
+      "While project reporting (SIA-14) tracks build progress and budget toward the initial launch, maintenance documentation keeps the live system healthy for years after launch. It logs incidents, coordinates safe upgrades with rollback plans, and guides support engineers when outages strike.",
+    example:
+      "An integration platform plans an API gateway upgrade. The maintenance documentation specifies pre-flight database backups, a canary traffic rollout, automated regression test runs, and a 15-minute rollback procedure if 5xx errors exceed 0.1%.",
+    objectives: [
+      "Distinguish ongoing maintenance documentation from delivery-phase project status reporting.",
+      "Categorise maintenance activities into corrective, preventive, adaptive, and perfective maintenance.",
+      "Document incident post-mortems and maintain structured change management records with CAB review.",
+      "Design safe upgrade plans incorporating automated regression testing, database migrations, and verified rollback procedures.",
+      "Define operational disaster recovery targets including Recovery Time Objective (RTO) and Recovery Point Objective (RPO).",
+    ],
+    terms: [
+      "Corrective Maintenance",
+      "Preventive Maintenance",
+      "Adaptive Maintenance",
+      "Perfective Maintenance",
+      "Change Management",
+      "Rollback Procedure",
+      "RTO and RPO",
+    ],
+    keyPoints: [
+      "Operational documentation differs fundamentally from project delivery reporting: delivery tracks progress to release, while maintenance guides reliability, incidents, and changes during ongoing live operations.",
+      "The four maintenance types are: Corrective (bug fixing), Preventive (proactive security patching and refactoring), Adaptive (updating for OS, platform, or regulatory shifts), and Perfective (enhancements and optimizations).",
+      "Every production change requires a Request for Change (RFC), risk assessment, approval, and a documented, tested rollback procedure.",
+      "Incident reports and blameless post-mortems record timeline, root cause, impact, recovery steps, and prevention items.",
+      "Recovery Time Objective (RTO) defines the maximum acceptable downtime, while Recovery Point Objective (RPO) defines the maximum acceptable data loss in time.",
+    ],
+    compare: {
+      headers: ["Maintenance Type", "Trigger", "Primary Objective", "Integration Example"],
+      rows: [
+        ["Corrective", "Discovered bug or production defect", "Restore intended operation quickly", "Patching an XML parser null-pointer exception on malformed payloads"],
+        ["Preventive", "Vulnerability alert or code smell", "Prevent future failures proactively", "Updating an outdated third-party JSON parser before security vulnerabilities are exploited"],
+        ["Adaptive", "External platform or regulatory change", "Maintain environment compatibility", "Migrating TLS 1.2 endpoints to TLS 1.3 to comply with revised data privacy regulations"],
+        ["Perfective", "User feedback or throughput bottleneck", "Enhance performance and capabilities", "Refactoring an ESB message flow with caching to double throughput during peak hours"],
+      ],
+    },
+    flow: [
+      ["Assess", "Review change request, impact, and operational risk."],
+      ["Prepare", "Verify automated regression suite, staging tests, and backups."],
+      ["Deploy", "Execute canary or rolling upgrade with continuous monitoring."],
+      ["Verify/Rollback", "Confirm operational SLOs or execute documented rollback."],
+    ],
+    lessonBlocks: [
+      {
+        kind: "code",
+        title: "Maintenance Runbook and Rollback Specification",
+        language: "text",
+        code: `SERVICE MAINTENANCE & RUNBOOK SPECIFICATION
+Service: Payment Integration Gateway (v2.4.0 -> v2.5.0)
+Maintenance Window: Sunday 02:00 - 04:00 UTC (Low Traffic)
+Risk Tier: Tier 1 (Financial Transaction Path)
+
+1. PRE-MAINTENANCE CHECKLIST:
+   [x] Automated snapshot of transaction database verified (RPO <= 5 min)
+   [x] Automated regression test suite passed in staging (100% pass rate)
+   [x] Change Advisory Board (CAB) approval logged under RFC-4821
+
+2. DEPLOYMENT STEPS:
+   - Route 10% traffic to v2.5.0 canary instance
+   - Monitor 5xx error rate and p99 latency for 15 minutes
+   - If healthy, promote to 100% via rolling update across cluster
+
+3. ROLLBACK CRITERIA & PROCEDURE:
+   Trigger: Error rate > 0.1% OR p99 latency > 800ms over 3 consecutive minutes
+   Rollback Time Limit: Complete within 10 minutes (RTO <= 15 min)
+   Action: Re-point load balancer to v2.4.0 target group; restore pre-migration DB schema`,
+        caption: "A production maintenance plan defines clear pre-flight checks, rollback triggers, and RTO/RPO limits.",
+      },
+      {
+        kind: "callout",
+        tone: "warning",
+        title: "Distinct from SIA-14 Project Reporting",
+        text: "SIA-14 focuses on project delivery reporting (milestones, burn-down charts, project budget, and stakeholder updates toward launch). SIA-19 focuses on operational maintenance documentation (incident post-mortems, the four maintenance types, change requests, runbooks, regression testing, and rollback safety for running systems).",
+      },
+      {
+        kind: "callout",
+        tone: "note",
+        title: "RTO vs RPO Metrics",
+        text: "Recovery Time Objective (RTO) is the target time to restore a system after an outage (how long you can afford to be down). Recovery Point Objective (RPO) is the maximum age of data that must be recovered (how much data loss you can afford).",
+      },
+    ],
+    sources: [lessonSources.iso25010, lessonSources.slo, lessonSources.pmi],
+  },
+
 ];
 
-// Store concise glossary entries in module order, exactly TERMS_PER_MODULE per module.
 const glossary = [
   ["Enterprise", "The whole organization or business environment being examined."],
   ["Architecture", "High-level planning that shows the overall shape, relationships, and direction of a solution."],
